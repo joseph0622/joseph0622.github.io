@@ -1,0 +1,31 @@
+<html>
+<head>
+	<script src="js/aes.js"></script>
+	<script src="js/jquery-3.3.1.min.js"></script>
+	<script type="text/javascript">
+		$(function(){	
+			$("#encryptBtn").click(function(){
+				$("#encrypted").val(CryptoJS.AES.encrypt($("#from").val(), $("#seed").val()));
+			});
+			
+			$("#decryptBtn").click(function(){
+				$("#decrypted").val(CryptoJS.AES.decrypt($("#to").val(), $("#seed").val()).toString(CryptoJS.enc.Utf8));
+			});
+			
+		});
+		
+	</script>
+</head>
+<body>
+	<h2>Simple Encrypter/Decrypter (CryptoJS-AES)</h2>
+	Seed: <input type="text" id="seed"/>
+	<br/><br/>
+	<textarea id="from" rows="10"></textarea>
+	<button id="encryptBtn" type="button">Encrypt</button>
+	<textarea id="encrypted" rows="10"></textarea>
+	<p></p>
+	<textarea id="to" rows="10"></textarea>
+	<button id="decryptBtn" type="button">Decrypt</button>
+	<textarea id="decrypted" rows="10"></textarea>
+</body>
+</html>
