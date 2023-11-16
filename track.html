@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+  <head>
+
+    <meta charset="utf-8">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>RetroTrackor</title>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+	 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <!-- Styles -->
+
+    <style>
+
+      body {
+
+        padding-top: 15px;
+
+      }
+
+      h1 {
+
+        margin: 15px 0px;
+
+      }
+
+    </style>
+
+  </head>
+
+  <body>
+
+    <div class="container">
+
+      <div class="row">
+
+        <div class="col-lg-12 text-center" >
+
+          <div class="container">
+
+          </div>
+          <table class="table">
+
+            <thead>
+
+              <tr>
+				<th scope="col">0</th>
+                <th scope="col">1</th>
+                <th scope="col">0</th>
+                <th scope="col">1</th>
+                <th scope="col">Total</th>
+				<th scope="col">InRange</th>
+				<th scope="col">R</th>
+              </tr>
+
+            </thead>
+
+            <tbody>
+				<tr>
+					<td class="t0"></td>
+					<td class="t1"></td>
+					<td class="bal0"></td>
+					<td class="bal1"></td>
+					<td class="total"></td>
+					<td class="inrange"></td>
+					<td class="apr"></td>
+				</tr>
+            </tbody>
+			<tfoot style="display:none;">
+				<tr>
+					<td class="t0"></td>
+					<td class="t1"></td>
+					<td class="bal0"></td>
+					<td class="bal1"></td>
+					<td class="total"></td>
+					<td class="inrange"></td>
+					<td class="apr"></td>
+				</tr>
+			</tfoot>
+          </table>
+
+		  <br/>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Web3 -->
+
+    <script>
+		$(function () {
+			function fetchPool(){
+				var ts = new Date().getUTCMilliseconds();
+				$.ajax({
+					type : "GET",
+					url: "https://api.angle.money/v1/merkl?chainId=137&user=0xF712aB8c4505eB4B36a2Ff9Fa746470be81E6538",
+					dataType: "json",
+					success : function(data) {
+						$("table.table tbody").empty();
+						//console.log(data);
+						var pools = data.pools;
+						$.each(pools, function(){
+							var pool = $(this)[0];
+							if(pool){
+								if(pool.userTVL > 0){
+									var tr = $("table.table tfoot tr").clone();
+								
+									$(tr).find(".t0").text(pool.tokenSymbol0);
+									$(tr).find(".t1").text(pool.tokenSymbol1);
+									$(tr).find(".bal0").text(pool.userTotalBalance0);
+									$(tr).find(".bal1").text(pool.userTotalBalance1);
+									$(tr).find(".total").text(pool.userTotalLiquidity);
+									$(tr).find(".inrange").text(pool.userInRangeLiquidity);
+									$(tr).find(".apr").text(pool.aprs['User current APR (based on last distribution boost)']);
+									
+									$(tr).appendTo($("table.table tbody"));
+								}
+							}
+						});			
+
+						$.ajax({
+							type : "GET",
+							url: "https://api.angle.money/v1/merkl?chainId=42161&user=0xF712aB8c4505eB4B36a2Ff9Fa746470be81E6538",
+							dataType: "json",
+							success : function(data) {
+								var pools = data.pools;
+								$.each(pools, function(){
+									var pool = $(this)[0];
+									if(pool){
+										if(pool.userTVL > 0){
+											var tr = $("table.table tfoot tr").clone();
+										
+											$(tr).find(".t0").text(pool.tokenSymbol0);
+											$(tr).find(".t1").text(pool.tokenSymbol1);
+											$(tr).find(".bal0").text(pool.userTotalBalance0);
+											$(tr).find(".bal1").text(pool.userTotalBalance1);
+											$(tr).find(".total").text(pool.userTotalLiquidity);
+											$(tr).find(".inrange").text(pool.userInRangeLiquidity);
+											$(tr).find(".apr").text(pool.aprs['User current APR (based on last distribution boost)']);
+											
+											$(tr).appendTo($("table.table tbody"));
+										}
+									}
+								});			
+
+								
+							},
+							error: function (e) {
+							}
+						});
+					},
+					error: function (e) {
+					}
+				});
+				
+				
+			}
+
+			fetchPool();
+			
+			setInterval(function () {
+				fetchPool();
+			}, 10000);
+
+		});
+    </script>
+
+  </body>
+
+</html>
+
