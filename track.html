@@ -30,6 +30,10 @@
         margin: 15px 0px;
 
       }
+	  
+	  .alert {
+		color: red;
+	  }
 
     </style>
 
@@ -134,6 +138,10 @@
 									$(tr).find(".apr").text(pool.aprs['User current APR ']);
 									
 									$(tr).appendTo($("table.table tbody"));
+									
+									if(pool.userInRangeLiquidity == 0){
+										$(tr).find(".inrange").addClass("alert");
+									}
 								}
 							}
 						});
@@ -165,6 +173,10 @@
 									$(tr).find(".apr").text(pool.aprs['User current APR (based on last distribution boost)']);
 									
 									$(tr).appendTo($("table.table tbody"));
+									
+									if(pool.userInRangeLiquidity == 0){
+										$(tr).find(".inrange").addClass("alert");
+									}
 								}
 							}
 						});
