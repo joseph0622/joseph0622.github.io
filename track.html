@@ -66,6 +66,7 @@
                 <th scope="col">Total</th>
 				<th scope="col">InRange</th>
 				<th scope="col">R</th>
+				<th scope="col">Reward</th>
               </tr>
 
             </thead>
@@ -79,6 +80,7 @@
 					<td class="total"></td>
 					<td class="inrange"></td>
 					<td class="apr"></td>
+					<td class="reward"></td>
 				</tr>
             </tbody>
 			<tfoot style="display:none;">
@@ -90,6 +92,7 @@
 					<td class="total"></td>
 					<td class="inrange"></td>
 					<td class="apr"></td>
+					<td class="reward"></td>
 				</tr>
 				<tr class="arb">
 					<td class="t0"></td>
@@ -99,6 +102,7 @@
 					<td class="total"></td>
 					<td class="inrange"></td>
 					<td class="apr"></td>
+					<td class="reward"></td>
 				</tr>
           </table>
 
@@ -113,6 +117,9 @@
     <!-- Web3 -->
 
     <script>
+		var ztxPrice = 0;
+		var oretroPrice = 0;
+		
 		$(function () {
 			function fetchPool(){
 				var ts = new Date().getUTCMilliseconds();
@@ -141,6 +148,20 @@
 									
 									if(pool.userInRangeLiquidity == 0){
 										$(tr).find(".inrange").addClass("alert");
+									}
+									
+									if(pool.distributionData){
+										var pendingReward = 0;
+										$(pool.distributionData).each(function(){
+											var reward = $(this)[0];
+											if(reward.isLive && reward.token == "0x1C43D05be7E5b54D506e3DdB6f0305e8A66CD04e"){
+												pendingReward += reward.unclaimed;
+											}
+										});
+										
+										if(pendingReward > 0){
+											$(tr).find(".reward").text(pendingReward * ztxPrice);
+										}
 									}
 								}
 							}
@@ -177,6 +198,20 @@
 									if(pool.userInRangeLiquidity == 0){
 										$(tr).find(".inrange").addClass("alert");
 									}
+									
+									if(pool.distributionData){
+										var pendingReward = 0;
+										$(pool.distributionData).each(function(){
+											var reward = $(this)[0];
+											if(reward.isLive && reward.token == "0x3A29CAb2E124919d14a6F735b6033a3AaD2B260F"){
+												pendingReward += reward.unclaimed;
+											}
+										});
+										
+										if(pendingReward > 0){
+											$(tr).find(".reward").text(pendingReward * oretroPrice);
+										}
+									}
 								}
 							}
 						});
@@ -192,6 +227,7 @@
 					dataType: "json",
 					success : function(data) {
 						$("span.price.ztx").text(data.pair.priceUsd + '(' + data.pair.priceChange.h1 +',' + data.pair.priceChange.h6 + ',' + data.pair.priceChange.h24 +')');
+						ztxPrice = data.pair.priceUsd;
 					},
 					error: function (e) {
 					}
@@ -214,6 +250,7 @@
 					dataType: "json",
 					success : function(data) {
 						$("span.price.oretro").text(data.pair.priceNative + '(' + data.pair.priceChange.h1 +',' + data.pair.priceChange.h6 + ',' + data.pair.priceChange.h24+')');
+						oretroPrice = data.pair.priceUsd;
 					},
 					error: function (e) {
 					}
