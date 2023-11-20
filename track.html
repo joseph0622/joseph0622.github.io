@@ -53,7 +53,7 @@
 			retro: <span class="retro price"></span>&nbsp;oretro: <span class="oretro price"></span><br/>
 			eth: <span class="eth price"></span>&nbsp;btc: <span class="btc price"></span>&nbsp;matic: <span class="matic price"></span><br/>
 			thena: <span class="thena price"></span>&nbsp;ram: <span class="ram price"></span><br/>			
-			Total Reward: <span class="reward"></span>
+			Total Reward: <span class="reward"></span>&nbsp;tvl:<span class="userTvl"></span>&nbsp;r:<span class="avgApr"></span>
           </div>
 		  <br/>
           <table class="table">
@@ -124,6 +124,9 @@
 		var lastmail = '';
 		var ztxReward = 0;
 		var retroReward = 0;
+		var userTvl = 0;
+		var totalApr = 0;
+		var poolNum = 0;
 		
 		$(function () {
 			function sendEmail(pair) {
@@ -145,6 +148,12 @@
 		
 			function fetchPool(){
 				var ts = new Date().getUTCMilliseconds();
+				retroReward = 0;
+				ztxReward = 0;
+				userTvl = 0;
+				totalApr = 0;
+				poolNum = 0;
+				
 				$.ajax({
 					type : "GET",
 					url: "https://api.angle.money/v1/merkl?chainId=42161&user=0xF712aB8c4505eB4B36a2Ff9Fa746470be81E6538",
@@ -156,6 +165,10 @@
 							var pool = $(this)[0];
 							if(pool){
 								if(pool.userTVL > 0){
+									userTvl += pool.userTVL;
+									totalApr += pool.aprs['User current APR '];
+									poolNum++;
+									
 									var tr = $("table.table tfoot tr.arb").clone();
 								
 									$(tr).find(".t0").text(pool.tokenSymbol0);
@@ -196,6 +209,9 @@
 								}
 							}
 						});
+						
+						$("span.userTvl").text(userTvl);
+						$("span.avgApr").text(totalApr / (poolNum || 0));
 					},
 					error: function (e) {
 					}
@@ -213,6 +229,10 @@
 							var pool = $(this)[0];
 							if(pool){
 								if(pool.userTVL > 0){
+									userTvl += pool.userTVL;
+									totalApr += pool.aprs['User current APR (based on last distribution boost)'];
+									poolNum++;								
+									
 									var tr = $("table.table tfoot tr.polygon").clone();
 								
 									$(tr).find(".t0").text(pool.tokenSymbol0);
@@ -253,6 +273,9 @@
 								}
 							}
 						});
+						
+						$("span.userTvl").text(userTvl);
+						$("span.avgApr").text(totalApr / (poolNum || 0));
 					},
 					error: function (e) {
 					}
@@ -368,8 +391,6 @@
 			fetchPool();
 			
 			setInterval(function () {
-				retroReward = 0;
-				ztxReward = 0;
 				fetchPool();
 			}, 60000);
 
