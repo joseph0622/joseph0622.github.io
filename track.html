@@ -53,6 +53,7 @@
 			retro: <span class="retro price"></span>&nbsp;oretro: <span class="oretro price"></span><br/>
 			eth: <span class="eth price"></span>&nbsp;btc: <span class="btc price"></span>&nbsp;matic: <span class="matic price"></span><br/>
 			thena: <span class="thena price"></span>&nbsp;ram: <span class="ram price"></span><br/>			
+			Total Reward: <span class="reward"></span>
           </div>
 		  <br/>
           <table class="table">
@@ -121,6 +122,8 @@
 		var ztxPrice = 0;
 		var oretroPrice = 0;
 		var lastmail = '';
+		var ztxReward = 0;
+		var retroReward = 0;
 		
 		$(function () {
 			function sendEmail(pair) {
@@ -180,12 +183,14 @@
 										$(pool.distributionData).each(function(){
 											var reward = $(this)[0];
 											if(reward.isLive && reward.token == "0x1C43D05be7E5b54D506e3DdB6f0305e8A66CD04e"){
-												pendingReward += reward.unclaimed;
+												pendingReward += reward.unclaimed;												
 											}
 										});
 										
 										if(pendingReward > 0){
 											$(tr).find(".reward").text(pendingReward * ztxPrice);
+											ztxReward += pendingReward;
+											$("span.reward").text((ztxReward * ztxPrice) + ' + ' + (retroReward * oretroPrice));
 										}
 									}
 								}
@@ -241,6 +246,8 @@
 										
 										if(pendingReward > 0){
 											$(tr).find(".reward").text(pendingReward * oretroPrice);
+											retroReward += pendingReward;
+											$("span.reward").text((ztxReward * ztxPrice) + ' + ' + (retroReward * oretroPrice));
 										}
 									}
 								}
@@ -361,6 +368,8 @@
 			fetchPool();
 			
 			setInterval(function () {
+				retroReward = 0;
+				ztxReward = 0;
 				fetchPool();
 			}, 60000);
 
