@@ -53,7 +53,8 @@
 			retro: <span class="retro price"></span>&nbsp;oretro: <span class="oretro price"></span><br/>
 			eth: <span class="eth price"></span>&nbsp;btc: <span class="btc price"></span>&nbsp;matic: <span class="matic price"></span><br/>
 			thena: <span class="thena price"></span>&nbsp;ram: <span class="ram price"></span><br/>			
-			Total Reward: <span class="reward"></span>&nbsp;tvl:<span class="userTvl"></span>&nbsp;r:<span class="avgApr"></span>
+			Total Reward: <span class="reward"></span>&nbsp;<br/>
+			ztx:<span class="ztxTvl"></span>&nbsp;retro:<span class="retroTvl"></span>&nbsp;total:<span class="userTvl"></span>&nbsp;r:<span class="avgApr"></span>%
           </div>
 		  <br/>
           <table class="table">
@@ -124,9 +125,10 @@
 		var lastmail = '';
 		var ztxReward = 0;
 		var retroReward = 0;
+		var ztxTvl = 0;
+		var retroTvl = 0;
+		var aprMap = new Map();
 		var userTvl = 0;
-		var totalApr = 0;
-		var poolNum = 0;
 		
 		$(function () {
 			function sendEmail(pair) {
@@ -150,9 +152,9 @@
 				var ts = new Date().getUTCMilliseconds();
 				retroReward = 0;
 				ztxReward = 0;
-				userTvl = 0;
-				totalApr = 0;
-				poolNum = 0;
+				ztxTvl = 0;
+				retroTvl = 0;
+				aprMap.clear();
 				
 				$.ajax({
 					type : "GET",
@@ -165,19 +167,18 @@
 							var pool = $(this)[0];
 							if(pool){
 								if(pool.userTVL > 0){
-									userTvl += pool.userTVL;
-									totalApr += pool.aprs['User current APR '];
-									poolNum++;
+									ztxTvl += pool.userTVL;
+									aprMap.set(pool.tokenSymbol0 + '-' + pool.tokenSymbol1, {tvl: pool.userTVL, apr: pool.aprs['User current APR ']});
 									
 									var tr = $("table.table tfoot tr.arb").clone();
 								
 									$(tr).find(".t0").text(pool.tokenSymbol0);
 									$(tr).find(".t1").text(pool.tokenSymbol1);
-									$(tr).find(".bal0").text(pool.userTotalBalance0);
-									$(tr).find(".bal1").text(pool.userTotalBalance1);
-									$(tr).find(".total").text(pool.userTotalLiquidity);
-									$(tr).find(".inrange").text(pool.userInRangeLiquidity);
-									$(tr).find(".apr").text(pool.aprs['User current APR ']);
+									$(tr).find(".bal0").text(parseFloat(pool.userTotalBalance0).toFixed(3));
+									$(tr).find(".bal1").text(parseFloat(pool.userTotalBalance1).toFixed(3));
+									$(tr).find(".total").text(Math.round(pool.userTVL) + ' (' + Math.round((pool.userTVL / pool.tvl)*100) + '%)');
+									$(tr).find(".inrange").text(((pool.userInRangeLiquidity/pool.userTotalLiquidity)*100)+ '%');
+									$(tr).find(".apr").text(Math.round(pool.aprs['User current APR ']) + '%');
 									
 									$(tr).appendTo($("table.table tbody"));
 									
@@ -201,17 +202,25 @@
 										});
 										
 										if(pendingReward > 0){
-											$(tr).find(".reward").text(pendingReward * ztxPrice);
+											$(tr).find(".reward").text(parseFloat(pendingReward * ztxPrice).toFixed(2));
 											ztxReward += pendingReward;
-											$("span.reward").text((ztxReward * ztxPrice) + ' + ' + (retroReward * oretroPrice));
+											$("span.reward").text(Math.round((ztxReward * ztxPrice)) + ' + ' + Math.round((retroReward * oretroPrice)));
 										}
 									}
 								}
 							}
 						});
 						
-						$("span.userTvl").text(userTvl);
-						$("span.avgApr").text(totalApr / (poolNum || 0));
+						$("span.ztxTvl").text(Math.round(ztxTvl));
+						$("span.userTvl").text(Math.round(ztxTvl + retroTvl));
+						userTvl = Math.round(ztxTvl + retroTvl);
+						
+						var aprCount = 0;
+						aprMap.forEach((obj, key) => {
+							aprCount += obj.tvl * obj.apr;
+						});
+						
+						$("span.avgApr").text(Math.round((aprCount/(ztxTvl+retroTvl))));
 					},
 					error: function (e) {
 					}
@@ -229,19 +238,18 @@
 							var pool = $(this)[0];
 							if(pool){
 								if(pool.userTVL > 0){
-									userTvl += pool.userTVL;
-									totalApr += pool.aprs['User current APR (based on last distribution boost)'];
-									poolNum++;								
+									retroTvl += pool.userTVL;
+									aprMap.set(pool.tokenSymbol0 + '-' + pool.tokenSymbol1, {tvl: pool.userTVL, apr: pool.aprs['User current APR (based on last distribution boost)']});									
 									
 									var tr = $("table.table tfoot tr.polygon").clone();
 								
 									$(tr).find(".t0").text(pool.tokenSymbol0);
 									$(tr).find(".t1").text(pool.tokenSymbol1);
-									$(tr).find(".bal0").text(pool.userTotalBalance0);
-									$(tr).find(".bal1").text(pool.userTotalBalance1);
-									$(tr).find(".total").text(pool.userTotalLiquidity);
-									$(tr).find(".inrange").text(pool.userInRangeLiquidity);
-									$(tr).find(".apr").text(pool.aprs['User current APR (based on last distribution boost)']);
+									$(tr).find(".bal0").text(parseFloat(pool.userTotalBalance0).toFixed(3));
+									$(tr).find(".bal1").text(parseFloat(pool.userTotalBalance1).toFixed(3));
+									$(tr).find(".total").text(Math.round(pool.userTVL) + ' (' + Math.round((pool.userTVL / pool.tvl)*100) + '%)');
+									$(tr).find(".inrange").text(((pool.userInRangeLiquidity/pool.userTotalLiquidity)*100)+ '%');
+									$(tr).find(".apr").text(Math.round(pool.aprs['User current APR (based on last distribution boost)']) + '%');
 									
 									$(tr).appendTo($("table.table tbody"));
 									
@@ -265,17 +273,24 @@
 										});
 										
 										if(pendingReward > 0){
-											$(tr).find(".reward").text(pendingReward * oretroPrice);
+											$(tr).find(".reward").text(parseFloat(pendingReward * oretroPrice).toFixed(2));
 											retroReward += pendingReward;
-											$("span.reward").text((ztxReward * ztxPrice) + ' + ' + (retroReward * oretroPrice));
+											$("span.reward").text(Math.round((ztxReward * ztxPrice)) + ' + ' + Math.round((retroReward * oretroPrice)));
 										}
 									}
 								}
 							}
 						});
 						
-						$("span.userTvl").text(userTvl);
-						$("span.avgApr").text(totalApr / (poolNum || 0));
+						$("span.retroTvl").text(Math.round(retroTvl));
+						$("span.userTvl").text(Math.round(ztxTvl + retroTvl));
+						userTvl = Math.round(ztxTvl + retroTvl);
+						var aprCount = 0;
+						aprMap.forEach((obj, key) => {
+							aprCount += obj.tvl * obj.apr;
+						});
+						
+						$("span.avgApr").text(Math.round((aprCount/(ztxTvl+retroTvl))));
 					},
 					error: function (e) {
 					}
@@ -287,7 +302,7 @@
 					url: "https://api.dexscreener.com/latest/dex/pairs/arbitrum/0xe6ea93ba4ae9ee6520e55affebbdb38ed6c233a4",
 					dataType: "json",
 					success : function(data) {
-						$("span.price.ztx").text(data.pair.priceUsd + '(' + data.pair.priceChange.h1 +',' + data.pair.priceChange.h6 + ',' + data.pair.priceChange.h24 +')');
+						$("span.price.ztx").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24 +')');
 						ztxPrice = data.pair.priceUsd;
 						
 						if(data.pair.priceChange.h1 < -10){
@@ -303,7 +318,7 @@
 					url: "https://api.dexscreener.com/latest/dex/pairs/polygon/0xb47a07966ce6812702c0567d03725f1b37e27877",
 					dataType: "json",
 					success : function(data) {
-						$("span.price.retro").text(data.pair.priceUsd + '(' + data.pair.priceChange.h1 +',' + data.pair.priceChange.h6 + ',' + data.pair.priceChange.h24+')');
+						$("span.price.retro").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
 					},
 					error: function (e) {
 					}
@@ -314,7 +329,7 @@
 					url: "https://api.dexscreener.com/latest/dex/pairs/polygon/0x387fbce5e2933bd3a7243d0be2aac8fd9ab3d55d",
 					dataType: "json",
 					success : function(data) {
-						$("span.price.oretro").text(data.pair.priceNative + '(' + data.pair.priceChange.h1 +',' + data.pair.priceChange.h6 + ',' + data.pair.priceChange.h24+')');
+						$("span.price.oretro").text(data.pair.priceNative + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
 						oretroPrice = data.pair.priceUsd;
 					},
 					error: function (e) {
@@ -326,7 +341,7 @@
 					url: "https://api.dexscreener.com/latest/dex/pairs/arbitrum/0xc31e54c7a869b9fcbecc14363cf510d1c41fa443",
 					dataType: "json",
 					success : function(data) {
-						$("span.price.eth").text(data.pair.priceUsd + '(' + data.pair.priceChange.h1 +',' + data.pair.priceChange.h6 + ',' + data.pair.priceChange.h24+')');
+						$("span.price.eth").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
 					},
 					error: function (e) {
 					}
@@ -337,7 +352,7 @@
 					url: "https://api.dexscreener.com/latest/dex/pairs/arbitrum/0x2f5e87c9312fa29aed5c179e456625d79015299c",
 					dataType: "json",
 					success : function(data) {
-						$("span.price.btc").text(data.pair.priceUsd + '(' + data.pair.priceChange.h1 +',' + data.pair.priceChange.h6 + ',' + data.pair.priceChange.h24+')');
+						$("span.price.btc").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
 					},
 					error: function (e) {
 					}
@@ -348,7 +363,7 @@
 					url: "https://api.dexscreener.com/latest/dex/pairs/polygon/0x6e7a5fafcec6bb1e78bae2a1f0b612012bf14827",
 					dataType: "json",
 					success : function(data) {
-						$("span.price.matic").text(data.pair.priceUsd + '(' + data.pair.priceChange.h1 +',' + data.pair.priceChange.h6 + ',' + data.pair.priceChange.h24+')');
+						$("span.price.matic").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
 					},
 					error: function (e) {
 					}
@@ -359,7 +374,7 @@
 					url: "https://api.dexscreener.com/latest/dex/pairs/bsc/0x51bd5e6d3da9064d59bcaa5a76776560ab42ceb8",
 					dataType: "json",
 					success : function(data) {
-						$("span.price.thena").text(data.pair.priceUsd + '(' + data.pair.priceChange.h1 +',' + data.pair.priceChange.h6 + ',' + data.pair.priceChange.h24+')');
+						$("span.price.thena").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
 					},
 					error: function (e) {
 					}
@@ -370,7 +385,7 @@
 					url: "https://api.dexscreener.com/latest/dex/pairs/arbitrum/0x688547381eec7c1d3d9eba778fe275d1d7e03946",
 					dataType: "json",
 					success : function(data) {
-						$("span.price.ram").text(data.pair.priceUsd + '(' + data.pair.priceChange.h1 +',' + data.pair.priceChange.h6 + ',' + data.pair.priceChange.h24+')');
+						$("span.price.ram").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
 					},
 					error: function (e) {
 					}
@@ -381,7 +396,7 @@
 					url: "https://api.dexscreener.com/latest/dex/pairs/bsc/0x6a524c7328eb652248d1a3786f9db0e74ca961f0",
 					dataType: "json",
 					success : function(data) {
-						$("span.price.deus").text(data.pair.priceUsd + '(' + data.pair.priceChange.h1 +',' + data.pair.priceChange.h6 + ',' + data.pair.priceChange.h24+')');
+						$("span.price.deus").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
 					},
 					error: function (e) {
 					}
