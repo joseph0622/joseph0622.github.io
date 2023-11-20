@@ -44,9 +44,10 @@
         <div class="col-lg-12 text-center" >
 
           <div class="container">
-			ZTX: <span class="ztx price"></span><br/>
-			retro: <span class="retro price"></span><br/>
-			oretro: <span class="oretro price"></span><br/>
+			ZTX: <span class="ztx price"></span>&nbsp;deus: <span class="deus price"></span><br/>
+			retro: <span class="retro price"></span>&nbsp;oretro: <span class="oretro price"></span><br/>
+			eth: <span class="eth price"></span>&nbsp;btc: <span class="btc price"></span>&nbsp;matic: <span class="matic price"></span><br/>
+			thena: <span class="thena price"></span>&nbsp;ram: <span class="ram price"></span><br/>			
           </div>
 		  <br/>
           <table class="table">
@@ -201,6 +202,72 @@
 					dataType: "json",
 					success : function(data) {
 						$("span.price.oretro").text(data.pair.priceNative + '(' + data.pair.priceChange.h1 +',' + data.pair.priceChange.h6 + ',' + data.pair.priceChange.h24+')');
+					},
+					error: function (e) {
+					}
+				});
+				
+				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/arbitrum/0xc31e54c7a869b9fcbecc14363cf510d1c41fa443",
+					dataType: "json",
+					success : function(data) {
+						$("span.price.eth").text(data.pair.priceUsd + '(' + data.pair.priceChange.h1 +',' + data.pair.priceChange.h6 + ',' + data.pair.priceChange.h24+')');
+					},
+					error: function (e) {
+					}
+				});
+				
+				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/arbitrum/0x2f5e87c9312fa29aed5c179e456625d79015299c",
+					dataType: "json",
+					success : function(data) {
+						$("span.price.btc").text(data.pair.priceUsd + '(' + data.pair.priceChange.h1 +',' + data.pair.priceChange.h6 + ',' + data.pair.priceChange.h24+')');
+					},
+					error: function (e) {
+					}
+				});
+				
+				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/polygon/0x6e7a5fafcec6bb1e78bae2a1f0b612012bf14827",
+					dataType: "json",
+					success : function(data) {
+						$("span.price.matic").text(data.pair.priceUsd + '(' + data.pair.priceChange.h1 +',' + data.pair.priceChange.h6 + ',' + data.pair.priceChange.h24+')');
+					},
+					error: function (e) {
+					}
+				});
+				
+				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/bsc/0x51bd5e6d3da9064d59bcaa5a76776560ab42ceb8",
+					dataType: "json",
+					success : function(data) {
+						$("span.price.thena").text(data.pair.priceUsd + '(' + data.pair.priceChange.h1 +',' + data.pair.priceChange.h6 + ',' + data.pair.priceChange.h24+')');
+					},
+					error: function (e) {
+					}
+				});
+				
+				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/arbitrum/0x688547381eec7c1d3d9eba778fe275d1d7e03946",
+					dataType: "json",
+					success : function(data) {
+						$("span.price.ram").text(data.pair.priceUsd + '(' + data.pair.priceChange.h1 +',' + data.pair.priceChange.h6 + ',' + data.pair.priceChange.h24+')');
+					},
+					error: function (e) {
+					}
+				});
+				
+				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/bsc/0x6a524c7328eb652248d1a3786f9db0e74ca961f0",
+					dataType: "json",
+					success : function(data) {
+						$("span.price.deus").text(data.pair.priceUsd + '(' + data.pair.priceChange.h1 +',' + data.pair.priceChange.h6 + ',' + data.pair.priceChange.h24+')');
 					},
 					error: function (e) {
 					}
