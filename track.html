@@ -13,6 +13,7 @@
     <title>RetroTrackor</title>
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+	<script src="https://smtpjs.com/v3/smtp.js"></script>
 	 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <!-- Styles -->
 
@@ -119,8 +120,19 @@
     <script>
 		var ztxPrice = 0;
 		var oretroPrice = 0;
+		var lastmail = '';
 		
 		$(function () {
+			function sendEmail(pair) {
+			  Email.send({ 
+				SecureToken: "643bd5d0-de86-4ed9-95a0-2bec58502461",
+				To: 'toxicyw@gmail.com', 
+				From: "sahkokla@outlook.com", 
+				Subject: "Outofrange Alert", 
+				Body: "OutOfRangeAlert: " + pair, 
+			  });
+			}
+		
 			function alertCall(){
 				$.ajax({
 					type : "GET",
@@ -156,6 +168,11 @@
 									if(pool.userInRangeLiquidity == 0){
 										$(tr).find(".inrange").addClass("alert");
 										alertCall();
+										
+										if(lastmail == '' || (new Date() - lastmail > 1200000)){
+											sendEmail(pool.tokenSymbol0 + " - " + pool.tokenSymbol1);
+											lastmail = new Date();
+										}
 									}
 									
 									if(pool.distributionData){
@@ -206,6 +223,11 @@
 									if(pool.userInRangeLiquidity == 0){
 										$(tr).find(".inrange").addClass("alert");
 										//alertCall();
+										
+										if(lastmail == '' || (new Date() - lastmail > 1200000)){
+											sendEmail(pool.tokenSymbol0 + " - " + pool.tokenSymbol1);
+											lastmail = new Date();
+										}
 									}
 									
 									if(pool.distributionData){
