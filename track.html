@@ -232,6 +232,10 @@
 											$("span.reward").text(Math.round((ztxReward * ztxPrice)) + ' + ' + Math.round((retroReward * oretroPrice)) + ' + ' + Math.round((eurosReward * eurosPrice)));
 										}
 									}
+									
+									if(pool.pool == '0xc9AA2fEB84F0134a38d5D1c56b1E787191327Cb0'){
+										$(tr).find(".total").text(Math.round(pool.userTVL) + ' (' + Math.round((pool.userTotalBalance1/pool.token1InPool)*100) + '%)');
+									}
 								}
 							}
 						});
