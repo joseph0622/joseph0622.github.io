@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 
 <html lang="en">
@@ -49,7 +50,7 @@
         <div class="col-lg-12 text-center" >
 
           <div class="container">
-			#<span class="totalBalance"></span><br/>
+			#<span class="totalBalance"></span>&nbsp;CL: <span class="eurosCl"></span>%<br/>
 			ZTX: <span class="ztx price"></span>&nbsp;Euros: <span class="euros price"></span><br/>deus: <span class="deus price"></span><br/>
 			retro: <span class="retro price"></span>&nbsp;oretro: <span class="oretro price"></span><br/>
 			eth: <span class="eth price"></span>&nbsp;btc: <span class="btc price"></span>&nbsp;matic: <span class="matic price"></span><br/>
@@ -124,6 +125,7 @@
 		var ztxPrice = 0;
 		var oretroPrice = 0;
 		var eurosPrice = 0;
+		var btcPrice = 0;
 		var lastmail = '';
 		var ztxReward = 0;
 		var retroReward = 0;
@@ -131,6 +133,9 @@
 		var retroTvl = 0;
 		var aprMap = new Map();
 		var userTvl = 0;
+		var clBtc = 0.2789;
+		var borrowedEuros = 7035;
+		var eurPrice = 0;
 		
 		$(function () {
 			function sendEmail(pair) {
@@ -158,6 +163,8 @@
 				ztxTvl = 0;
 				retroTvl = 0;
 				aprMap.clear();
+				
+				$("span.eurosCl").removeClass("alert");
 				
 				$.ajax({
 					type : "GET",
@@ -344,6 +351,29 @@
 				
 				$.ajax({
 					type : "GET",
+					url: "https://min-api.cryptocompare.com/data/pricemultifull?fsyms=EUR&tsyms=USD",
+					dataType: "json",
+					success : function(data) {
+						eurPrice = data.RAW.EUR.USD.PRICE;
+						
+												
+						if(clBtc > 0 && eurPrice >0 && btcPrice > 0){
+							var btcValue = (clBtc * btcPrice) / eurPrice;
+							var clLevel = (borrowedEuros / btcValue)*100;
+							$("span.eurosCl").text(clLevel);
+							
+							if(clLevel > 80){
+								alertCall();
+								$("span.eurosCl").addClass("alert");
+							}
+						}
+					},
+					error: function (e) {
+					}
+				});
+				
+				$.ajax({
+					type : "GET",
 					url: "https://api.dexscreener.com/latest/dex/pairs/arbitrum/0xc9aa2feb84f0134a38d5d1c56b1e787191327cb0",
 					dataType: "json",
 					success : function(data) {
@@ -398,6 +428,18 @@
 					dataType: "json",
 					success : function(data) {
 						$("span.price.btc").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
+						btcPrice = data.pair.priceUsd;
+						
+						if(clBtc > 0 && eurPrice >0 && btcPrice > 0){
+							var btcValue = (clBtc * btcPrice) / eurPrice;
+							var clLevel = (borrowedEuros / btcValue)*100;
+							$("span.eurosCl").text(clLevel);
+							
+							if(clLevel > 80){
+								alertCall();
+								$("span.eurosCl").addClass("alert");
+							}
+						}
 					},
 					error: function (e) {
 					}
