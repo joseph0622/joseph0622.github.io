@@ -437,7 +437,7 @@
 					}
 				});
 				
-				/*
+				
 				$.ajax({
 					type : "GET",
 					url: "https://api.dexscreener.com/latest/dex/pairs/arbitrum/0x2f5e87c9312fa29aed5c179e456625d79015299c",
@@ -445,22 +445,11 @@
 					success : function(data) {
 						$("span.price.btc").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
 						btcPrice = data.pair.priceUsd;
-						
-						if(clBtc > 0 && eurPrice >0 && btcPrice > 0){
-							var btcValue = (clBtc * btcPrice) / eurPrice;
-							var clLevel = (borrowedEuros / btcValue)*100;
-							$("span.eurosCl").text(clLevel);
-							
-							if(clLevel > 80){
-								alertCall();
-								$("span.eurosCl").addClass("alert");
-							}
-						}
 					},
 					error: function (e) {
 					}
 				});
-				*/
+				
 				
 				$.ajax({
 					type : "GET",
