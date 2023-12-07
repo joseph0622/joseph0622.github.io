@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 
 <html lang="en">
@@ -14,7 +15,7 @@
     <title>RetroTrackor</title>
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
-	<script src="https://smtpjs.com/v3/smtp.js"></script>
+	<!--<script src="https://smtpjs.com/v3/smtp.js"></script>-->
 	 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <!-- Styles -->
 
@@ -50,8 +51,8 @@
         <div class="col-lg-12 text-center" >
 
           <div class="container">
-			#<span class="totalBalance"></span>&nbsp;CL: <span class="eurosCl"></span>%<br/>
-			ZTX: <span class="ztx price"></span>&nbsp;Euros: <span class="euros price"></span><br/>deus: <span class="deus price"></span><br/>
+			#<span class="totalBalance"></span><br/>
+			ZTX: <span class="ztx price"></span>&nbsp;deus: <span class="deus price"></span><br/>
 			retro: <span class="retro price"></span>&nbsp;oretro: <span class="oretro price"></span><br/>
 			eth: <span class="eth price"></span>&nbsp;btc: <span class="btc price"></span>&nbsp;matic: <span class="matic price"></span><br/>
 			thena: <span class="thena price"></span>&nbsp;ram: <span class="ram price"></span><br/>			
@@ -133,19 +134,20 @@
 		var retroTvl = 0;
 		var aprMap = new Map();
 		var userTvl = 0;
-		var clBtc = 0.2789;
-		var borrowedEuros = 7035;
-		var eurPrice = 0;
+		//var clBtc = 0.2789;
+		//var borrowedEuros = 7035;
+		//var eurPrice = 0;
 		
 		$(function () {
 			function sendEmail(pair) {
+				/*
 			  Email.send({ 
 				SecureToken: "643bd5d0-de86-4ed9-95a0-2bec58502461",
 				To: 'toxicyw@gmail.com', 
 				From: "sahkokla@outlook.com", 
 				Subject: "Outofrange Alert", 
 				Body: "OutOfRangeAlert: " + pair, 
-			  });
+			  });*/
 			}
 		
 			function alertCall(){
@@ -253,6 +255,9 @@
 						
 						var aprCount = 0;
 						aprMap.forEach((obj, key) => {
+							if(!$.isNumeric(obj.apr) || !$.isNumeric(obj.tvl)){
+								return;
+							}
 							aprCount += obj.tvl * obj.apr;
 						});
 						
@@ -291,7 +296,7 @@
 									
 									if(pool.userInRangeLiquidity == 0){
 										$(tr).find(".inrange").addClass("alert");
-										//alertCall();
+										alertCall();
 										
 										if(lastmail == '' || (new Date() - lastmail > 1200000)){
 											sendEmail(pool.tokenSymbol0 + " - " + pool.tokenSymbol1);
@@ -303,7 +308,7 @@
 										var pendingReward = 0;
 										$(pool.distributionData).each(function(){
 											var reward = $(this)[0];
-											if(reward.isLive && reward.token == "0x3A29CAb2E124919d14a6F735b6033a3AaD2B260F"){
+											if(reward.token == "0x3A29CAb2E124919d14a6F735b6033a3AaD2B260F"){
 												pendingReward += reward.unclaimed;
 											}
 										});
@@ -323,6 +328,9 @@
 						userTvl = Math.round(ztxTvl + retroTvl);
 						var aprCount = 0;
 						aprMap.forEach((obj, key) => {
+							if(!$.isNumeric(obj.apr) || !$.isNumeric(obj.tvl)){
+								return;
+							}
 							aprCount += obj.tvl * obj.apr;
 						});
 						
@@ -344,11 +352,16 @@
 						if(data.pair.priceChange.h1 < -10){
 							alertCall();
 						}
+						
+						if(data.pair.priceChange.h1 > 10){
+							alertCall();
+						}
 					},
 					error: function (e) {
 					}
 				});
 				
+				/*
 				$.ajax({
 					type : "GET",
 					url: "https://min-api.cryptocompare.com/data/pricemultifull?fsyms=EUR&tsyms=USD",
@@ -372,6 +385,7 @@
 					}
 				});
 				
+				
 				$.ajax({
 					type : "GET",
 					url: "https://api.dexscreener.com/latest/dex/pairs/arbitrum/0xc9aa2feb84f0134a38d5d1c56b1e787191327cb0",
@@ -387,6 +401,7 @@
 					error: function (e) {
 					}
 				});
+				*/
 				
 				$.ajax({
 					type : "GET",
@@ -422,6 +437,7 @@
 					}
 				});
 				
+				/*
 				$.ajax({
 					type : "GET",
 					url: "https://api.dexscreener.com/latest/dex/pairs/arbitrum/0x2f5e87c9312fa29aed5c179e456625d79015299c",
@@ -444,6 +460,7 @@
 					error: function (e) {
 					}
 				});
+				*/
 				
 				$.ajax({
 					type : "GET",
