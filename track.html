@@ -128,6 +128,7 @@
 		var eurosPrice = 0;
 		var btcPrice = 0;
 		var lastmail = '';
+		var lastcall = '';
 		var ztxReward = 0;
 		var retroReward = 0;
 		var ztxTvl = 0;
@@ -137,6 +138,7 @@
 		//var clBtc = 0.2789;
 		//var borrowedEuros = 7035;
 		//var eurPrice = 0;
+		//1050408813895138196
 		
 		$(function () {
 			function sendEmail(pair) {
@@ -351,10 +353,20 @@
 						
 						if(data.pair.priceChange.h1 < -10){
 							alertCall();
+							
+							if(lastcall == '' || (new Date() - lastcall > 3600000)){
+								alertCall();
+								lastcall = new Date();
+							}
 						}
 						
 						if(data.pair.priceChange.h1 > 10){
 							alertCall();
+							
+							if(lastcall == '' || (new Date() - lastcall > 3600000)){
+								alertCall();
+								lastcall = new Date();
+							}
 						}
 					},
 					error: function (e) {
