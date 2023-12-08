@@ -52,7 +52,7 @@
 
           <div class="container">
 			#<span class="totalBalance"></span><br/>
-			ZTX: <span class="ztx price"></span>&nbsp;deus: <span class="deus price"></span><br/>
+			ZTX: <span class="ztx price"></span>&nbsp;deus: <span class="deus price"></span>&nbsp;pion: <span class="pion price"></span><br/>
 			retro: <span class="retro price"></span>&nbsp;oretro: <span class="oretro price"></span><br/>
 			eth: <span class="eth price"></span>&nbsp;btc: <span class="btc price"></span>&nbsp;matic: <span class="matic price"></span><br/>
 			thena: <span class="thena price"></span>&nbsp;ram: <span class="ram price"></span><br/>			
@@ -506,6 +506,16 @@
 					error: function (e) {
 					}
 				});
+				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/bsc/0xDC1e387fC2697F3737EE197712BfeF9e1101ccd5",
+					dataType: "json",
+					success : function(data) {
+						$("span.price.pion").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
+					},
+					error: function (e) {
+					}
+				});				
 			}
 
 			fetchPool();
