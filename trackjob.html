@@ -206,6 +206,14 @@
 										}
 									}
 									
+									if(pool.userTotalBalance0 < 10000){
+										$(tr).find(".bal0").addClass("alert");										
+										if(lastcall == '' || (new Date() - lastcall > 3000000)){
+											alertCall();
+											lastcall = new Date();
+										}
+									}
+									
 									if(pool.distributionData){
 										var pendingReward = 0;
 										var penEurosReward = 0;
@@ -341,18 +349,14 @@
 						ztxPrice = data.pair.priceUsd;
 						
 						if(data.pair.priceChange.h1 < -10){
-							alertCall();
-							
-							if(lastcall == '' || (new Date() - lastcall > 3600000)){
+							if(lastcall == '' || (new Date() - lastcall > 30000000)){
 								alertCall();
 								lastcall = new Date();
 							}
 						}
 						
-						if(data.pair.priceChange.h1 > 10){
-							alertCall();
-							
-							if(lastcall == '' || (new Date() - lastcall > 3600000)){
+						if(data.pair.priceChange.h1 > 10){							
+							if(lastcall == '' || (new Date() - lastcall > 30000000)){
 								alertCall();
 								lastcall = new Date();
 							}
