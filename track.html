@@ -187,20 +187,20 @@
 					dataType: "json",
 					success : function(data) {
 						$("table.table tbody tr.arb").empty();
-						var pools = data.pools;
+						var pools = data[42161].pools;
 						$.each(pools, function(){
 							var pool = $(this)[0];
 							if(pool){
 								if(pool.userTVL > 0){
 									ztxTvl += pool.userTVL;
-									aprMap.set(pool.tokenSymbol0 + '-' + pool.tokenSymbol1, {tvl: pool.userTVL, apr: pool.aprs['User current APR ']});
+									aprMap.set(pool.symbolToken0 + '-' + pool.symbolToken1, {tvl: pool.userTVL, apr: pool.aprs['User current APR ']});
 									
 									var tr = $("table.table tfoot tr.arb").clone();
 								
-									$(tr).find(".t0").text(pool.tokenSymbol0);
-									$(tr).find(".t1").text(pool.tokenSymbol1);
-									$(tr).find(".bal0").text(parseFloat(pool.userTotalBalance0).toFixed(3));
-									$(tr).find(".bal1").text(parseFloat(pool.userTotalBalance1).toFixed(3));
+									$(tr).find(".t0").text(pool.symbolToken0);
+									$(tr).find(".t1").text(pool.symbolToken1);
+									$(tr).find(".bal0").text(parseFloat(pool.userBalanceToken0).toFixed(3));
+									$(tr).find(".bal1").text(parseFloat(pool.userBalanceToken1).toFixed(3));
 									$(tr).find(".total").text(Math.round(pool.userTVL) + ' (' + Math.round((pool.userTVL / pool.tvl)*100) + '%)');
 									$(tr).find(".inrange").text(((pool.userInRangeLiquidity/pool.userTotalLiquidity)*100)+ '%');
 									$(tr).find(".apr").text(Math.round(pool.aprs['User current APR ']) + '%');
@@ -212,7 +212,7 @@
 										alertCall();
 										
 										if(lastmail == '' || (new Date() - lastmail > 1200000)){
-											sendEmail(pool.tokenSymbol0 + " - " + pool.tokenSymbol1);
+											sendEmail(pool.symbolToken0 + " - " + pool.symbolToken1);
 											lastmail = new Date();
 										}
 									}
@@ -222,11 +222,11 @@
 										var penEurosReward = 0;
 										$(pool.distributionData).each(function(){
 											var reward = $(this)[0];
-											if(reward.isLive && reward.token == "0x1C43D05be7E5b54D506e3DdB6f0305e8A66CD04e"){
+											if(reward.isLive && reward.rewardToken == "0x1C43D05be7E5b54D506e3DdB6f0305e8A66CD04e"){
 												pendingReward += reward.unclaimed;												
 											}
 											
-											if(reward.isLive && reward.token == "0x643b34980E635719C15a2D4ce69571a258F940E9"){
+											if(reward.isLive && reward.rewardToken == "0x643b34980E635719C15a2D4ce69571a258F940E9"){
 												penEurosReward += reward.unclaimed;												
 											}
 										});
@@ -245,7 +245,7 @@
 									}
 									
 									if(pool.pool == '0xc9AA2fEB84F0134a38d5D1c56b1E787191327Cb0'){
-										$(tr).find(".total").text(Math.round(pool.userTVL) + ' (' + Math.round((pool.userTotalBalance1/pool.token1InPool)*100) + '%)');
+										$(tr).find(".total").text(Math.round(pool.userTVL) + ' (' + Math.round((pool.userBalanceToken1/pool.token1InPool)*100) + '%)');
 									}
 								}
 							}
@@ -276,20 +276,20 @@
 					success : function(data) {
 						$("table.table tbody tr.polygon").empty();
 						//console.log(data);
-						var pools = data.pools;
+						var pools = data[137].pools;
 						$.each(pools, function(){
 							var pool = $(this)[0];
 							if(pool){
 								if(pool.userTVL > 0){
 									retroTvl += pool.userTVL;
-									aprMap.set(pool.tokenSymbol0 + '-' + pool.tokenSymbol1, {tvl: pool.userTVL, apr: pool.aprs['User current APR (based on last distribution boost)']});									
+									aprMap.set(pool.symbolToken0 + '-' + pool.symbolToken1, {tvl: pool.userTVL, apr: pool.aprs['User current APR (based on last distribution boost)']});									
 									
 									var tr = $("table.table tfoot tr.polygon").clone();
 								
-									$(tr).find(".t0").text(pool.tokenSymbol0);
-									$(tr).find(".t1").text(pool.tokenSymbol1);
-									$(tr).find(".bal0").text(parseFloat(pool.userTotalBalance0).toFixed(3));
-									$(tr).find(".bal1").text(parseFloat(pool.userTotalBalance1).toFixed(3));
+									$(tr).find(".t0").text(pool.symbolToken0);
+									$(tr).find(".t1").text(pool.symbolToken1);
+									$(tr).find(".bal0").text(parseFloat(pool.userBalanceToken0).toFixed(3));
+									$(tr).find(".bal1").text(parseFloat(pool.userBalanceToken1).toFixed(3));
 									$(tr).find(".total").text(Math.round(pool.userTVL) + ' (' + Math.round((pool.userTVL / pool.tvl)*100) + '%)');
 									$(tr).find(".inrange").text(((pool.userInRangeLiquidity/pool.userTotalLiquidity)*100)+ '%');
 									$(tr).find(".apr").text(Math.round(pool.aprs['User current APR (based on last distribution boost)']) + '%');
@@ -301,7 +301,7 @@
 										alertCall();
 										
 										if(lastmail == '' || (new Date() - lastmail > 1200000)){
-											sendEmail(pool.tokenSymbol0 + " - " + pool.tokenSymbol1);
+											sendEmail(pool.symbolToken0 + " - " + pool.symbolToken1);
 											lastmail = new Date();
 										}
 									}
@@ -310,7 +310,7 @@
 										var pendingReward = 0;
 										$(pool.distributionData).each(function(){
 											var reward = $(this)[0];
-											if(reward.token == "0x3A29CAb2E124919d14a6F735b6033a3AaD2B260F"){
+											if(reward.rewardToken == "0x3A29CAb2E124919d14a6F735b6033a3AaD2B260F"){
 												pendingReward += reward.unclaimed;
 											}
 										});
