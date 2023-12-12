@@ -183,7 +183,7 @@
 				
 				$.ajax({
 					type : "GET",
-					url: "https://api.angle.money/v1/merkl?chainId=42161&user=0xF712aB8c4505eB4B36a2Ff9Fa746470be81E6538",
+					url: "https://api.angle.money/v2/merkl?user=0xf712ab8c4505eb4b36a2ff9fa746470be81e6538&chainIds%5B0%5D=42161",
 					dataType: "json",
 					success : function(data) {
 						$("table.table tbody tr.arb").empty();
@@ -271,7 +271,7 @@
 				
 				$.ajax({
 					type : "GET",
-					url: "https://api.angle.money/v1/merkl?chainId=137&user=0xF712aB8c4505eB4B36a2Ff9Fa746470be81E6538",
+					url: "https://api.angle.money/v2/merkl?user=0xf712ab8c4505eb4b36a2ff9fa746470be81e6538&chainIds%5B0%5D=137",
 					dataType: "json",
 					success : function(data) {
 						$("table.table tbody tr.polygon").empty();
