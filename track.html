@@ -217,29 +217,18 @@
 										}
 									}
 									
-									if(pool.distributionData){
+									if(pool.rewardsPerToken){
 										var pendingReward = 0;
-										var penEurosReward = 0;
-										$(pool.distributionData).each(function(){
-											var reward = $(this)[0];
-											if(reward.isLive && reward.rewardToken == "0x1C43D05be7E5b54D506e3DdB6f0305e8A66CD04e"){
+										$(pool.rewardsPerToken).each(function(){
+											var reward = $(this)[0]['0x1C43D05be7E5b54D506e3DdB6f0305e8A66CD04e'];
+											if(reward.unclaimed > 0){
 												pendingReward += reward.unclaimed;												
-											}
-											
-											if(reward.isLive && reward.rewardToken == "0x643b34980E635719C15a2D4ce69571a258F940E9"){
-												penEurosReward += reward.unclaimed;												
 											}
 										});
 										
 										if(pendingReward > 0){
 											$(tr).find(".reward").text(parseFloat(pendingReward * ztxPrice).toFixed(2));
 											ztxReward += pendingReward;
-											$("span.reward").text(Math.round((ztxReward * ztxPrice)) + ' + ' + Math.round((retroReward * oretroPrice)) + ' + ' + Math.round((eurosReward * eurosPrice)));
-										}
-										
-										if(penEurosReward > 0){
-											$(tr).find(".reward").text(parseFloat(penEurosReward * eurosPrice).toFixed(2));
-											eurosReward += penEurosReward;
 											$("span.reward").text(Math.round((ztxReward * ztxPrice)) + ' + ' + Math.round((retroReward * oretroPrice)) + ' + ' + Math.round((eurosReward * eurosPrice)));
 										}
 									}
@@ -306,12 +295,12 @@
 										}
 									}
 									
-									if(pool.distributionData){
+									if(pool.rewardsPerToken){
 										var pendingReward = 0;
-										$(pool.distributionData).each(function(){
-											var reward = $(this)[0];
-											if(reward.rewardToken == "0x3A29CAb2E124919d14a6F735b6033a3AaD2B260F"){
-												pendingReward += reward.unclaimed;
+										$(pool.rewardsPerToken).each(function(){
+											var reward = $(this)[0]['0x3A29CAb2E124919d14a6F735b6033a3AaD2B260F'];
+											if(reward.unclaimed > 0){
+												pendingReward += reward.unclaimed;												
 											}
 										});
 										
@@ -530,4 +519,3 @@
   </body>
 
 </html>
-
