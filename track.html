@@ -158,6 +158,22 @@
 					url: "https://api.callmebot.com/start.php?user=@gcp02hk&text=alert"
 				});
 			}
+			
+			function fecthBalance(){
+				$.ajax({
+					type : "GET",
+					url: "https://api.debank.com/user/total_balance?addr=0xf712ab8c4505eb4b36a2ff9fa746470be81e6538",
+					dataType: "json",
+					success : function(data) {
+						localStorage.setItem("debankBalance", Math.round(data.data.total_usd_value));
+						localStorage.setItem("debankBalanceDate", new Date().toLocaleString());
+						$("span.totalBalance").text((localStorage.getItem("debankBalance")||'') + " " + (localStorage.getItem("debankBalanceDate")||''));
+					},
+					error: function (e) {
+						$("span.totalBalance").text((localStorage.getItem("debankBalance")||'') + " " + (localStorage.getItem("debankBalanceDate")||''));
+					}
+				});
+			}
 		
 			function fetchPool(){
 				var ts = new Date().getUTCMilliseconds();
@@ -169,17 +185,6 @@
 				aprMap.clear();
 				
 				$("span.eurosCl").removeClass("alert");
-				
-				$.ajax({
-					type : "GET",
-					url: "https://api.debank.com/user/total_balance?addr=0xf712ab8c4505eb4b36a2ff9fa746470be81e6538",
-					dataType: "json",
-					success : function(data) {
-						$("span.totalBalance").text(Math.round(data.data.total_usd_value));
-					},
-					error: function (e) {
-					}
-				});
 				
 				$.ajax({
 					type : "GET",
@@ -508,10 +513,15 @@
 			}
 
 			fetchPool();
+			fecthBalance();
 			
 			setInterval(function () {
 				fetchPool();
 			}, 60000);
+			
+			setInterval(function() {
+				fecthBalance();
+			}, 120000);
 
 		});
     </script>
