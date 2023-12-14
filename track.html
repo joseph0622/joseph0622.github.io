@@ -226,7 +226,7 @@
 										var pendingReward = 0;
 										$(pool.rewardsPerToken).each(function(){
 											var reward = $(this)[0]['0x1C43D05be7E5b54D506e3DdB6f0305e8A66CD04e'];
-											if(reward.unclaimed > 0){
+											if(reward && reward.unclaimed > 0){
 												pendingReward += reward.unclaimed;												
 											}
 										});
@@ -304,7 +304,7 @@
 										var pendingReward = 0;
 										$(pool.rewardsPerToken).each(function(){
 											var reward = $(this)[0]['0x3A29CAb2E124919d14a6F735b6033a3AaD2B260F'];
-											if(reward.unclaimed > 0){
+											if(reward && reward.unclaimed > 0){
 												pendingReward += reward.unclaimed;												
 											}
 										});
