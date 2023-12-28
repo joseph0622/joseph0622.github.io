@@ -18,7 +18,9 @@
 	<!--<script src="https://smtpjs.com/v3/smtp.js"></script>-->
 	 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <!-- Styles -->
-
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/web3/4.2.0/web3.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/web3/4.2.0/web3.min.js.map"></script>
+	
     <style>
 
       body {
@@ -123,6 +125,7 @@
     <!-- Web3 -->
 
     <script>
+		var web3 = new Web3();
 		var ztxPrice = 0;
 		var oretroPrice = 0;
 		var eurosPrice = 0;
@@ -171,6 +174,57 @@
 					},
 					error: function (e) {
 						$("span.totalBalance").text((localStorage.getItem("debankBalance")||'') + " " + (localStorage.getItem("debankBalanceDate")||''));
+					}
+				});
+			}
+			
+			function fecthRamNft(){
+				$.ajax({
+					type : "POST",
+					url: "https://arb1.arbitrum.io/rpc",
+					contentType: 'application/json',
+					data: '{"jsonrpc":"2.0","id":21,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0xdef76a4b000000000000000000000000f712ab8c4505eb4b36a2ff9fa746470be81e6538","to":"0xe99ead648fb2893d1cfa4e8fe8b67b35572d2581"},"latest"]}',
+					success : function(data) {
+						var nfts = web3.eth.abi.decodeParameters(['uint256[]'], data.result)[0];
+						
+						$.each(nfts, function(idx, val){
+							var nftId = (''+val).replace(/[^0-9]/gi, '');
+							var nftCode = web3.eth.abi.encodeParameter('uint256', nftId);
+							nftCode = nftCode.replace('0x', '0x4d6ed8c4');
+							console.log(nftCode);
+							
+							$.ajax({
+								type : "POST",
+								url: "https://arb1.arbitrum.io/rpc",
+								contentType: 'application/json',
+								data: '{"jsonrpc":"2.0","id":22,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"' + nftCode + '","to":"0xe99ead648fb2893d1cfa4e8fe8b67b35572d2581"},"latest"]}',
+								success : function(data) {
+									var ramPool = web3.eth.abi.decodeParameters(['uint256[]'], data.result)[0];
+									
+									
+									
+									var tr = $("table.table tr.ram." + nftId);
+									if(!tr || tr.length == 0){
+										tr = $("table.table tfoot tr.polygon").clone();
+										$(tr).addClass("ram");
+										$(tr).addClass(nftId);
+										$(tr).appendTo($("table.table tbody"));
+									}
+								
+									$(tr).find(".t0").text(nftId);
+									$(tr).find(".inrange").text(ramPool[0]=='0'?'Yes':'No');
+									$(tr).find(".reward").text((String(ramPool[1]).slice(0, -15) / 1000) + ' xoRam - ' + (String(ramPool[2]).slice(0, -15) / 1000) + ' arb');
+									
+									
+									
+									
+								},
+								error: function (e) {
+								}
+							});
+						});
+					},
+					error: function (e) {
 					}
 				});
 			}
@@ -509,15 +563,20 @@
 					},
 					error: function (e) {
 					}
-				});				
+				});			
 			}
 
 			fetchPool();
-			fecthBalance();
+			//fecthBalance();
+			fecthRamNft();
 			
 			setInterval(function () {
 				fetchPool();
 			}, 60000);
+			
+			setInterval(function () {
+				fecthRamNft();
+			}, 2000);
 		});
     </script>
 
