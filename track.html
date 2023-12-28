@@ -112,6 +112,16 @@
 					<td class="apr"></td>
 					<td class="reward"></td>
 				</tr>
+				<tr class="ram">
+					<td class="t0"></td>
+					<td class="t1"></td>
+					<td class="bal0"></td>
+					<td class="bal1"></td>
+					<td class="total"></td>
+					<td class="inrange"></td>
+					<td class="apr"></td>
+					<td class="reward"></td>
+				</tr>
           </table>
 
 		  <br/>
@@ -142,6 +152,47 @@
 		//var borrowedEuros = 7035;
 		//var eurPrice = 0;
 		//1050408813895138196
+		
+		function getTokenPrice(nftId, tr){
+			var nftIdCode = web3.eth.abi.encodeParameter('uint256', nftId);
+			nftIdCode = nftIdCode.replace('0x', '0x99fbab88');
+			
+			$.ajax({
+				type : "POST",
+				url: "https://arb1.arbitrum.io/rpc",
+				contentType: 'application/json',
+				data: '{"jsonrpc":"2.0","id":3,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"' + nftIdCode + '","to":"0xaa277cb7914b7e5514946da92cb9de332ce610ef"},"latest"]}',
+				success : function(data) {
+					console.log(data);
+				},
+				error: function (e) {
+				}
+			});
+		
+			$.ajax({
+				type : "GET",
+				url: "https://deep-index.moralis.io/api/v2.2/erc20/" + tokenAddress0 + "/price?chain=arbitrum",
+				headers: {"X-API-Key": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZSI6IjVkMWY2MWRlLTI4NDktNDkxNi05MzE0LWVmZjM4NTlhMGM2NCIsIm9yZ0lkIjoiMzcwMDAyIiwidXNlcklkIjoiMzgwMjY2IiwidHlwZUlkIjoiMTBmOWYzN2YtYTNjNy00OWY4LTkyM2UtYTlmNjViOTU2Y2VlIiwidHlwZSI6IlBST0pFQ1QiLCJpYXQiOjE3MDM3ODIyNTUsImV4cCI6NDg1OTU0MjI1NX0.81X5qUIyiAu8QpVrowQmpyC1wFl_hH7uz_H3YKL3nAk"},
+				success : function(data) {
+					$(tr).find(".t0").text(data.tokenSymbol);
+				},
+				error: function (e) {
+					
+				}
+			});
+			
+			$.ajax({
+				type : "GET",
+				url: "https://deep-index.moralis.io/api/v2.2/erc20/" + tokenAddress1 + "/price?chain=arbitrum",
+				headers: {"X-API-Key": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZSI6IjVkMWY2MWRlLTI4NDktNDkxNi05MzE0LWVmZjM4NTlhMGM2NCIsIm9yZ0lkIjoiMzcwMDAyIiwidXNlcklkIjoiMzgwMjY2IiwidHlwZUlkIjoiMTBmOWYzN2YtYTNjNy00OWY4LTkyM2UtYTlmNjViOTU2Y2VlIiwidHlwZSI6IlBST0pFQ1QiLCJpYXQiOjE3MDM3ODIyNTUsImV4cCI6NDg1OTU0MjI1NX0.81X5qUIyiAu8QpVrowQmpyC1wFl_hH7uz_H3YKL3nAk"},
+				success : function(data) {
+					$(tr).find(".t1").text(data.tokenSymbol);
+				},
+				error: function (e) {
+					
+				}
+			});
+		}
 		
 		$(function () {
 			function sendEmail(pair) {
@@ -191,7 +242,7 @@
 							var nftId = (''+val).replace(/[^0-9]/gi, '');
 							var nftCode = web3.eth.abi.encodeParameter('uint256', nftId);
 							nftCode = nftCode.replace('0x', '0x4d6ed8c4');
-							console.log(nftCode);
+							//console.log(nftCode);
 							
 							$.ajax({
 								type : "POST",
@@ -201,23 +252,28 @@
 								success : function(data) {
 									var ramPool = web3.eth.abi.decodeParameters(['uint256[]'], data.result)[0];
 									
-									
-									
 									var tr = $("table.table tr.ram." + nftId);
 									if(!tr || tr.length == 0){
-										tr = $("table.table tfoot tr.polygon").clone();
+										tr = $("table.table tfoot tr.ram").clone();
 										$(tr).addClass("ram");
 										$(tr).addClass(nftId);
 										$(tr).appendTo($("table.table tbody"));
 									}
-								
+									
 									$(tr).find(".t0").text(nftId);
-									$(tr).find(".inrange").text(ramPool[0]=='0'?'Yes':'No');
-									$(tr).find(".reward").text((String(ramPool[1]).slice(0, -15) / 1000) + ' xoRam - ' + (String(ramPool[2]).slice(0, -15) / 1000) + ' arb');
+									//$(tr).find(".inrange").text(ramPool[0]=='0'?'Yes':'No');
+									var ramReward = (String(ramPool[1]).slice(0, -15) / 1000) + ' xoRam - ' + (String(ramPool[2]).slice(0, -15) / 1000) + ' arb';
+									$(tr).find(".reward").text(ramReward);
 									
+									$(tr).find(".inrange").removeClass("alert");
+									if(ramReward == sessionStorage.getItem(nftId)){
+										$(tr).find(".inrange").text('No');
+										$(tr).find(".inrange").addClass("alert");
+									}else{
+										$(tr).find(".inrange").text('Yes');
+									}
 									
-									
-									
+									sessionStorage.setItem(nftId, ramReward);
 								},
 								error: function (e) {
 								}
