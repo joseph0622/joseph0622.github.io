@@ -204,25 +204,28 @@
 			});
 		}
 		
-		$(function () {
-			function sendEmail(pair) {
-				/*
-			  Email.send({ 
-				SecureToken: "643bd5d0-de86-4ed9-95a0-2bec58502461",
-				To: 'toxicyw@gmail.com', 
-				From: "sahkokla@outlook.com", 
-				Subject: "Outofrange Alert", 
-				Body: "OutOfRangeAlert: " + pair, 
-			  });*/
-			}
+		function sendEmail(pair) {
+			/*
+		  Email.send({ 
+			SecureToken: "643bd5d0-de86-4ed9-95a0-2bec58502461",
+			To: 'toxicyw@gmail.com', 
+			From: "sahkokla@outlook.com", 
+			Subject: "Outofrange Alert", 
+			Body: "OutOfRangeAlert: " + pair, 
+		  });*/
+		  
+		  //fjs4nginwi@pomail.net
+		}
+	
+		function alertCall(msg){
+			$.ajax({
+				type : "POST",
+				url: "https://api.pushover.net/1/messages.json",
+				data: {'token': 'aofuvijmgfrqhjab11xrgjjigvf63r', 'user': 'uyhipavxjt4e3j7g7hsedp7f5aphq7', 'message': (msg||'alert')}
+			});
+		}
 		
-			function alertCall(){
-				$.ajax({
-					type : "GET",
-					url: "https://api.callmebot.com/start.php?user=@gcp02hk&text=alert"
-				});
-			}
-			
+		$(function () {			
 			function fecthBalance(){
 				$.ajax({
 					type : "GET",
@@ -279,7 +282,7 @@
 									if(ramReward == sessionStorage.getItem(nftId)){
 										$(tr).find(".inrange").text('No');
 										$(tr).find(".inrange").addClass("alert");
-										alertCall();
+										alertCall('Alert - ram');
 									}else{
 										$(tr).find(".inrange").text('Yes');
 									}
