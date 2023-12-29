@@ -1,0 +1,653 @@
+
+
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+  <head>
+
+    <meta charset="utf-8">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>RetroTrackor</title>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+	<!--<script src="https://smtpjs.com/v3/smtp.js"></script>-->
+	 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <!-- Styles -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/web3/4.2.0/web3.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/web3/4.2.0/web3.min.js.map"></script>
+	
+    <style>
+
+      body {
+		background-color: black;
+		color: #d9b584;
+        padding-top: 15px;
+
+      }
+
+      h1 {
+
+        margin: 15px 0px;
+
+      }
+	  
+	  .alert {
+		color: red;
+	  }
+
+    </style>
+
+  </head>
+
+  <body>
+
+    <div class="container">
+
+      <div class="row">
+
+        <div class="col-lg-12 text-center" >
+
+          <div class="container">
+			#<span class="totalBalance"></span><br/>
+			ZTX: <span class="ztx price"></span>&nbsp;deus: <span class="deus price"></span>&nbsp;pion: <span class="pion price"></span><br/>
+			retro: <span class="retro price"></span>&nbsp;oretro: <span class="oretro price"></span><br/>
+			eth: <span class="eth price"></span>&nbsp;btc: <span class="btc price"></span>&nbsp;matic: <span class="matic price"></span><br/>
+			thena: <span class="thena price"></span>&nbsp;ram: <span class="ram price"></span><br/>			
+			Total Reward: <span class="reward"></span>&nbsp;<br/>
+			ztx:<span class="ztxTvl"></span>&nbsp;retro:<span class="retroTvl"></span>&nbsp;total:<span class="userTvl"></span>&nbsp;r:<span class="avgApr"></span>%
+          </div>
+		  <br/>
+          <table class="table">
+
+            <thead>
+
+              <tr>
+				<th scope="col">0</th>
+                <th scope="col">1</th>
+                <th scope="col">0</th>
+                <th scope="col">1</th>
+                <th scope="col">Total</th>
+				<th scope="col">InRange</th>
+				<th scope="col">R</th>
+				<th scope="col">Reward</th>
+              </tr>
+
+            </thead>
+
+            <tbody>
+				<tr>
+					<td class="t0"></td>
+					<td class="t1"></td>
+					<td class="bal0"></td>
+					<td class="bal1"></td>
+					<td class="total"></td>
+					<td class="inrange"></td>
+					<td class="apr"></td>
+					<td class="reward"></td>
+				</tr>
+            </tbody>
+			<tfoot style="display:none;">
+				<tr class="polygon">
+					<td class="t0"></td>
+					<td class="t1"></td>
+					<td class="bal0"></td>
+					<td class="bal1"></td>
+					<td class="total"></td>
+					<td class="inrange"></td>
+					<td class="apr"></td>
+					<td class="reward"></td>
+				</tr>
+				<tr class="arb">
+					<td class="t0"></td>
+					<td class="t1"></td>
+					<td class="bal0"></td>
+					<td class="bal1"></td>
+					<td class="total"></td>
+					<td class="inrange"></td>
+					<td class="apr"></td>
+					<td class="reward"></td>
+				</tr>
+				<tr class="ram">
+					<td class="t0"></td>
+					<td class="t1"></td>
+					<td class="bal0"></td>
+					<td class="bal1"></td>
+					<td class="total"></td>
+					<td class="inrange"></td>
+					<td class="apr"></td>
+					<td class="reward"></td>
+				</tr>
+          </table>
+
+		  <br/>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Web3 -->
+
+    <script>
+		var web3 = new Web3();
+		var ztxPrice = 0;
+		var oretroPrice = 0;
+		var eurosPrice = 0;
+		var btcPrice = 0;
+		var lastmail = '';
+		var lastcall = '';
+		var ztxReward = 0;
+		var retroReward = 0;
+		var ztxTvl = 0;
+		var retroTvl = 0;
+		var aprMap = new Map();
+		var userTvl = 0;
+		//var clBtc = 0.2789;
+		//var borrowedEuros = 7035;
+		//var eurPrice = 0;
+		//1050408813895138196
+		var showToken = [];
+		
+		function getTokenPrice(nftId, tr){
+			var nftIdCode = web3.eth.abi.encodeParameter('uint256', nftId);
+			nftIdCode = nftIdCode.replace('0x', '0x99fbab88');
+			
+			if(showToken.indexOf(nftId) >= 0){
+				return;
+			}
+			
+			$.ajax({
+				type : "POST",
+				url: "https://arb1.arbitrum.io/rpc",
+				contentType: 'application/json',
+				data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"' + nftIdCode + '","to":"0xaa277cb7914b7e5514946da92cb9de332ce610ef"},"latest"]}',
+				success : function(data) {
+					var info = web3.eth.abi.decodeParameters(['uint96', 'address', 'address', 'address'], data.result);
+					var token0 = info[2];
+					var token1 = info[3];
+					
+					$.ajax({
+						type : "GET",
+						url: "https://deep-index.moralis.io/api/v2.2/erc20/" + token0 + "/price?chain=arbitrum",
+						headers: {"X-API-Key": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZSI6IjVkMWY2MWRlLTI4NDktNDkxNi05MzE0LWVmZjM4NTlhMGM2NCIsIm9yZ0lkIjoiMzcwMDAyIiwidXNlcklkIjoiMzgwMjY2IiwidHlwZUlkIjoiMTBmOWYzN2YtYTNjNy00OWY4LTkyM2UtYTlmNjViOTU2Y2VlIiwidHlwZSI6IlBST0pFQ1QiLCJpYXQiOjE3MDM3ODIyNTUsImV4cCI6NDg1OTU0MjI1NX0.81X5qUIyiAu8QpVrowQmpyC1wFl_hH7uz_H3YKL3nAk"},
+						success : function(data) {
+							$(tr).find(".t1").text(data.tokenSymbol);
+						},
+						error: function (e) {
+							
+						}
+					});
+					
+					$.ajax({
+						type : "GET",
+						url: "https://deep-index.moralis.io/api/v2.2/erc20/" + token1 + "/price?chain=arbitrum",
+						headers: {"X-API-Key": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZSI6IjVkMWY2MWRlLTI4NDktNDkxNi05MzE0LWVmZjM4NTlhMGM2NCIsIm9yZ0lkIjoiMzcwMDAyIiwidXNlcklkIjoiMzgwMjY2IiwidHlwZUlkIjoiMTBmOWYzN2YtYTNjNy00OWY4LTkyM2UtYTlmNjViOTU2Y2VlIiwidHlwZSI6IlBST0pFQ1QiLCJpYXQiOjE3MDM3ODIyNTUsImV4cCI6NDg1OTU0MjI1NX0.81X5qUIyiAu8QpVrowQmpyC1wFl_hH7uz_H3YKL3nAk"},
+						success : function(data) {
+							$(tr).find(".bal0").text(data.tokenSymbol);
+						},
+						error: function (e) {
+							
+						}
+					});
+					
+					showToken.push(nftId);
+				},
+				error: function (e) {
+				}
+			});
+		}
+		
+		$(function () {
+			function sendEmail(pair) {
+				/*
+			  Email.send({ 
+				SecureToken: "643bd5d0-de86-4ed9-95a0-2bec58502461",
+				To: 'toxicyw@gmail.com', 
+				From: "sahkokla@outlook.com", 
+				Subject: "Outofrange Alert", 
+				Body: "OutOfRangeAlert: " + pair, 
+			  });*/
+			}
+		
+			function alertCall(){
+				$.ajax({
+					type : "GET",
+					url: "https://api.callmebot.com/start.php?user=@gcp02hk&text=alert"
+				});
+			}
+			
+			function fecthBalance(){
+				$.ajax({
+					type : "GET",
+					url: "https://api.debank.com/user/total_balance?addr=0xf712ab8c4505eb4b36a2ff9fa746470be81e6538",
+					dataType: "json",
+					success : function(data) {
+						localStorage.setItem("debankBalance", Math.round(data.data.total_usd_value));
+						localStorage.setItem("debankBalanceDate", new Date().toLocaleString());
+						$("span.totalBalance").text((localStorage.getItem("debankBalance")||'') + " " + (localStorage.getItem("debankBalanceDate")||''));
+					},
+					error: function (e) {
+						$("span.totalBalance").text((localStorage.getItem("debankBalance")||'') + " " + (localStorage.getItem("debankBalanceDate")||''));
+					}
+				});
+			}
+			
+			function fecthRamNft(){
+				$.ajax({
+					type : "POST",
+					url: "https://arb1.arbitrum.io/rpc",
+					contentType: 'application/json',
+					data: '{"jsonrpc":"2.0","id":21,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0xdef76a4b000000000000000000000000f712ab8c4505eb4b36a2ff9fa746470be81e6538","to":"0xe99ead648fb2893d1cfa4e8fe8b67b35572d2581"},"latest"]}',
+					success : function(data) {
+						var nfts = web3.eth.abi.decodeParameters(['uint256[]'], data.result)[0];
+						
+						$.each(nfts, function(idx, val){
+							var nftId = (''+val).replace(/[^0-9]/gi, '');
+							var nftCode = web3.eth.abi.encodeParameter('uint256', nftId);
+							nftCode = nftCode.replace('0x', '0x4d6ed8c4');
+							//console.log(nftCode);
+							
+							$.ajax({
+								type : "POST",
+								url: "https://arb1.arbitrum.io/rpc",
+								contentType: 'application/json',
+								data: '{"jsonrpc":"2.0","id":22,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"' + nftCode + '","to":"0xe99ead648fb2893d1cfa4e8fe8b67b35572d2581"},"latest"]}',
+								success : function(data) {
+									var ramPool = web3.eth.abi.decodeParameters(['uint256[]'], data.result)[0];
+									
+									var tr = $("table.table tr.ram." + nftId);
+									if(!tr || tr.length == 0){
+										tr = $("table.table tfoot tr.ram").clone();
+										$(tr).addClass("ram");
+										$(tr).addClass(nftId);
+										$(tr).appendTo($("table.table tbody"));
+									}
+									
+									$(tr).find(".t0").text(nftId);
+									//$(tr).find(".inrange").text(ramPool[0]=='0'?'Yes':'No');
+									var ramReward = (String(ramPool[1]).slice(0, -15) / 1000) + ' xoRam - ' + (String(ramPool[2]).slice(0, -15) / 1000) + ' arb';
+									$(tr).find(".reward").text(ramReward);
+									
+									$(tr).find(".inrange").removeClass("alert");
+									if(ramReward == sessionStorage.getItem(nftId)){
+										$(tr).find(".inrange").text('No');
+										$(tr).find(".inrange").addClass("alert");
+										alertCall();
+									}else{
+										$(tr).find(".inrange").text('Yes');
+									}
+									
+									sessionStorage.setItem(nftId, ramReward);
+									
+									getTokenPrice(nftId, tr);
+								},
+								error: function (e) {
+								}
+							});
+						});
+					},
+					error: function (e) {
+					}
+				});
+			}
+		
+			function fetchPool(){
+				var ts = new Date().getUTCMilliseconds();
+				retroReward = 0;
+				ztxReward = 0;
+				eurosReward = 0;
+				ztxTvl = 0;
+				retroTvl = 0;
+				aprMap.clear();
+				
+				$("span.eurosCl").removeClass("alert");
+				
+				$.ajax({
+					type : "GET",
+					url: "https://api.angle.money/v2/merkl?user=0xf712ab8c4505eb4b36a2ff9fa746470be81e6538&chainIds%5B0%5D=42161",
+					dataType: "json",
+					success : function(data) {
+						$("table.table tbody tr.arb").empty();
+						var pools = data[42161].pools;
+						$.each(pools, function(){
+							var pool = $(this)[0];
+							if(pool){
+								if(pool.userTVL > 0){
+									ztxTvl += pool.userTVL;
+									aprMap.set(pool.symbolToken0 + '-' + pool.symbolToken1, {tvl: pool.userTVL, apr: pool.aprs['User current APR ']});
+									
+									var tr = $("table.table tfoot tr.arb").clone();
+								
+									$(tr).find(".t0").text(pool.symbolToken0);
+									$(tr).find(".t1").text(pool.symbolToken1);
+									$(tr).find(".bal0").text(parseFloat(pool.userBalanceToken0).toFixed(3));
+									$(tr).find(".bal1").text(parseFloat(pool.userBalanceToken1).toFixed(3));
+									$(tr).find(".total").text(Math.round(pool.userTVL) + ' (' + Math.round((pool.userTVL / pool.tvl)*100) + '%)');
+									$(tr).find(".inrange").text(((pool.userInRangeLiquidity/pool.userTotalLiquidity)*100)+ '%');
+									$(tr).find(".apr").text(Math.round(pool.aprs['User current APR ']) + '%');
+									
+									$(tr).appendTo($("table.table tbody"));
+									
+									if(pool.userInRangeLiquidity == 0){
+										$(tr).find(".inrange").addClass("alert");
+										alertCall();
+										
+										if(lastmail == '' || (new Date() - lastmail > 1200000)){
+											sendEmail(pool.symbolToken0 + " - " + pool.symbolToken1);
+											lastmail = new Date();
+										}
+									}
+									
+									if(pool.rewardsPerToken){
+										var pendingReward = 0;
+										$(pool.rewardsPerToken).each(function(){
+											var reward = $(this)[0]['0x1C43D05be7E5b54D506e3DdB6f0305e8A66CD04e'];
+											if(reward && reward.unclaimed > 0){
+												pendingReward += reward.unclaimed;												
+											}
+										});
+										
+										if(pendingReward > 0){
+											$(tr).find(".reward").text(parseFloat(pendingReward * ztxPrice).toFixed(2));
+											ztxReward += pendingReward;
+											$("span.reward").text(Math.round((ztxReward * ztxPrice)) + ' + ' + Math.round((retroReward * oretroPrice)) + ' + ' + Math.round((eurosReward * eurosPrice)));
+										}
+									}
+									
+									if(pool.pool == '0xc9AA2fEB84F0134a38d5D1c56b1E787191327Cb0'){
+										$(tr).find(".total").text(Math.round(pool.userTVL) + ' (' + Math.round((pool.userBalanceToken1/pool.token1InPool)*100) + '%)');
+									}
+								}
+							}
+						});
+						
+						$("span.ztxTvl").text(Math.round(ztxTvl));
+						$("span.userTvl").text(Math.round(ztxTvl + retroTvl));
+						userTvl = Math.round(ztxTvl + retroTvl);
+						
+						var aprCount = 0;
+						aprMap.forEach((obj, key) => {
+							if(!$.isNumeric(obj.apr) || !$.isNumeric(obj.tvl)){
+								return;
+							}
+							aprCount += obj.tvl * obj.apr;
+						});
+						
+						$("span.avgApr").text(Math.round((aprCount/(ztxTvl+retroTvl))));
+					},
+					error: function (e) {
+					}
+				});
+				
+				$.ajax({
+					type : "GET",
+					url: "https://api.angle.money/v2/merkl?user=0xf712ab8c4505eb4b36a2ff9fa746470be81e6538&chainIds%5B0%5D=137",
+					dataType: "json",
+					success : function(data) {
+						$("table.table tbody tr.polygon").empty();
+						//console.log(data);
+						var pools = data[137].pools;
+						$.each(pools, function(){
+							var pool = $(this)[0];
+							if(pool){
+								if(pool.userTVL > 0){
+									retroTvl += pool.userTVL;
+									aprMap.set(pool.symbolToken0 + '-' + pool.symbolToken1, {tvl: pool.userTVL, apr: pool.aprs['User current APR (based on last distribution boost)']});									
+									
+									var tr = $("table.table tfoot tr.polygon").clone();
+								
+									$(tr).find(".t0").text(pool.symbolToken0);
+									$(tr).find(".t1").text(pool.symbolToken1);
+									$(tr).find(".bal0").text(parseFloat(pool.userBalanceToken0).toFixed(3));
+									$(tr).find(".bal1").text(parseFloat(pool.userBalanceToken1).toFixed(3));
+									$(tr).find(".total").text(Math.round(pool.userTVL) + ' (' + Math.round((pool.userTVL / pool.tvl)*100) + '%)');
+									$(tr).find(".inrange").text(((pool.userInRangeLiquidity/pool.userTotalLiquidity)*100)+ '%');
+									$(tr).find(".apr").text(Math.round(pool.aprs['User current APR (based on last distribution boost)']) + '%');
+									
+									$(tr).appendTo($("table.table tbody"));
+									
+									if(pool.userInRangeLiquidity == 0){
+										$(tr).find(".inrange").addClass("alert");
+										alertCall();
+										
+										if(lastmail == '' || (new Date() - lastmail > 1200000)){
+											sendEmail(pool.symbolToken0 + " - " + pool.symbolToken1);
+											lastmail = new Date();
+										}
+									}
+									
+									if(pool.rewardsPerToken){
+										var pendingReward = 0;
+										$(pool.rewardsPerToken).each(function(){
+											var reward = $(this)[0]['0x3A29CAb2E124919d14a6F735b6033a3AaD2B260F'];
+											if(reward && reward.unclaimed > 0){
+												pendingReward += reward.unclaimed;												
+											}
+										});
+										
+										if(pendingReward > 0){
+											$(tr).find(".reward").text(parseFloat(pendingReward * oretroPrice).toFixed(2));
+											retroReward += pendingReward;
+											$("span.reward").text(Math.round((ztxReward * ztxPrice)) + ' + ' + Math.round((retroReward * oretroPrice)) + ' + ' + Math.round((eurosReward * eurosPrice)));
+										}
+									}
+								}
+							}
+						});
+						
+						$("span.retroTvl").text(Math.round(retroTvl));
+						$("span.userTvl").text(Math.round(ztxTvl + retroTvl));
+						userTvl = Math.round(ztxTvl + retroTvl);
+						var aprCount = 0;
+						aprMap.forEach((obj, key) => {
+							if(!$.isNumeric(obj.apr) || !$.isNumeric(obj.tvl)){
+								return;
+							}
+							aprCount += obj.tvl * obj.apr;
+						});
+						
+						$("span.avgApr").text(Math.round((aprCount/(ztxTvl+retroTvl))));
+					},
+					error: function (e) {
+					}
+				});
+				
+				
+				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/arbitrum/0xe6ea93ba4ae9ee6520e55affebbdb38ed6c233a4",
+					dataType: "json",
+					success : function(data) {
+						$("span.price.ztx").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24 +')');
+						ztxPrice = data.pair.priceUsd;
+						
+						if(data.pair.priceChange.h1 < -10){
+							alertCall();
+							
+							if(lastcall == '' || (new Date() - lastcall > 3600000)){
+								alertCall();
+								lastcall = new Date();
+							}
+						}
+						
+						if(data.pair.priceChange.h1 > 10){
+							alertCall();
+							
+							if(lastcall == '' || (new Date() - lastcall > 3600000)){
+								alertCall();
+								lastcall = new Date();
+							}
+						}
+					},
+					error: function (e) {
+					}
+				});
+				
+				/*
+				$.ajax({
+					type : "GET",
+					url: "https://min-api.cryptocompare.com/data/pricemultifull?fsyms=EUR&tsyms=USD",
+					dataType: "json",
+					success : function(data) {
+						eurPrice = data.RAW.EUR.USD.PRICE;
+						
+												
+						if(clBtc > 0 && eurPrice >0 && btcPrice > 0){
+							var btcValue = (clBtc * btcPrice) / eurPrice;
+							var clLevel = (borrowedEuros / btcValue)*100;
+							$("span.eurosCl").text(clLevel);
+							
+							if(clLevel > 80){
+								alertCall();
+								$("span.eurosCl").addClass("alert");
+							}
+						}
+					},
+					error: function (e) {
+					}
+				});
+				
+				
+				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/arbitrum/0xc9aa2feb84f0134a38d5d1c56b1e787191327cb0",
+					dataType: "json",
+					success : function(data) {
+						$("span.price.euros").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24 +')');
+						eurosPrice = data.pair.priceUsd;
+						
+						if(data.pair.priceChange.h1 < -10){
+							alertCall();
+						}
+					},
+					error: function (e) {
+					}
+				});
+				*/
+				
+				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/polygon/0xb47a07966ce6812702c0567d03725f1b37e27877",
+					dataType: "json",
+					success : function(data) {
+						$("span.price.retro").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
+					},
+					error: function (e) {
+					}
+				});
+				
+				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/polygon/0x387fbce5e2933bd3a7243d0be2aac8fd9ab3d55d",
+					dataType: "json",
+					success : function(data) {
+						$("span.price.oretro").text(data.pair.priceNative + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
+						oretroPrice = data.pair.priceUsd;
+					},
+					error: function (e) {
+					}
+				});
+				
+				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/arbitrum/0xc31e54c7a869b9fcbecc14363cf510d1c41fa443",
+					dataType: "json",
+					success : function(data) {
+						$("span.price.eth").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
+					},
+					error: function (e) {
+					}
+				});
+				
+				
+				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/arbitrum/0x2f5e87c9312fa29aed5c179e456625d79015299c",
+					dataType: "json",
+					success : function(data) {
+						$("span.price.btc").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
+						btcPrice = data.pair.priceUsd;
+					},
+					error: function (e) {
+					}
+				});
+				
+				
+				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/polygon/0x6e7a5fafcec6bb1e78bae2a1f0b612012bf14827",
+					dataType: "json",
+					success : function(data) {
+						$("span.price.matic").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
+					},
+					error: function (e) {
+					}
+				});
+				
+				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/bsc/0x51bd5e6d3da9064d59bcaa5a76776560ab42ceb8",
+					dataType: "json",
+					success : function(data) {
+						$("span.price.thena").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
+					},
+					error: function (e) {
+					}
+				});
+				
+				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/arbitrum/0x688547381eec7c1d3d9eba778fe275d1d7e03946",
+					dataType: "json",
+					success : function(data) {
+						$("span.price.ram").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
+					},
+					error: function (e) {
+					}
+				});
+				
+				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/bsc/0x6a524c7328eb652248d1a3786f9db0e74ca961f0",
+					dataType: "json",
+					success : function(data) {
+						$("span.price.deus").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
+					},
+					error: function (e) {
+					}
+				});
+				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/bsc/0xDC1e387fC2697F3737EE197712BfeF9e1101ccd5",
+					dataType: "json",
+					success : function(data) {
+						$("span.price.pion").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
+					},
+					error: function (e) {
+					}
+				});			
+			}
+
+			fetchPool();
+			fecthRamNft();
+			
+			setInterval(function () {
+				fetchPool();
+			}, 60000);
+			
+			setInterval(function () {
+				fecthRamNft();
+			}, 30000);
+		});
+    </script>
+
+  </body>
+
+</html>
