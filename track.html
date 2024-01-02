@@ -60,7 +60,7 @@
 			eth: <span class="eth price"></span>&nbsp;btc: <span class="btc price"></span>&nbsp;arb: <span class="arb price"></span>&nbsp;matic: <span class="matic price"></span><br/>
 			thena: <span class="thena price"></span>&nbsp;ram: <span class="ram price"></span><br/>			
 			Total Reward: <span class="reward"></span>&nbsp;<br/>
-			ztx:<span class="ztxTvl"></span>&nbsp;retro:<span class="retroTvl"></span>&nbsp;total:<span class="userTvl"></span>&nbsp;r:<span class="avgApr"></span>%
+			ztx:<span class="ztxTvl"></span>&nbsp;gamma:<span class="gammaTvl"></span>&nbsp;retro:<span class="retroTvl"></span>&nbsp;total:<span class="userTvl"></span>&nbsp;r:<span class="avgApr"></span>%
           </div>
 		  <br/>
           <table class="table">
@@ -157,6 +157,7 @@
 		var retroReward = 0;
 		var ztxTvl = 0;
 		var retroTvl = 0;
+		var gammaTvl = 0;
 		var aprMap = new Map();
 		var userTvl = 0;
 		//var clBtc = 0.2789;
@@ -366,8 +367,8 @@
 						});
 						
 						$("span.ztxTvl").text(Math.round(ztxTvl));
-						$("span.userTvl").text(Math.round(ztxTvl + retroTvl));
-						userTvl = Math.round(ztxTvl + retroTvl);
+						$("span.userTvl").text(Math.round(ztxTvl + retroTvl + gammaTvl));
+						userTvl = Math.round(ztxTvl + retroTvl + gammaTvl);
 						
 						var aprCount = 0;
 						aprMap.forEach((obj, key) => {
@@ -440,8 +441,8 @@
 						});
 						
 						$("span.retroTvl").text(Math.round(retroTvl));
-						$("span.userTvl").text(Math.round(ztxTvl + retroTvl));
-						userTvl = Math.round(ztxTvl + retroTvl);
+						$("span.userTvl").text(Math.round(ztxTvl + retroTvl + gammaTvl));
+						userTvl = Math.round(ztxTvl + retroTvl + gammaTvl);
 						var aprCount = 0;
 						aprMap.forEach((obj, key) => {
 							if(!$.isNumeric(obj.apr) || !$.isNumeric(obj.tvl)){
@@ -505,6 +506,11 @@
 												$(tr).find(".inrange").text('Yes');
 												$(tr).appendTo($("table.table tbody"));
 												
+												gammaTvl = Math.round((arbTotal * myShare * arbPrice) + (usdcTotal * myShare));
+												
+												$("span.gammaTvl").text(Math.round(gammaTvl));
+												$("span.userTvl").text(Math.round(ztxTvl + retroTvl + gammaTvl));
+												userTvl = Math.round(ztxTvl + retroTvl + gammaTvl);
 											},
 											error: function (e) {
 											}
