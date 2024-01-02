@@ -1,7 +1,6 @@
 
 
 
-
 <!DOCTYPE html>
 
 <html lang="en">
@@ -121,8 +120,16 @@
 					<td class="bal1"></td>
 					<td class="total"></td>
 					<td class="inrange"></td>
-					<td class="apr"></td>
-					<td class="reward"></td>
+					<td colspan="2" class="reward"></td>
+				</tr>
+				<tr class="gamma">
+					<td class="t0"></td>
+					<td class="t1"></td>
+					<td class="bal0"></td>
+					<td class="bal1"></td>
+					<td class="total"></td>
+					<td class="inrange"></td>
+					<td colspan="2" class="reward"></td>
 				</tr>
           </table>
 
@@ -137,13 +144,13 @@
     <!-- Web3 -->
 
     <script>
-		var web3 = new Web3();
+		var web3 = new Web3('https://rpc.ankr.com/arbitrum');
 		var ztxPrice = 0;
 		var oretroPrice = 0;
 		var eurosPrice = 0;
 		var btcPrice = 0;
-		var ramPrice = 0;
 		var arbPrice = 0;
+		var ramPrice = 0;
 		var lastmail = '';
 		var lastcall = '';
 		var ztxReward = 0;
@@ -157,6 +164,7 @@
 		//var eurPrice = 0;
 		//1050408813895138196
 		var showToken = [];
+		var tokenAbi = [{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"}];
 		
 		function getTokenPrice(nftId, tr){
 			var nftIdCode = web3.eth.abi.encodeParameter('uint256', nftId);
@@ -176,29 +184,11 @@
 					var token0 = info[2];
 					var token1 = info[3];
 					
-					$.ajax({
-						type : "GET",
-						url: "https://deep-index.moralis.io/api/v2.2/erc20/" + token0 + "/price?chain=arbitrum",
-						headers: {"X-API-Key": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZSI6IjVkMWY2MWRlLTI4NDktNDkxNi05MzE0LWVmZjM4NTlhMGM2NCIsIm9yZ0lkIjoiMzcwMDAyIiwidXNlcklkIjoiMzgwMjY2IiwidHlwZUlkIjoiMTBmOWYzN2YtYTNjNy00OWY4LTkyM2UtYTlmNjViOTU2Y2VlIiwidHlwZSI6IlBST0pFQ1QiLCJpYXQiOjE3MDM3ODIyNTUsImV4cCI6NDg1OTU0MjI1NX0.81X5qUIyiAu8QpVrowQmpyC1wFl_hH7uz_H3YKL3nAk"},
-						success : function(data) {
-							$(tr).find(".t1").text(data.tokenSymbol);
-						},
-						error: function (e) {
-							
-						}
-					});
+					var c0 = new web3.eth.Contract(tokenAbi, token0);
+					c0.methods.symbol().call().then(function(result){ $(tr).find(".t1").text(result);});
 					
-					$.ajax({
-						type : "GET",
-						url: "https://deep-index.moralis.io/api/v2.2/erc20/" + token1 + "/price?chain=arbitrum",
-						headers: {"X-API-Key": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZSI6IjVkMWY2MWRlLTI4NDktNDkxNi05MzE0LWVmZjM4NTlhMGM2NCIsIm9yZ0lkIjoiMzcwMDAyIiwidXNlcklkIjoiMzgwMjY2IiwidHlwZUlkIjoiMTBmOWYzN2YtYTNjNy00OWY4LTkyM2UtYTlmNjViOTU2Y2VlIiwidHlwZSI6IlBST0pFQ1QiLCJpYXQiOjE3MDM3ODIyNTUsImV4cCI6NDg1OTU0MjI1NX0.81X5qUIyiAu8QpVrowQmpyC1wFl_hH7uz_H3YKL3nAk"},
-						success : function(data) {
-							$(tr).find(".bal0").text(data.tokenSymbol);
-						},
-						error: function (e) {
-							
-						}
-					});
+					var c1 = new web3.eth.Contract(tokenAbi, token1);
+					c1.methods.symbol().call().then(function(result){ $(tr).find(".bal0").text(result);});
 					
 					showToken.push(nftId);
 				},
@@ -221,9 +211,14 @@
 		}
 	
 		function alertCall(msg){
+			/*$.ajax({
+				type : "POST",
+				url: "https://api.pushover.net/1/messages.json",
+				data: {'token': 'aofuvijmgfrqhjab11xrgjjigvf63r', 'user': 'uyhipavxjt4e3j7g7hsedp7f5aphq7', 'message': (msg||'alert')}
+			});*/
 		}
 		
-		$(function () {			
+		$(function () {
 			function fecthBalance(){
 				$.ajax({
 					type : "GET",
@@ -273,19 +268,15 @@
 									
 									$(tr).find(".t0").text(nftId);
 									//$(tr).find(".inrange").text(ramPool[0]=='0'?'Yes':'No');
-									var reward0 = (String(ramPool[1]).slice(0, -15) / 1000);
-									var reward1 = (String(ramPool[2]).slice(0, -15) / 1000);
-									var ramReward = reward0 + ' xoRam - ' + reward1 + ' arb';
-									
-									ramReward += ' (' + (Math.floor(((reward0 * ramPrice / 2) + (reward1 * arbPrice))*100) / 100) + ')';
-									
-									$(tr).find(".reward").text(ramReward);
+									var xoRamReward = String(ramPool[1]).slice(0, -15) / 1000;
+									var arbReward = String(ramPool[2]).slice(0, -15) / 1000
+									var ramReward = xoRamReward + ' xoRam - ' + arbReward + ' arb';
+									$(tr).find(".reward").text(ramReward + ' (' + Math.floor(((xoRamReward * (ramPrice /2 )) + arbReward * arbPrice)*100)/100 + ')');
 									
 									$(tr).find(".inrange").removeClass("alert");
 									if(ramReward == sessionStorage.getItem(nftId)){
 										$(tr).find(".inrange").text('No');
 										$(tr).find(".inrange").addClass("alert");
-										alertCall('Alert - ram');
 									}else{
 										$(tr).find(".inrange").text('Yes');
 									}
@@ -465,6 +456,73 @@
 					}
 				});
 				
+				$.ajax({
+					type : "POST",
+					url: "https://arb1.arbitrum.io/rpc",
+					contentType: 'application/json',
+					data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0x6eacd398000000000000000000000000f712ab8c4505eb4b36a2ff9fa746470be81e6538","to":"0x825d9772deb8218c0a6628f76cae98e70d1b3694"},"latest"]}',
+					success : function(data) {
+						$("table.table tbody tr.gamma").empty();
+						var posBal = web3.eth.abi.decodeParameter('uint256', data.result).toString();
+						
+						$.ajax({
+							type : "POST",
+							url: "https://arb1.arbitrum.io/rpc",
+							contentType: 'application/json',
+							data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0x70a08231000000000000000000000000825d9772deb8218c0a6628f76cae98e70d1b3694","to":"0x524d49847e644ed908d65396166eacef5c2d2a41"},"latest"]}',
+							success : function(data) {
+								var supply = web3.eth.abi.decodeParameter('uint256', data.result).toString();
+								var myShare = posBal / supply;
+								
+								$.ajax({
+									type : "POST",
+									url: "https://arb1.arbitrum.io/rpc",
+									contentType: 'application/json',
+									data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"data":"0xc4a7761e","to":"0x524d49847e644ed908d65396166eacef5c2d2a41"},"latest"]}',
+									success : function(data) {
+										var inPool = web3.eth.abi.decodeParameters(['uint256', 'uint256'], data.result);
+										var arbTotal = String(inPool[0]).slice(0, -15) / 1000;
+										var usdcTotal = String(inPool[1]).slice(0, -3) / 1000;
+										
+										$.ajax({
+											type : "POST",
+											url: "https://arb1.arbitrum.io/rpc",
+											contentType: 'application/json',
+											data: '{"jsonrpc":"2.0","id":2,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0xdc01f60d000000000000000000000000f712ab8c4505eb4b36a2ff9fa746470be81e6538","to":"0x825d9772deb8218c0a6628f76cae98e70d1b3694"},"latest"]}',
+											success : function(data) {
+												var info = web3.eth.abi.decodeParameters(['address[]', 'uint256[]'], data.result);
+												var xoRamReward = String(info[1][1]).slice(0, -15) / 1000;
+												var arbReward = String(info[1][2]).slice(0, -15) / 1000;
+												
+												var tr = $("table.table tfoot tr.gamma").clone();
+								
+												$(tr).find(".t0").text("ARB");
+												$(tr).find(".t1").text("USDC");
+												$(tr).find(".bal0").text(arbTotal * myShare);
+												$(tr).find(".bal1").text(usdcTotal * myShare);
+												$(tr).find(".total").text(Math.round((arbTotal * myShare * arbPrice) + (usdcTotal * myShare)) + ' (' + Math.round((myShare)*100) + '%)');
+												$(tr).find(".reward").text(xoRamReward + ' xoRam - ' + arbReward + ' arb (' + Math.floor(((xoRamReward * (ramPrice /2 )) + arbReward * arbPrice)*100)/100 + ')');
+												$(tr).find(".inrange").text('Yes');
+												$(tr).appendTo($("table.table tbody"));
+												
+											},
+											error: function (e) {
+											}
+										});
+										
+										
+									},
+									error: function (e) {
+									}
+								});
+							},
+							error: function (e) {
+							}
+						});
+					},
+					error: function (e) {
+					}
+				});
 				
 				$.ajax({
 					type : "GET",
@@ -616,7 +674,6 @@
 						$("span.price.ram").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
 						ramPrice = data.pair.priceUsd;
 					},
-
 					error: function (e) {
 					}
 				});
@@ -629,7 +686,6 @@
 						$("span.price.arb").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
 						arbPrice = data.pair.priceUsd;
 					},
-
 					error: function (e) {
 					}
 				});
@@ -657,6 +713,7 @@
 			}
 
 			fetchPool();
+			//fecthBalance();
 			fecthRamNft();
 			
 			setInterval(function () {
