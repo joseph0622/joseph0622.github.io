@@ -226,6 +226,7 @@
 						$.ajax({
 							type : "POST",
 							url: rpc,
+							async: false,
 							contentType: 'application/json',
 							data: '{"jsonrpc":"2.0","id":8,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"' + q + '","to":"0xaa2cd7477c451e703f3b9ba5663334914763edf8"},"latest"]}',
 							success : function(data) {
@@ -235,21 +236,20 @@
 						});
 					}
 					
-					if(sessionStorage.getItem(nftId + 'tick')){
-						tick = sessionStorage.getItem(nftId + 'tick');
-					}else{
-							$.ajax({
-							type : "POST",
-							url: rpc,
-							contentType: 'application/json',
-							data: '{"jsonrpc":"2.0","id":8,"method":"eth_call","params":[{"data":"0x3850c7bd","to":"' + pool + '"},"latest"]}',
-							success : function(data) {
-								var info = web3.eth.abi.decodeParameters(['uint160', 'int24'], data.result);
-								tick = info[1].toString();
-								sessionStorage.setItem(nftId + 'tick', tick);
-							}
-						});
-					}
+					
+					$.ajax({
+						type : "POST",
+						url: rpc,
+						contentType: 'application/json',
+						data: '{"jsonrpc":"2.0","id":8,"method":"eth_call","params":[{"data":"0x3850c7bd","to":"' + pool + '"},"latest"]}',
+						success : function(data) {
+							var info = web3.eth.abi.decodeParameters(['uint160', 'int24'], data.result);
+							tick = info[1].toString();
+							sessionStorage.setItem(nftId + 'tick', tick);
+						}
+					});
+					
+					tick = sessionStorage.getItem(nftId + 'tick');
 
 					
 					var range = tickUpper - tickLower;
