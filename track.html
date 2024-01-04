@@ -145,6 +145,7 @@
 
     <script>
 		var web3 = new Web3('https://arb1.arbitrum.io/rpc');
+		var rpc = 'https://arb1.arbitrum.io/rpc';
 		var ztxPrice = 0;
 		var oretroPrice = 0;
 		var eurosPrice = 0;
@@ -177,7 +178,7 @@
 			
 			$.ajax({
 				type : "POST",
-				url: "https://arb1.arbitrum.io/rpc",
+				url: rpc,
 				contentType: 'application/json',
 				data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"' + nftIdCode + '","to":"0xaa277cb7914b7e5514946da92cb9de332ce610ef"},"latest"]}',
 				success : function(data) {
@@ -192,6 +193,63 @@
 					c1.methods.symbol().call().then(function(result){ $(tr).find(".bal0").text(result);});
 					
 					showToken.push(nftId);
+				},
+				error: function (e) {
+				}
+			});
+		}
+		
+		function getPosition(nftId, tr){
+			var nftIdCode = web3.eth.abi.encodeParameter('uint256', nftId);
+			nftIdCode = nftIdCode.replace('0x', '0x99fbab88');
+			
+			$.ajax({
+				type : "POST",
+				url: rpc,
+				contentType: 'application/json',
+				data: '{"jsonrpc":"2.0","id":9,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"' + nftIdCode + '","to":"0xaa277cb7914b7e5514946da92cb9de332ce610ef"},"latest"]}',
+				success : function(data) {
+					var info = web3.eth.abi.decodeParameters(['uint96', 'address', 'address', 'address', 'uint24', 'int24', 'int24', 'uint128'], data.result);
+					var token0 = info[2];
+					var token1 = info[3];
+					var fee = info[4];
+					var tickLower = info[5].toString();
+					var tickUpper = info[6].toString();
+					var liquidity = info[7];
+					var tick;
+					var pool;
+					
+					var q = web3.eth.abi.encodeParameters(['address', 'address', 'uint24'], [token0, token1, fee]).replace('0x', '0x1698ee82');
+					//
+					$.ajax({
+						type : "POST",
+						url: rpc,
+						async: false,
+						contentType: 'application/json',
+						data: '{"jsonrpc":"2.0","id":8,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"' + q + '","to":"0xaa2cd7477c451e703f3b9ba5663334914763edf8"},"latest"]}',
+						success : function(data) {
+							pool = web3.eth.abi.decodeParameter('address', data.result);
+						}
+					});
+					
+					$.ajax({
+						type : "POST",
+						url: rpc,
+						async: false,
+						contentType: 'application/json',
+						data: '{"jsonrpc":"2.0","id":8,"method":"eth_call","params":[{"data":"0x3850c7bd","to":"' + pool + '"},"latest"]}',
+						success : function(data) {
+							var info = web3.eth.abi.decodeParameters(['uint160', 'int24'], data.result);
+							tick = info[1].toString();
+						}
+					});
+					
+
+					
+					var range = tickUpper - tickLower;
+					var tickPos = ((tick - tickLower) / range) * 100;
+												
+					$(tr).find("td.total").text((Math.floor(tickPos * 100) / 100) + "%");
 				},
 				error: function (e) {
 				}
@@ -285,6 +343,7 @@
 									sessionStorage.setItem(nftId, ramReward);
 									
 									getTokenPrice(nftId, tr);
+									getPosition(nftId, tr);
 								},
 								error: function (e) {
 								}
