@@ -218,11 +218,14 @@
 		}
 	
 		function alertCall(msg){
-			$.ajax({
-				type : "POST",
-				url: "https://api.pushover.net/1/messages.json",
-				data: {'token': 'aofuvijmgfrqhjab11xrgjjigvf63r', 'user': 'uyhipavxjt4e3j7g7hsedp7f5aphq7', 'message': (msg||'alert'), 'priority': 1}
-			});
+			if(lastcall == '' || (new Date() - lastcall > 300000)){
+				$.ajax({
+					type : "POST",
+					url: "https://api.pushover.net/1/messages.json",
+					data: {'token': 'aofuvijmgfrqhjab11xrgjjigvf63r', 'user': 'uyhipavxjt4e3j7g7hsedp7f5aphq7', 'message': (msg||'alert'), 'priority': 1}
+				});
+				lastcall = new Date();
+			}
 		}
 		
 		$(function () {			
@@ -471,22 +474,16 @@
 						$("span.price.ztx").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24 +')');
 						ztxPrice = data.pair.priceUsd;
 						
+						if(data.pair.priceUsd < - 0.0188){
+							alertCall();
+						}
+						
 						if(data.pair.priceChange.h1 < -10){
 							alertCall();
-							
-							if(lastcall == '' || (new Date() - lastcall > 3600000)){
-								alertCall();
-								lastcall = new Date();
-							}
 						}
 						
 						if(data.pair.priceChange.h1 > 10){
 							alertCall();
-							
-							if(lastcall == '' || (new Date() - lastcall > 3600000)){
-								alertCall();
-								lastcall = new Date();
-							}
 						}
 					},
 					error: function (e) {
