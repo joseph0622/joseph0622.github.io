@@ -40,6 +40,10 @@
 	  .alert {
 		color: red;
 	  }
+	  
+	  .eth.price, .arb.price {
+		font-weight: bold;
+	  }
 
     </style>
 
@@ -61,6 +65,15 @@
 			thena: <span class="thena price"></span>&nbsp;ram: <span class="ram price"></span>&nbsp;neadram: <span class="neadram price"></span><br/>			
 			Total Reward: <span class="reward"></span>&nbsp;<br/>
 			ztx:<span class="ztxTvl"></span>&nbsp;gamma:<span class="gammaTvl"></span>&nbsp;retro:<span class="retroTvl"></span>&nbsp;total:<span class="userTvl"></span>&nbsp;r:<span class="avgApr"></span>%
+          </div>
+		  <br/>
+		  <div class="container">
+			<span class="ethHealthRatio"></span>&nbsp;
+			eth supply: <span class="eth supply"></span>&nbsp;arb borrow: <span class="arb borrow"></span>&nbsp;usdc borrow: <span class="eth usdc borrow"></span>&nbsp;<br/>
+          </div>
+		  <div class="container">
+			<span class="btcHealthRatio"></span>&nbsp;
+			btc supply: <span class="btc supply"></span>&nbsp;usdc borrow: <span class="btc usdc borrow"></span>&nbsp;<br/>
           </div>
 		  <br/>
           <table class="table">
@@ -150,6 +163,7 @@
 		var oretroPrice = 0;
 		var eurosPrice = 0;
 		var btcPrice = 0;
+		var ethPrice = 0;
 		var arbPrice = 0;
 		var ramPrice = 0;
 		var lastmail = '';
@@ -167,6 +181,84 @@
 		//1050408813895138196
 		var showToken = [];
 		var tokenAbi = [{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"}];
+		var ethSupply = 0;
+		var btcSupply = 0
+		var arbBorrow = 0;
+		var ethUsdcBorrow = 0;
+		var btcUsdcBorrow = 0;
+		var healthRatio = 0;
+		
+		function getSilo(){			
+			$.ajax({
+				type : "POST",
+				url: rpc,
+				contentType: 'application/json',
+				data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0x70a08231000000000000000000000000f712ab8c4505eb4b36a2ff9fa746470be81e6538","to":"0x7fd52da78f579db67cdd09e5d8981ecfccfc8bc9"},"latest"]}',
+				success : function(data) {
+					var supplyEth = web3.eth.abi.decodeParameter('uint256', data.result);					
+					ethSupply = String(supplyEth.toString()).slice(0, -15) / 1000;
+					
+					if(ethPrice >0 && arbPrice > 0){
+						$(".eth.supply").text(ethSupply + " (" + (Math.floor(ethSupply * ethPrice * 100) / 100) + ")");
+						
+						if(ethSupply > 0 && arbBorrow > 0){
+							healthRatio = Math.floor((1 - ((Math.floor(arbBorrow * arbPrice * 100) / 100) / (Math.floor(ethSupply * ethPrice * 100) / 100) / 0.85))*100);
+							
+							$(".ethHealthRatio").text(healthRatio + "%");
+						}
+					}
+				},
+				error: function (e) {
+				}
+			});
+			
+			$.ajax({
+				type : "POST",
+				url: rpc,
+				contentType: 'application/json',
+				data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0x70a08231000000000000000000000000f712ab8c4505eb4b36a2ff9fa746470be81e6538","to":"0x29Aa259659402c6280620048e976537ff9AFFdbB"},"latest"]}',
+				success : function(data) {
+					var supplyBtc = web3.eth.abi.decodeParameter('uint256', data.result);					
+					btcSupply = String(supplyBtc.toString()).slice(0, -5) / 1000;
+					
+					if(btcPrice >0){
+						$(".btc.supply").text(btcSupply + " (" + (Math.floor(btcSupply * btcPrice * 100) / 100) + ")");
+						
+						if(btcPrice > 0 && btcUsdcBorrow > 0){
+							healthRatio = Math.floor((1 - ((Math.floor(btcUsdcBorrow * 100) / 100) / (Math.floor(btcSupply * btcPrice * 100) / 100) / 0.85))*100);
+							
+							$(".btcHealthRatio").text(healthRatio + "%");
+						}
+					}
+				},
+				error: function (e) {
+				}
+			});
+			
+			$.ajax({
+				type : "POST",
+				url: rpc,
+				contentType: 'application/json',
+				data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0x70a08231000000000000000000000000f712ab8c4505eb4b36a2ff9fa746470be81e6538","to":"0x0c6c638dc7f38762dd66cb64f54929f9b4d4adf5"},"latest"]}',
+				success : function(data) {
+					var borrowArb = web3.eth.abi.decodeParameter('uint256', data.result);					
+					arbBorrow = String(borrowArb).slice(0, -15) / 1000;
+					
+					if(ethPrice >0 && arbPrice > 0){
+						$(".arb.borrow").text(arbBorrow + " (" + (Math.floor(arbBorrow * arbPrice * 100) / 100) + ")");
+						
+						if(ethSupply > 0 && arbBorrow > 0){
+							healthRatio = Math.floor((1 - ((Math.floor(arbBorrow * arbPrice * 100) / 100) / (Math.floor(ethSupply * ethPrice * 100) / 100) / 0.85))*100);
+							
+							$(".ethHealthRatio").text(healthRatio + "%");
+						}
+					}
+				},
+				error: function (e) {
+				}
+			});
+			
+		}
 		
 		function getTokenPrice(nftId, tr){
 			var nftIdCode = web3.eth.abi.encodeParameter('uint256', nftId);
@@ -696,11 +788,24 @@
 					dataType: "json",
 					success : function(data) {
 						$("span.price.eth").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
+						ethPrice = data.pair.priceUsd;
 					},
 					error: function (e) {
+						$.ajax({
+							type : "POST",
+							url: rpc,
+							contentType: 'application/json',
+							data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"data":"0xfeaf968c","to":"0x639Fe6ab55C921f74e7fac1ee960C0B6293ba612"},"latest"]}',
+							success : function(data) {
+								var info = web3.eth.abi.decodeParameters(['uint80', 'int256'], data.result);
+								ethPrice = String(info[1].toString()).slice(0, -5) / 1000;
+								$("span.price.eth").text(ethPrice);
+							},
+							error: function (e) {
+							}
+						});
 					}
-				});
-				
+				});				
 				
 				$.ajax({
 					type : "GET",
@@ -773,6 +878,19 @@
 						arbPrice = data.pair.priceUsd;
 					},
 					error: function (e) {
+						$.ajax({
+							type : "POST",
+							url: rpc,
+							contentType: 'application/json',
+							data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"data":"0xfeaf968c","to":"0xb2A824043730FE05F3DA2efaFa1CBbe83fa548D6"},"latest"]}',
+							success : function(data) {
+								var info = web3.eth.abi.decodeParameters(['uint80', 'int256'], data.result);
+								arbPrice = String(info[1].toString()).slice(0, -5) / 1000;
+								$("span.price.arb").text(arbPrice);
+							},
+							error: function (e) {
+							}
+						});
 					}
 				});
 				
@@ -801,14 +919,17 @@
 			fetchPool();
 			//fecthBalance();
 			fecthRamNft();
+			getSilo();
 			
 			setInterval(function () {
-				fetchPool();
+				fetchPool();				
+				getSilo();
 			}, 60000);
 			
 			setInterval(function () {
 				fecthRamNft();
 			}, 2000);
+			
 		});
     </script>
 
