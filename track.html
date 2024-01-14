@@ -205,6 +205,10 @@
 							healthRatio = Math.floor((1 - ((Math.floor(arbBorrow * arbPrice * 100) / 100) / (Math.floor(ethSupply * ethPrice * 100) / 100) / 0.85))*100);
 							
 							$(".ethHealthRatio").text(healthRatio + "%");
+							
+							if(healthRatio <= 13){
+								alertCall('silo');
+							}
 						}
 					}
 				},
@@ -228,6 +232,10 @@
 							healthRatio = Math.floor((1 - ((Math.floor(btcUsdcBorrow * 100) / 100) / (Math.floor(btcSupply * btcPrice * 100) / 100) / 0.85))*100);
 							
 							$(".btcHealthRatio").text(healthRatio + "%");
+							
+							if(healthRatio <= 13){
+								alertCall('silo');
+							}
 						}
 					}
 				},
@@ -368,11 +376,14 @@
 		}
 	
 		function alertCall(msg){
-			/*$.ajax({
-				type : "POST",
-				url: "https://api.pushover.net/1/messages.json",
-				data: {'token': 'aofuvijmgfrqhjab11xrgjjigvf63r', 'user': 'uyhipavxjt4e3j7g7hsedp7f5aphq7', 'message': (msg||'alert')}
-			});*/
+			/*if(lastcall == '' || (new Date() - lastcall > 300000)){
+				$.ajax({
+					type : "POST",
+					url: "https://api.pushover.net/1/messages.json",
+					data: {'token': 'aofuvijmgfrqhjab11xrgjjigvf63r', 'user': 'uyhipavxjt4e3j7g7hsedp7f5aphq7', 'message': (msg||'alert'), 'priority': 1}
+				});
+				lastcall = new Date();
+			}*/
 		}
 		
 		$(function () {
@@ -434,6 +445,7 @@
 									if(ramReward == sessionStorage.getItem(nftId)){
 										$(tr).find(".inrange").text('No');
 										$(tr).find(".inrange").addClass("alert");
+										alertCall('Alert - ram');
 									}else{
 										$(tr).find(".inrange").text('Yes');
 									}
@@ -492,7 +504,7 @@
 									
 									if(pool.userInRangeLiquidity == 0){
 										$(tr).find(".inrange").addClass("alert");
-										alertCall();
+										//alertCall();
 										
 										if(lastmail == '' || (new Date() - lastmail > 1200000)){
 											sendEmail(pool.symbolToken0 + " - " + pool.symbolToken1);
@@ -570,7 +582,7 @@
 									
 									if(pool.userInRangeLiquidity == 0){
 										$(tr).find(".inrange").addClass("alert");
-										alertCall();
+										//alertCall();
 										
 										if(lastmail == '' || (new Date() - lastmail > 1200000)){
 											sendEmail(pool.symbolToken0 + " - " + pool.symbolToken1);
@@ -695,6 +707,7 @@
 						$("span.price.ztx").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24 +')');
 						ztxPrice = data.pair.priceUsd;
 						
+						/*
 						if(data.pair.priceChange.h1 < -10){
 							alertCall();
 							
@@ -712,6 +725,7 @@
 								lastcall = new Date();
 							}
 						}
+						*/
 					},
 					error: function (e) {
 					}
