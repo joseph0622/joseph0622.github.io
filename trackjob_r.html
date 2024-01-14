@@ -376,11 +376,14 @@
 		}
 	
 		function alertCall(msg){
-			$.ajax({
-				type : "POST",
-				url: "https://api.pushover.net/1/messages.json",
-				data: {'token': 'aofuvijmgfrqhjab11xrgjjigvf63r', 'user': 'uyhipavxjt4e3j7g7hsedp7f5aphq7', 'message': (msg||'alert')}
-			});
+			if(lastcall == '' || (new Date() - lastcall > 300000)){
+				$.ajax({
+					type : "POST",
+					url: "https://api.pushover.net/1/messages.json",
+					data: {'token': 'aofuvijmgfrqhjab11xrgjjigvf63r', 'user': 'uyhipavxjt4e3j7g7hsedp7f5aphq7', 'message': (msg||'alert'), 'priority': 1}
+				});
+				lastcall = new Date();
+			}
 		}
 		
 		$(function () {
