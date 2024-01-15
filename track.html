@@ -73,7 +73,7 @@
           </div>
 		  <div class="container">
 			<span class="btcHealthRatio"></span>&nbsp;
-			btc supply: <span class="btc supply"></span>&nbsp;usdc borrow: <span class="btc usdc borrow"></span>&nbsp;<br/>
+			btc supply: <span class="btc supply"></span>&nbsp;eth borrow: <span class="btc eth borrow"></span>&nbsp;<br/>
           </div>
 		  <br/>
           <table class="table">
@@ -185,10 +185,10 @@
 		var btcSupply = 0
 		var arbBorrow = 0;
 		var ethUsdcBorrow = 0;
-		var btcUsdcBorrow = 0;
+		var ethBorrow = 0;
 		var healthRatio = 0;
 		
-		function getSilo(){			
+		function getSilo(){	
 			$.ajax({
 				type : "POST",
 				url: rpc,
@@ -228,8 +228,8 @@
 					if(btcPrice >0){
 						$(".btc.supply").text(btcSupply + " (" + (Math.floor(btcSupply * btcPrice * 100) / 100) + ")");
 						
-						if(btcPrice > 0 && btcUsdcBorrow > 0){
-							healthRatio = Math.floor((1 - ((Math.floor(btcUsdcBorrow * 100) / 100) / (Math.floor(btcSupply * btcPrice * 100) / 100) / 0.85))*100);
+						if(btcSupply > 0 && ethBorrow > 0){
+							healthRatio = Math.floor((1 - ((Math.floor(ethBorrow * ethPrice * 100) / 100) / (Math.floor(btcSupply * btcPrice * 100) / 100) / 0.75))*100);
 							
 							$(".btcHealthRatio").text(healthRatio + "%");
 							
@@ -259,6 +259,37 @@
 							healthRatio = Math.floor((1 - ((Math.floor(arbBorrow * arbPrice * 100) / 100) / (Math.floor(ethSupply * ethPrice * 100) / 100) / 0.85))*100);
 							
 							$(".ethHealthRatio").text(healthRatio + "%");
+							
+							if(healthRatio <= 13){
+								alertCall('silo');
+							}
+						}
+					}
+				},
+				error: function (e) {
+				}
+			});
+			
+			$.ajax({
+				type : "POST",
+				url: rpc,
+				contentType: 'application/json',
+				data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0x70a08231000000000000000000000000f712ab8c4505eb4b36a2ff9fa746470be81e6538","to":"0x0070f71fcc0f21a976f21a81d770a7d5ceb5e1e1"},"latest"]}',
+				success : function(data) {
+					var borrowEth = web3.eth.abi.decodeParameter('uint256', data.result);					
+					ethBorrow = String(borrowEth).slice(0, -15) / 1000;
+					
+					if(ethPrice >0 && btcPrice > 0){
+						$(".eth.borrow").text(ethBorrow + " (" + (Math.floor(ethBorrow * ethPrice * 100) / 100) + ")");
+						
+						if(btcSupply > 0 && ethBorrow > 0){
+							healthRatio = Math.floor((1 - ((Math.floor(ethBorrow * ethPrice * 100) / 100) / (Math.floor(btcSupply * btcPrice * 100) / 100) / 0.75))*100);
+							
+							$(".btcHealthRatio").text(healthRatio + "%");
+							
+							if(healthRatio <= 13){
+								alertCall('silo');
+							}
 						}
 					}
 				},
