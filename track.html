@@ -280,7 +280,7 @@
 					ethBorrow = String(borrowEth).slice(0, -15) / 1000;
 					
 					if(ethPrice >0 && btcPrice > 0){
-						$(".eth.borrow").text(ethBorrow + " (" + (Math.floor(ethBorrow * ethPrice * 100) / 100) + ")");
+						$(".btc.eth.borrow").text(ethBorrow + " (" + (Math.floor(ethBorrow * ethPrice * 100) / 100) + ")");
 						
 						if(btcSupply > 0 && ethBorrow > 0){
 							healthRatio = Math.floor((1 - ((Math.floor(ethBorrow * ethPrice * 100) / 100) / (Math.floor(btcSupply * btcPrice * 100) / 100) / 0.75))*100);
@@ -921,6 +921,10 @@
 					success : function(data) {
 						$("span.price.arb").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
 						arbPrice = data.pair.priceUsd;
+						
+						if(ethPrice > 0){
+							$("span.price.arb").text($("span.price.arb").text() + ' (' + (Math.floor((arbPrice / ethPrice) * 1000000) / 10000) + ')');
+						}
 					},
 					error: function (e) {
 						$.ajax({
