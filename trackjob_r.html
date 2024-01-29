@@ -536,7 +536,7 @@
 									
 									if(pool.userInRangeLiquidity == 0){
 										$(tr).find(".inrange").addClass("alert");
-										//alertCall();
+										alertCall();
 										
 										if(lastmail == '' || (new Date() - lastmail > 1200000)){
 											sendEmail(pool.symbolToken0 + " - " + pool.symbolToken1);
@@ -739,7 +739,7 @@
 						$("span.price.ztx").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24 +')');
 						ztxPrice = data.pair.priceUsd;
 						
-						/*
+						
 						if(data.pair.priceChange.h1 < -10){
 							alertCall();
 							
@@ -757,7 +757,7 @@
 								lastcall = new Date();
 							}
 						}
-						*/
+						
 					},
 					error: function (e) {
 					}
