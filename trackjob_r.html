@@ -1039,6 +1039,24 @@
 					error: function (e) {
 					}
 				});			
+				
+				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/mantle/0xeb67e93e820be77e7ed134d39fe1e18b62e86fba",
+					dataType: "json",
+					success : function(data) {
+						var ethPrice = 1 / parseFloat(data.pair.priceNative);
+						if(ethPrice < 1.0203023){
+							alertCall('cleo');
+						}
+						
+						if(ethPrice > 1.0205064){
+							alertCall('cleo');
+						}
+					},
+					error: function (e) {
+					}
+				});		
 			}
 
 			fetchPool();
