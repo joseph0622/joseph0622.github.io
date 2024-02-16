@@ -163,7 +163,7 @@
 
     <script>
 		var web3 = new Web3('https://arb1.arbitrum.io/rpc');
-		var rpc = 'https://arb1.arbitrum.io/rpc';
+		var rpc = 'https://arbitrum.blockpi.network/v1/rpc/public';
 		var ztxPrice = 0;
 		var oretroPrice = 0;
 		var eurosPrice = 0;
@@ -520,7 +520,7 @@
 			function fecthRamNft(){
 				$.ajax({
 					type : "POST",
-					url: "https://arb1.arbitrum.io/rpc",
+					url: rpc,
 					contentType: 'application/json',
 					data: '{"jsonrpc":"2.0","id":21,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0xdef76a4b000000000000000000000000f712ab8c4505eb4b36a2ff9fa746470be81e6538","to":"0xe99ead648fb2893d1cfa4e8fe8b67b35572d2581"},"latest"]}',
 					success : function(data) {
@@ -534,7 +534,7 @@
 							
 							$.ajax({
 								type : "POST",
-								url: "https://arb1.arbitrum.io/rpc",
+								url: rpc,
 								contentType: 'application/json',
 								data: '{"jsonrpc":"2.0","id":22,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"' + nftCode + '","to":"0xe99ead648fb2893d1cfa4e8fe8b67b35572d2581"},"latest"]}',
 								success : function(data) {
@@ -735,7 +735,7 @@
 				
 				$.ajax({
 					type : "POST",
-					url: "https://arb1.arbitrum.io/rpc",
+					url: rpc,
 					contentType: 'application/json',
 					data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0x6eacd398000000000000000000000000f712ab8c4505eb4b36a2ff9fa746470be81e6538","to":"0x825d9772deb8218c0a6628f76cae98e70d1b3694"},"latest"]}',
 					success : function(data) {
