@@ -80,6 +80,10 @@
 			<span class="aethHealthRatio"></span>&nbsp;
 			aeth supply: <span class="aeth supply"></span>&nbsp;alink borrow: <span class="alink borrow"></span>&nbsp;<br/>
           </div>
+		  <div class="container">
+			<span class="cleoRange"></span>&nbsp;
+			lower: <span class="cleo lower"></span>&nbsp;upper: <span class="cleo upper"></span>&nbsp;current: <span class="cleo current"></span>&nbsp;<br/>
+          </div>
 		  <br/>
           <table class="table">
 
@@ -1039,6 +1043,34 @@
 					error: function (e) {
 					}
 				});			
+				
+				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/mantle/0xeb67e93e820be77e7ed134d39fe1e18b62e86fba",
+					dataType: "json",
+					success : function(data) {
+						var lower = 1.0207105;
+						var upper = 1.0211189;
+						
+						var ethPrice = 1 / parseFloat(data.pair.priceNative);
+						$("span.cleo.current").text(ethPrice);
+						$("span.cleo.lower").text(lower);
+						$("span.cleo.upper").text(upper);
+						
+						var pos = ethPrice - lower;
+						$("span.cleoRange").text((pos/(upper - lower))*100);
+						
+						if(ethPrice < lower){
+							alertCall('cleo');
+						}
+						
+						if(ethPrice > upper){
+							alertCall('cleo');
+						}
+					},
+					error: function (e) {
+					}
+				});		
 			}
 
 			fetchPool();
