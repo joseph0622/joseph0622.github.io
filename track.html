@@ -553,7 +553,7 @@
 									var xoRamReward = String(ramPool[1]).slice(0, -15) / 1000;
 									var arbReward = String(ramPool[2]).slice(0, -15) / 1000
 									var ramReward = xoRamReward + ' xoRam - ' + arbReward + ' arb';
-									$(tr).find(".reward").text(ramReward + ' (' + Math.floor(((xoRamReward * (ramPrice /2 )) + arbReward * arbPrice)*100)/100 + ')');
+									$(tr).find(".reward").text(ramReward + ' (' + Math.floor(((xoRamReward * (ramPrice * 0.75 )) + arbReward * arbPrice)*100)/100 + ')');
 									
 									
 									
