@@ -463,7 +463,7 @@
 					$(tr).find("td.total").text(inRange + "%");
 					
 					$(tr).find(".inrange").removeClass("alert");
-					if(inRange <= 0){
+					if(inRange <= 0 || inRange > 100){
 						$(tr).find(".inrange").text('No');
 						$(tr).find(".inrange").addClass("alert");
 						alertCall('Alert - ram');
