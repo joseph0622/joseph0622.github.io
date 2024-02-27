@@ -68,17 +68,19 @@
 		  <br/>
 		  <h6>Silo</h6>
 		  <div class="container">
+			usdce: <span class="usdce price"></span> <br/>
 			<span class="ethHealthRatio"></span>&nbsp;
-			eth supply: <span class="eth supply"></span>&nbsp;arb borrow: <span class="arb borrow"></span>&nbsp;usdc borrow: <span class="eth usdc borrow"></span>&nbsp;<br/>
+			usdc supply: <span class="usdc supply"></span>&nbsp;eth borrow: <span class="eth borrow"></span>&nbsp;arb borrow: <span class="arb borrow"></span>&nbsp;<br/>
           </div>
-		  <div class="container">
+		  <!--<div class="container">
 			<span class="btcHealthRatio"></span>&nbsp;
 			btc supply: <span class="btc supply"></span>&nbsp;eth borrow: <span class="btc eth borrow"></span>&nbsp;<br/>
-          </div>
+          </div> -->
 		  <!-- <div class="container">
 			<span class="aethHealthRatio"></span>&nbsp;
 			aeth supply: <span class="aeth supply"></span>&nbsp;alink borrow: <span class="alink borrow"></span>&nbsp;<br/>
           </div> -->
+		  <!-- 
 		  <br/>
 		  <h6>Dolo</h6>
 		  <div class="container">
@@ -89,6 +91,7 @@
 			<span class="darbHealthRatio"></span>&nbsp;
 			arb - supply: <span class="darb supply"></span>&nbsp;borrow: <span class="darb borrow"></span>&nbsp;<br/>
           </div>
+		  -->
 		  <br/>
           <table class="table">
 
@@ -175,7 +178,7 @@
 		var rpc = 'https://arbitrum.blockpi.network/v1/rpc/public';
 		var ztxPrice = 0;
 		var oretroPrice = 0;
-		var eurosPrice = 0;
+		var usdcePrice = 0;
 		var btcPrice = 0;
 		var ethPrice = 0;
 		var arbPrice = 0;
@@ -191,22 +194,21 @@
 		var aprMap = new Map();
 		var userTvl = 0;
 		//var clBtc = 0.2789;
-		//var borrowedEuros = 7035;
-		//var eurPrice = 0;
-		//1050408813895138196
 		var showToken = [];
 		var tokenAbi = [{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"}];
 		var ethSupply = 0;
+		var usdcSupply = 0;
 		var aethSupply = 0;
 		var btcSupply = 0
 		var arbBorrow = 0;
+		var ethBorrow = 0;
 		var alinkBorrow = 0;
 		var ethUsdcBorrow = 0;
 		var ethBorrow = 0;
 		var healthRatio = 0;
 		
 		function getSilo(){	
-			$.ajax({
+			/*$.ajax({
 				type : "GET",
 				url: "https://api.dexscreener.com/latest/dex/pairs/arbitrum/0xabc27aa4e47ce3b5591093de87ab7abeafb3afa0",
 				dataType: "json",
@@ -216,8 +218,8 @@
 				},
 				error: function (e) {
 				}
-			});
-		
+			});*/
+			/*
 			$.ajax({
 				type : "POST",
 				url: rpc,
@@ -244,7 +246,8 @@
 				error: function (e) {
 				}
 			});
-		
+			*/
+			/*
 			$.ajax({
 				type : "POST",
 				url: rpc,
@@ -271,7 +274,100 @@
 				error: function (e) {
 				}
 			});
+			*/
+			$.ajax({
+				type : "GET",
+				url: "https://api.dexscreener.com/latest/dex/pairs/arbitrum/0xc86eb7b85807020b4548ee05b54bfc956eebbfcd",
+				dataType: "json",
+				success : function(data) {
+					$("span.price.usdce").text(data.pair.priceUsd);
+					usdcePrice = data.pair.priceUsd;
+				},
+				error: function (e) {
+				}
+			});
+			$.ajax({
+				type : "POST",
+				url: rpc,
+				contentType: 'application/json',
+				data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0x70a08231000000000000000000000000f712ab8c4505eb4b36a2ff9fa746470be81e6538","to":"0x55ADE3B74abef55bF379FF6Ae61CB77a405Eb4A8"},"latest"]}',
+				success : function(data) {
+					var supplyUsdc = web3.eth.abi.decodeParameter('uint256', data.result);					
+					usdcSupply = String(supplyUsdc.toString()).slice(0, -3) / 1000;
+					
+					if(ethPrice >0 && arbPrice > 0){
+						$(".usdc.supply").text(usdcSupply + " (" + (Math.floor(usdcSupply * 1 * 100) / 100) + ")");
+						
+						if(usdcSupply > 0){
+							healthRatio = Math.floor((1 - (((Math.floor(arbBorrow * arbPrice * 100) / 100) + (Math.floor(ethBorrow * ethPrice * 100) / 100)) / (Math.floor(usdcSupply * usdcePrice * 100) / 100) / 0.9))*100);
+							
+							$(".ethHealthRatio").text(healthRatio + "%");
+							
+							if(healthRatio <= 10){
+								alertCall('silo');
+							}
+						}
+					}
+				},
+				error: function (e) {
+				}
+			});
 			
+			$.ajax({
+				type : "POST",
+				url: rpc,
+				contentType: 'application/json',
+				data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0x70a08231000000000000000000000000f712ab8c4505eb4b36a2ff9fa746470be81e6538","to":"0x0c6c638dc7f38762dd66cb64f54929f9b4d4adf5"},"latest"]}',
+				success : function(data) {
+					var borrowArb = web3.eth.abi.decodeParameter('uint256', data.result);					
+					arbBorrow = String(borrowArb).slice(0, -15) / 1000;
+					
+					if(usdcePrice > 0 && ethPrice >0 && arbPrice > 0){
+						$(".arb.borrow").text(arbBorrow + " (" + (Math.floor(arbBorrow * arbPrice * 100) / 100) + ")");
+						
+						if(usdcSupply > 0){
+							healthRatio = Math.floor((1 - (((Math.floor(arbBorrow * arbPrice * 100) / 100) + (Math.floor(ethBorrow * ethPrice * 100) / 100)) / (Math.floor(usdcSupply * usdcePrice * 100) / 100) / 0.9))*100);
+							
+							$(".ethHealthRatio").text(healthRatio + "%");
+							
+							if(healthRatio <= 10){
+								alertCall('silo');
+							}
+						}
+					}
+				},
+				error: function (e) {
+				}
+			});
+			
+			$.ajax({
+				type : "POST",
+				url: rpc,
+				contentType: 'application/json',
+				data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0x70a08231000000000000000000000000f712ab8c4505eb4b36a2ff9fa746470be81e6538","to":"0x86b25620401413d99c17dcebd2885477cb1737e1"},"latest"]}',
+				success : function(data) {
+					var borrowEth = web3.eth.abi.decodeParameter('uint256', data.result);					
+					ethBorrow = String(borrowEth).slice(0, -15) / 1000;
+					
+					if(ethPrice >0 && arbPrice > 0){
+						$(".eth.borrow").text(ethBorrow + " (" + (Math.floor(ethBorrow * ethPrice * 100) / 100) + ")");
+						
+						if(usdcSupply > 0){
+							healthRatio = Math.floor((1 - (((Math.floor(arbBorrow * arbPrice * 100) / 100) + (Math.floor(ethBorrow * ethPrice * 100) / 100)) / (Math.floor(usdcSupply * usdcePrice * 100) / 100) / 0.9))*100);
+							
+							$(".ethHealthRatio").text(healthRatio + "%");
+							
+							if(healthRatio <= 10){
+								alertCall('silo');
+							}
+						}
+					}
+				},
+				error: function (e) {
+				}
+			});
+			
+			/*
 			$.ajax({
 				type : "POST",
 				url: rpc,
@@ -297,8 +393,9 @@
 				},
 				error: function (e) {
 				}
-			});
+			});*/
 			
+			/*
 			$.ajax({
 				type : "POST",
 				url: rpc,
@@ -324,7 +421,7 @@
 				},
 				error: function (e) {
 				}
-			});
+			});*/
 			
 			$.ajax({
 				type : "POST",
@@ -353,6 +450,7 @@
 				}
 			});
 			
+			/*
 			$.ajax({
 				type : "POST",
 				url: rpc,
@@ -379,6 +477,7 @@
 				error: function (e) {
 				}
 			});
+			*/
 			
 		}
 		
@@ -617,13 +716,10 @@
 				var ts = new Date().getUTCMilliseconds();
 				retroReward = 0;
 				ztxReward = 0;
-				eurosReward = 0;
 				ztxTvl = 0;
 				retroTvl = 0;
 				aprMap.clear();
-				
-				$("span.eurosCl").removeClass("alert");
-				
+								
 				$.ajax({
 					type : "GET",
 					url: "https://api.angle.money/v2/merkl?user=0xf712ab8c4505eb4b36a2ff9fa746470be81e6538&chainIds%5B0%5D=42161",
@@ -672,7 +768,7 @@
 										if(pendingReward > 0){
 											$(tr).find(".reward").text(parseFloat(pendingReward * ztxPrice).toFixed(2));
 											ztxReward += pendingReward;
-											$("span.reward").text(Math.round((ztxReward * ztxPrice)) + ' + ' + Math.round((retroReward * oretroPrice)) + ' + ' + Math.round((eurosReward * eurosPrice)));
+											$("span.reward").text(Math.round((ztxReward * ztxPrice)) + ' + ' + Math.round((retroReward * oretroPrice)));
 										}
 									}
 									
@@ -750,7 +846,7 @@
 										if(pendingReward > 0){
 											$(tr).find(".reward").text(parseFloat(pendingReward * oretroPrice).toFixed(2));
 											retroReward += pendingReward;
-											$("span.reward").text(Math.round((ztxReward * ztxPrice)) + ' + ' + Math.round((retroReward * oretroPrice)) + ' + ' + Math.round((eurosReward * eurosPrice)));
+											$("span.reward").text(Math.round((ztxReward * ztxPrice)) + ' + ' + Math.round((retroReward * oretroPrice)));
 										}
 									}
 								}
@@ -806,47 +902,6 @@
 					}
 				});
 				
-				/*
-				$.ajax({
-					type : "GET",
-					url: "https://min-api.cryptocompare.com/data/pricemultifull?fsyms=EUR&tsyms=USD",
-					dataType: "json",
-					success : function(data) {
-						eurPrice = data.RAW.EUR.USD.PRICE;
-						
-												
-						if(clBtc > 0 && eurPrice >0 && btcPrice > 0){
-							var btcValue = (clBtc * btcPrice) / eurPrice;
-							var clLevel = (borrowedEuros / btcValue)*100;
-							$("span.eurosCl").text(clLevel);
-							
-							if(clLevel > 80){
-								alertCall();
-								$("span.eurosCl").addClass("alert");
-							}
-						}
-					},
-					error: function (e) {
-					}
-				});
-				
-				
-				$.ajax({
-					type : "GET",
-					url: "https://api.dexscreener.com/latest/dex/pairs/arbitrum/0xc9aa2feb84f0134a38d5d1c56b1e787191327cb0",
-					dataType: "json",
-					success : function(data) {
-						$("span.price.euros").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24 +')');
-						eurosPrice = data.pair.priceUsd;
-						
-						if(data.pair.priceChange.h1 < -10){
-							alertCall();
-						}
-					},
-					error: function (e) {
-					}
-				});
-				*/
 				/*
 				$.ajax({
 					type : "GET",
