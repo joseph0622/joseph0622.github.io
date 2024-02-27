@@ -59,15 +59,14 @@
         <div class="col-lg-12 text-center" >
 
           <div class="container">
-			#<span class="totalBalance"></span><br/>
 			ZTX: <span class="ztx price"></span>&nbsp;deus: <span class="deus price"></span>&nbsp;pion: <span class="pion price"></span><br/>
-			retro: <span class="retro price"></span>&nbsp;oretro: <span class="oretro price"></span><br/>
 			eth: <span class="eth price"></span>&nbsp;btc: <span class="btc price"></span>&nbsp;arb: <span class="arb price"></span>&nbsp;link: <span class="link price"></span><br/>
 			thena: <span class="thena price"></span>&nbsp;ram: <span class="ram price"></span>&nbsp;neadram: <span class="neadram price"></span><br/>			
 			Total Reward: <span class="reward"></span>&nbsp;<br/>
 			ztx:<span class="ztxTvl"></span>&nbsp;gamma:<span class="gammaTvl"></span>&nbsp;retro:<span class="retroTvl"></span>&nbsp;total:<span class="userTvl"></span>&nbsp;r:<span class="avgApr"></span>%
           </div>
 		  <br/>
+		  <h6>Silo</h6>
 		  <div class="container">
 			<span class="ethHealthRatio"></span>&nbsp;
 			eth supply: <span class="eth supply"></span>&nbsp;arb borrow: <span class="arb borrow"></span>&nbsp;usdc borrow: <span class="eth usdc borrow"></span>&nbsp;<br/>
@@ -76,9 +75,19 @@
 			<span class="btcHealthRatio"></span>&nbsp;
 			btc supply: <span class="btc supply"></span>&nbsp;eth borrow: <span class="btc eth borrow"></span>&nbsp;<br/>
           </div>
-		  <div class="container">
+		  <!-- <div class="container">
 			<span class="aethHealthRatio"></span>&nbsp;
 			aeth supply: <span class="aeth supply"></span>&nbsp;alink borrow: <span class="alink borrow"></span>&nbsp;<br/>
+          </div> -->
+		  <br/>
+		  <h6>Dolo</h6>
+		  <div class="container">
+			<span class="dethHealthRatio"></span>&nbsp;
+			eth - supply: <span class="deth supply"></span>&nbsp;borrow: <span class="deth borrow"></span>&nbsp;<br/>
+          </div>
+		  <div class="container">
+			<span class="darbHealthRatio"></span>&nbsp;
+			arb - supply: <span class="darb supply"></span>&nbsp;borrow: <span class="darb borrow"></span>&nbsp;<br/>
           </div>
 		  <br/>
           <table class="table">
@@ -163,7 +172,7 @@
 
     <script>
 		var web3 = new Web3('https://arb1.arbitrum.io/rpc');
-		var rpc = 'https://arb1.arbitrum.io/rpc';
+		var rpc = 'https://arbitrum.blockpi.network/v1/rpc/public';
 		var ztxPrice = 0;
 		var oretroPrice = 0;
 		var eurosPrice = 0;
@@ -373,6 +382,54 @@
 			
 		}
 		
+		function getDolo(){	
+			$.ajax({
+				type : "POST",
+				url: rpc,
+				contentType: 'application/json',
+				data: '{"jsonrpc":"2.0","id":3,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0xf9416052000000000000000000000000f712ab8c4505eb4b36a2ff9fa746470be81e653898417228759d4afbd3cdfb6c346ff08e6e71f8cd72286e53ae0a4d54399c29a9","to":"0x6bd780e7fdf01d77e4d475c821f1e7ae05409072"},"latest"]}',
+				success : function(data) {
+					var arbPos = web3.eth.abi.decodeParameters(["(uint256,uint256)"], data.result);
+					var supply = String(arbPos[0][0]).slice(0, -34) / 100;
+					var borrow = String(arbPos[0][1]).slice(0, -34) / 100;
+					$("span.darb.supply").text(supply);
+					$("span.darb.borrow").text(borrow);
+					
+					var health = (parseFloat(supply)*0.85) / parseFloat(borrow);
+					$("span.darbHealthRatio").text(String(health).slice(0, -14));
+					
+					if(health <= 1.1){
+						alertCall('DOLO');
+					}
+				},
+				error: function (e) {
+				}
+			});
+			
+			$.ajax({
+				type : "POST",
+				url: rpc,
+				contentType: 'application/json',
+				data: '{"jsonrpc":"2.0","id":5,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0xf9416052000000000000000000000000f712ab8c4505eb4b36a2ff9fa746470be81e65383fae52a6c0e3dd55bf5867fe592768a645679160a7704d5d695a7b2b9e0a7a4f","to":"0x6bd780e7fdf01d77e4d475c821f1e7ae05409072"},"latest"]}',
+				success : function(data) {
+					var ethPos = web3.eth.abi.decodeParameters(["(uint256,uint256)"], data.result);
+					var supply = String(ethPos[0][0]).slice(0, -34) / 100;
+					var borrow = String(ethPos[0][1]).slice(0, -34) / 100;
+					$("span.deth.supply").text(supply);
+					$("span.deth.borrow").text(borrow);
+					
+					var health = (parseFloat(supply)*0.85) / parseFloat(borrow);
+					$("span.dethHealthRatio").text(String(health).slice(0, -14));
+					
+					if(health <= 1.1){
+						alertCall('DOLO');
+					}
+				},
+				error: function (e) {
+				}
+			});
+		}
+		
 		function getTokenPrice(nftId, tr){
 			var nftIdCode = web3.eth.abi.encodeParameter('uint256', nftId);
 			nftIdCode = nftIdCode.replace('0x', '0x99fbab88');
@@ -463,7 +520,7 @@
 					$(tr).find("td.total").text(inRange + "%");
 					
 					$(tr).find(".inrange").removeClass("alert");
-					if(inRange <= 0 || inRange > 100){
+					if(inRange <= 0){
 						$(tr).find(".inrange").text('No');
 						$(tr).find(".inrange").addClass("alert");
 						alertCall('Alert - ram');
@@ -501,26 +558,10 @@
 		}
 		
 		$(function () {
-			function fecthBalance(){
-				$.ajax({
-					type : "GET",
-					url: "https://api.debank.com/user/total_balance?addr=0xf712ab8c4505eb4b36a2ff9fa746470be81e6538",
-					dataType: "json",
-					success : function(data) {
-						localStorage.setItem("debankBalance", Math.round(data.data.total_usd_value));
-						localStorage.setItem("debankBalanceDate", new Date().toLocaleString());
-						$("span.totalBalance").text((localStorage.getItem("debankBalance")||'') + " " + (localStorage.getItem("debankBalanceDate")||''));
-					},
-					error: function (e) {
-						$("span.totalBalance").text((localStorage.getItem("debankBalance")||'') + " " + (localStorage.getItem("debankBalanceDate")||''));
-					}
-				});
-			}
-			
 			function fecthRamNft(){
 				$.ajax({
 					type : "POST",
-					url: "https://arb1.arbitrum.io/rpc",
+					url: rpc,
 					contentType: 'application/json',
 					data: '{"jsonrpc":"2.0","id":21,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0xdef76a4b000000000000000000000000f712ab8c4505eb4b36a2ff9fa746470be81e6538","to":"0xe99ead648fb2893d1cfa4e8fe8b67b35572d2581"},"latest"]}',
 					success : function(data) {
@@ -534,7 +575,7 @@
 							
 							$.ajax({
 								type : "POST",
-								url: "https://arb1.arbitrum.io/rpc",
+								url: rpc,
 								contentType: 'application/json',
 								data: '{"jsonrpc":"2.0","id":22,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"' + nftCode + '","to":"0xe99ead648fb2893d1cfa4e8fe8b67b35572d2581"},"latest"]}',
 								success : function(data) {
@@ -553,7 +594,7 @@
 									var xoRamReward = String(ramPool[1]).slice(0, -15) / 1000;
 									var arbReward = String(ramPool[2]).slice(0, -15) / 1000
 									var ramReward = xoRamReward + ' xoRam - ' + arbReward + ' arb';
-									$(tr).find(".reward").text(ramReward + ' (' + Math.floor(((xoRamReward * (ramPrice /2 )) + arbReward * arbPrice)*100)/100 + ')');
+									$(tr).find(".reward").text(ramReward + ' (' + Math.floor(((xoRamReward * (ramPrice * 0.75 )) + arbReward * arbPrice)*100)/100 + ')');
 									
 									
 									
@@ -734,79 +775,6 @@
 				});
 				
 				$.ajax({
-					type : "POST",
-					url: "https://arb1.arbitrum.io/rpc",
-					contentType: 'application/json',
-					data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0x6eacd398000000000000000000000000f712ab8c4505eb4b36a2ff9fa746470be81e6538","to":"0x825d9772deb8218c0a6628f76cae98e70d1b3694"},"latest"]}',
-					success : function(data) {
-						$("table.table tbody tr.gamma").empty();
-						var posBal = web3.eth.abi.decodeParameter('uint256', data.result).toString();
-						
-						$.ajax({
-							type : "POST",
-							url: "https://arb1.arbitrum.io/rpc",
-							contentType: 'application/json',
-							data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0x70a08231000000000000000000000000825d9772deb8218c0a6628f76cae98e70d1b3694","to":"0x524d49847e644ed908d65396166eacef5c2d2a41"},"latest"]}',
-							success : function(data) {
-								var supply = web3.eth.abi.decodeParameter('uint256', data.result).toString();
-								var myShare = posBal / supply;
-								
-								$.ajax({
-									type : "POST",
-									url: "https://arb1.arbitrum.io/rpc",
-									contentType: 'application/json',
-									data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"data":"0xc4a7761e","to":"0x524d49847e644ed908d65396166eacef5c2d2a41"},"latest"]}',
-									success : function(data) {
-										var inPool = web3.eth.abi.decodeParameters(['uint256', 'uint256'], data.result);
-										var arbTotal = String(inPool[0]).slice(0, -15) / 1000;
-										var usdcTotal = String(inPool[1]).slice(0, -3) / 1000;
-										
-										$.ajax({
-											type : "POST",
-											url: "https://arb1.arbitrum.io/rpc",
-											contentType: 'application/json',
-											data: '{"jsonrpc":"2.0","id":2,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0xdc01f60d000000000000000000000000f712ab8c4505eb4b36a2ff9fa746470be81e6538","to":"0x825d9772deb8218c0a6628f76cae98e70d1b3694"},"latest"]}',
-											success : function(data) {
-												var info = web3.eth.abi.decodeParameters(['address[]', 'uint256[]'], data.result);
-												var xoRamReward = String(info[1][1]).slice(0, -15) / 1000;
-												var arbReward = String(info[1][2]).slice(0, -15) / 1000;
-												
-												var tr = $("table.table tfoot tr.gamma").clone();
-								
-												$(tr).find(".t0").text("ARB");
-												$(tr).find(".t1").text("USDC");
-												$(tr).find(".bal0").text(arbTotal * myShare);
-												$(tr).find(".bal1").text(usdcTotal * myShare);
-												$(tr).find(".total").text(Math.round((arbTotal * myShare * arbPrice) + (usdcTotal * myShare)) + ' (' + Math.round((myShare)*100) + '%)');
-												$(tr).find(".reward").text(xoRamReward + ' xoRam - ' + arbReward + ' arb (' + Math.floor(((xoRamReward * (ramPrice /2 )) + arbReward * arbPrice)*100)/100 + ')');
-												$(tr).find(".inrange").text('Yes');
-												$(tr).appendTo($("table.table tbody"));
-												
-												gammaTvl = Math.round((arbTotal * myShare * arbPrice) + (usdcTotal * myShare));
-												
-												$("span.gammaTvl").text(Math.round(gammaTvl));
-												$("span.userTvl").text(Math.round(ztxTvl + retroTvl + gammaTvl));
-												userTvl = Math.round(ztxTvl + retroTvl + gammaTvl);
-											},
-											error: function (e) {
-											}
-										});
-										
-										
-									},
-									error: function (e) {
-									}
-								});
-							},
-							error: function (e) {
-							}
-						});
-					},
-					error: function (e) {
-					}
-				});
-				
-				$.ajax({
 					type : "GET",
 					url: "https://api.dexscreener.com/latest/dex/pairs/arbitrum/0xe6ea93ba4ae9ee6520e55affebbdb38ed6c233a4",
 					dataType: "json",
@@ -879,7 +847,7 @@
 					}
 				});
 				*/
-				
+				/*
 				$.ajax({
 					type : "GET",
 					url: "https://api.dexscreener.com/latest/dex/pairs/polygon/0xb47a07966ce6812702c0567d03725f1b37e27877",
@@ -902,7 +870,7 @@
 					error: function (e) {
 					}
 				});
-				
+				*/
 				$.ajax({
 					type : "GET",
 					url: "https://api.dexscreener.com/latest/dex/pairs/arbitrum/0xc31e54c7a869b9fcbecc14363cf510d1c41fa443",
@@ -1039,32 +1007,42 @@
 					error: function (e) {
 					}
 				});			
-				
-				/**
+				/*
 				$.ajax({
 					type : "GET",
 					url: "https://api.dexscreener.com/latest/dex/pairs/mantle/0xeb67e93e820be77e7ed134d39fe1e18b62e86fba",
 					dataType: "json",
 					success : function(data) {
+						var lower = 1.0207105;
+						var upper = 1.0211189;
+						
 						var ethPrice = 1 / parseFloat(data.pair.priceNative);
-						if(ethPrice < 1.0203023){
+						$("span.cleo.current").text(ethPrice);
+						$("span.cleo.lower").text(lower);
+						$("span.cleo.upper").text(upper);
+						
+						var pos = ethPrice - lower;
+						$("span.cleoRange").text((pos/(upper - lower))*100);
+						
+						if(ethPrice < lower){
 							alertCall('cleo');
 						}
 						
-						if(ethPrice > 1.0205064){
+						if(ethPrice > upper){
 							alertCall('cleo');
 						}
 					},
 					error: function (e) {
 					}
 				});		
-				**/
+				*/
 			}
 
 			fetchPool();
 			//fecthBalance();
 			fecthRamNft();
 			getSilo();
+			getDolo();
 			
 			setInterval(function () {
 				fetchPool();
@@ -1073,7 +1051,8 @@
 			setInterval(function () {
 				fecthRamNft();
 				getSilo();
-			}, 60000);
+				getDolo();
+			}, 20000);
 			
 		});
     </script>
