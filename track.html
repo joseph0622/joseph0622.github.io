@@ -70,7 +70,7 @@
 		  <div class="container">
 			<!-- usdce: <span class="usdce price"></span> <br/> -->
 			<span class="ethHealthRatio"></span>&nbsp;
-			eth supply: <span class="eth supply"></span>&nbsp;eth borrow: <span class="eth borrow"></span>&nbsp;arb borrow: <span class="arb borrow"></span>&nbsp;<br/>
+			eth supply: <span class="eth supply"></span>&nbsp;usdc supply: <span class="usdc supply"></span>&nbsp;eth borrow: <span class="eth borrow"></span>&nbsp;arb borrow: <span class="arb borrow"></span>&nbsp;<br/>
           </div>
 		  <br/>
 		  <h6>Dolo</h6>
@@ -272,7 +272,7 @@
 						$(".eth.supply").text(ethSupply + " (" + (Math.floor(ethSupply * ethPrice * 100) / 100) + ")");
 						
 						if(ethSupply > 0 && arbBorrow > 0){
-							healthRatio = Math.floor((1 - ((Math.floor(arbBorrow * arbPrice * 100) / 100) / (Math.floor(ethSupply * ethPrice * 100) / 100) / 0.85))*100);
+							healthRatio = Math.floor((1 - ((Math.floor(arbBorrow * arbPrice)) / ((Math.floor(ethSupply * ethPrice) * 0.85) + (Math.floor(usdcSupply * usdcePrice) * 0.9))))*100);
 							
 							$(".ethHealthRatio").text(healthRatio + "%");
 							
@@ -297,7 +297,7 @@
 				error: function (e) {
 				}
 			});
-			/*
+			
 			$.ajax({
 				type : "POST",
 				url: rpc,
@@ -311,7 +311,7 @@
 						$(".usdc.supply").text(usdcSupply + " (" + (Math.floor(usdcSupply * 1 * 100) / 100) + ")");
 						
 						if(usdcSupply > 0){
-							healthRatio = Math.floor((1 - (((Math.floor(arbBorrow * arbPrice * 100) / 100) + (Math.floor(ethBorrow * ethPrice * 100) / 100)) / (Math.floor(usdcSupply * usdcePrice * 100) / 100) / 0.9))*100);
+							healthRatio = Math.floor((1 - ((Math.floor(arbBorrow * arbPrice)) / ((Math.floor(ethSupply * ethPrice) * 0.85) + (Math.floor(usdcSupply * usdcePrice) * 0.9))))*100);
 							
 							$(".ethHealthRatio").text(healthRatio + "%");
 							
@@ -323,7 +323,7 @@
 				},
 				error: function (e) {
 				}
-			});*/
+			});
 			
 			$.ajax({
 				type : "POST",
@@ -338,7 +338,7 @@
 						$(".arb.borrow").text(arbBorrow + " (" + (Math.floor(arbBorrow * arbPrice * 100) / 100) + ")");
 						
 						if(usdcSupply > 0){
-							healthRatio = Math.floor((1 - ((Math.floor(arbBorrow * arbPrice * 100) / 100) / (Math.floor(ethSupply * ethPrice * 100) / 100) / 0.85))*100);
+							healthRatio = Math.floor((1 - ((Math.floor(arbBorrow * arbPrice)) / ((Math.floor(ethSupply * ethPrice) * 0.85) + (Math.floor(usdcSupply * usdcePrice) * 0.9))))*100);
 							
 							$(".ethHealthRatio").text(healthRatio + "%");
 							
@@ -449,7 +449,7 @@
 						$(".arb.borrow").text(arbBorrow + " (" + (Math.floor(arbBorrow * arbPrice * 100) / 100) + ")");
 						
 						if(ethSupply > 0 && arbBorrow > 0){
-							healthRatio = Math.floor((1 - ((Math.floor(arbBorrow * arbPrice * 100) / 100) / (Math.floor(ethSupply * ethPrice * 100) / 100) / 0.85))*100);
+							healthRatio = Math.floor((1 - ((Math.floor(arbBorrow * arbPrice)) / ((Math.floor(ethSupply * ethPrice) * 0.85) + (Math.floor(usdcSupply * usdcePrice) * 0.9))))*100);
 							
 							$(".ethHealthRatio").text(healthRatio + "%");
 							
