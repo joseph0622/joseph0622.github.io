@@ -670,6 +670,72 @@
 		$(function () {
 			function fecthRamNft(){
 				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/arbitrum/0xc31e54c7a869b9fcbecc14363cf510d1c41fa443",
+					dataType: "json",
+					success : function(data) {
+						$("span.price.eth").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
+						ethPrice = data.pair.priceUsd;
+					},
+					error: function (e) {
+						$.ajax({
+							type : "POST",
+							url: rpc,
+							contentType: 'application/json',
+							data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"data":"0xfeaf968c","to":"0x639Fe6ab55C921f74e7fac1ee960C0B6293ba612"},"latest"]}',
+							success : function(data) {
+								var info = web3.eth.abi.decodeParameters(['uint80', 'int256'], data.result);
+								ethPrice = String(info[1].toString()).slice(0, -5) / 1000;
+								$("span.price.eth").text(ethPrice);
+							},
+							error: function (e) {
+							}
+						});
+					}
+				});				
+				
+				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/arbitrum/0x2f5e87c9312fa29aed5c179e456625d79015299c",
+					dataType: "json",
+					success : function(data) {
+						$("span.price.btc").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
+						btcPrice = data.pair.priceUsd;
+					},
+					error: function (e) {
+					}
+				});
+				
+				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/arbitrum/0xC6F780497A95e246EB9449f5e4770916DCd6396A",
+					dataType: "json",
+					success : function(data) {
+						$("span.price.arb").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
+						arbPrice = data.pair.priceUsd;
+						
+						if(ethPrice > 0){
+							$("span.price.arb").text($("span.price.arb").text() + ' (' + (Math.floor((arbPrice / ethPrice) * 1000000) / 10000) + ')');
+						}
+					},
+					error: function (e) {
+						$.ajax({
+							type : "POST",
+							url: rpc,
+							contentType: 'application/json',
+							data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"data":"0xfeaf968c","to":"0xb2A824043730FE05F3DA2efaFa1CBbe83fa548D6"},"latest"]}',
+							success : function(data) {
+								var info = web3.eth.abi.decodeParameters(['uint80', 'int256'], data.result);
+								arbPrice = String(info[1].toString()).slice(0, -5) / 1000;
+								$("span.price.arb").text(arbPrice);
+							},
+							error: function (e) {
+							}
+						});
+					}
+				});
+				
+				$.ajax({
 					type : "POST",
 					url: rpc,
 					contentType: 'application/json',
@@ -937,42 +1003,7 @@
 					}
 				});
 				*/
-				$.ajax({
-					type : "GET",
-					url: "https://api.dexscreener.com/latest/dex/pairs/arbitrum/0xc31e54c7a869b9fcbecc14363cf510d1c41fa443",
-					dataType: "json",
-					success : function(data) {
-						$("span.price.eth").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
-						ethPrice = data.pair.priceUsd;
-					},
-					error: function (e) {
-						$.ajax({
-							type : "POST",
-							url: rpc,
-							contentType: 'application/json',
-							data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"data":"0xfeaf968c","to":"0x639Fe6ab55C921f74e7fac1ee960C0B6293ba612"},"latest"]}',
-							success : function(data) {
-								var info = web3.eth.abi.decodeParameters(['uint80', 'int256'], data.result);
-								ethPrice = String(info[1].toString()).slice(0, -5) / 1000;
-								$("span.price.eth").text(ethPrice);
-							},
-							error: function (e) {
-							}
-						});
-					}
-				});				
 				
-				$.ajax({
-					type : "GET",
-					url: "https://api.dexscreener.com/latest/dex/pairs/arbitrum/0x2f5e87c9312fa29aed5c179e456625d79015299c",
-					dataType: "json",
-					success : function(data) {
-						$("span.price.btc").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
-						btcPrice = data.pair.priceUsd;
-					},
-					error: function (e) {
-					}
-				});
 				
 				
 				$.ajax({
@@ -1021,35 +1052,6 @@
 						}
 					},
 					error: function (e) {
-					}
-				});
-				
-				$.ajax({
-					type : "GET",
-					url: "https://api.dexscreener.com/latest/dex/pairs/arbitrum/0xC6F780497A95e246EB9449f5e4770916DCd6396A",
-					dataType: "json",
-					success : function(data) {
-						$("span.price.arb").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
-						arbPrice = data.pair.priceUsd;
-						
-						if(ethPrice > 0){
-							$("span.price.arb").text($("span.price.arb").text() + ' (' + (Math.floor((arbPrice / ethPrice) * 1000000) / 10000) + ')');
-						}
-					},
-					error: function (e) {
-						$.ajax({
-							type : "POST",
-							url: rpc,
-							contentType: 'application/json',
-							data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"data":"0xfeaf968c","to":"0xb2A824043730FE05F3DA2efaFa1CBbe83fa548D6"},"latest"]}',
-							success : function(data) {
-								var info = web3.eth.abi.decodeParameters(['uint80', 'int256'], data.result);
-								arbPrice = String(info[1].toString()).slice(0, -5) / 1000;
-								$("span.price.arb").text(arbPrice);
-							},
-							error: function (e) {
-							}
-						});
 					}
 				});
 				
