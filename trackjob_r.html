@@ -258,6 +258,17 @@
 				}
 			});
 			*/
+			$.ajax({
+				type : "GET",
+				url: "https://api.dexscreener.com/latest/dex/pairs/arbitrum/0xc86eb7b85807020b4548ee05b54bfc956eebbfcd",
+				dataType: "json",
+				success : function(data) {
+					$("span.price.usdce").text(data.pair.priceUsd);
+					usdcePrice = data.pair.priceUsd;
+				},
+				error: function (e) {
+				}
+			});
 			
 			$.ajax({
 				type : "POST",
@@ -272,7 +283,7 @@
 						$(".eth.supply").text(ethSupply + " (" + (Math.floor(ethSupply * ethPrice * 100) / 100) + ")");
 						
 						if(ethSupply > 0 && usdcSupply > 0){
-							healthRatio = Math.floor((1 - ((Math.floor(arbBorrow * arbPrice)) / ((Math.floor(ethSupply * ethPrice) * 0.85) + (Math.floor(usdcSupply * usdcePrice) * 0.9))))*100);
+							healthRatio = Math.floor((1 - ((Math.floor(arbBorrow * arbPrice)) / ((Math.floor(ethSupply * ethPrice) * 0.85) + (Math.floor(usdcSupply * (usdcePrice || 1)) * 0.9))))*100);
 							
 							$(".ethHealthRatio").text(healthRatio + "%");
 							
@@ -281,18 +292,6 @@
 							}
 						}
 					}
-				},
-				error: function (e) {
-				}
-			});
-			
-			$.ajax({
-				type : "GET",
-				url: "https://api.dexscreener.com/latest/dex/pairs/arbitrum/0xc86eb7b85807020b4548ee05b54bfc956eebbfcd",
-				dataType: "json",
-				success : function(data) {
-					$("span.price.usdce").text(data.pair.priceUsd);
-					usdcePrice = data.pair.priceUsd;
 				},
 				error: function (e) {
 				}
@@ -311,7 +310,7 @@
 						$(".usdc.supply").text(usdcSupply + " (" + (Math.floor(usdcSupply * 1 * 100) / 100) + ")");
 						
 						if(ethSupply > 0 && usdcSupply > 0){
-							healthRatio = Math.floor((1 - ((Math.floor(arbBorrow * arbPrice)) / ((Math.floor(ethSupply * ethPrice) * 0.85) + (Math.floor(usdcSupply * usdcePrice) * 0.9))))*100);
+							healthRatio = Math.floor((1 - ((Math.floor(arbBorrow * arbPrice)) / ((Math.floor(ethSupply * ethPrice) * 0.85) + (Math.floor(usdcSupply * (usdcePrice || 1)) * 0.9))))*100);
 							
 							$(".ethHealthRatio").text(healthRatio + "%");
 							
@@ -334,11 +333,38 @@
 					var borrowArb = web3.eth.abi.decodeParameter('uint256', data.result);					
 					arbBorrow = String(borrowArb).slice(0, -15) / 1000;
 					
-					if(usdcePrice > 0 && ethPrice >0 && arbPrice > 0){
+					if(ethPrice >0 && arbPrice > 0){
 						$(".arb.borrow").text(arbBorrow + " (" + (Math.floor(arbBorrow * arbPrice * 100) / 100) + ")");
 						
 						if(ethSupply > 0 && usdcSupply > 0){
-							healthRatio = Math.floor((1 - ((Math.floor(arbBorrow * arbPrice)) / ((Math.floor(ethSupply * ethPrice) * 0.85) + (Math.floor(usdcSupply * usdcePrice) * 0.9))))*100);
+							healthRatio = Math.floor((1 - ((Math.floor(arbBorrow * arbPrice)) / ((Math.floor(ethSupply * ethPrice) * 0.85) + (Math.floor(usdcSupply * (usdcePrice || 1)) * 0.9))))*100);
+							
+							$(".ethHealthRatio").text(healthRatio + "%");
+							
+							if(healthRatio <= 10){
+								alertCall('silo');
+							}
+						}
+					}
+				},
+				error: function (e) {
+				}
+			});
+			
+			$.ajax({
+				type : "POST",
+				url: rpc,
+				contentType: 'application/json',
+				data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0x70a08231000000000000000000000000f712ab8c4505eb4b36a2ff9fa746470be81e6538","to":"0x0c6c638dc7f38762dd66cb64f54929f9b4d4adf5"},"latest"]}',
+				success : function(data) {
+					var borrowArb = web3.eth.abi.decodeParameter('uint256', data.result);					
+					arbBorrow = String(borrowArb).slice(0, -15) / 1000;
+					
+					if(ethPrice >0 && arbPrice > 0){
+						$(".arb.borrow").text(arbBorrow + " (" + (Math.floor(arbBorrow * arbPrice * 100) / 100) + ")");
+						
+						if(ethSupply > 0 && usdcSupply > 0){
+							healthRatio = Math.floor((1 - ((Math.floor(arbBorrow * arbPrice)) / ((Math.floor(ethSupply * ethPrice) * 0.85) + (Math.floor(usdcSupply * (usdcePrice || 1)) * 0.9))))*100);
 							
 							$(".ethHealthRatio").text(healthRatio + "%");
 							
@@ -435,33 +461,6 @@
 				error: function (e) {
 				}
 			});*/
-			
-			$.ajax({
-				type : "POST",
-				url: rpc,
-				contentType: 'application/json',
-				data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0x70a08231000000000000000000000000f712ab8c4505eb4b36a2ff9fa746470be81e6538","to":"0x0c6c638dc7f38762dd66cb64f54929f9b4d4adf5"},"latest"]}',
-				success : function(data) {
-					var borrowArb = web3.eth.abi.decodeParameter('uint256', data.result);					
-					arbBorrow = String(borrowArb).slice(0, -15) / 1000;
-					
-					if(ethPrice >0 && arbPrice > 0){
-						$(".arb.borrow").text(arbBorrow + " (" + (Math.floor(arbBorrow * arbPrice * 100) / 100) + ")");
-						
-						if(ethSupply > 0 && usdcSupply > 0){
-							healthRatio = Math.floor((1 - ((Math.floor(arbBorrow * arbPrice)) / ((Math.floor(ethSupply * ethPrice) * 0.85) + (Math.floor(usdcSupply * usdcePrice) * 0.9))))*100);
-							
-							$(".ethHealthRatio").text(healthRatio + "%");
-							
-							if(healthRatio <= 10){
-								alertCall('silo');
-							}
-						}
-					}
-				},
-				error: function (e) {
-				}
-			});
 			
 			/*
 			$.ajax({
