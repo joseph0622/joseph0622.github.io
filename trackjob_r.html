@@ -72,6 +72,17 @@
 			<span class="ethHealthRatio"></span>&nbsp;
 			usdc supply: <span class="usdc supply"></span>&nbsp;eth borrow: <span class="eth borrow"></span>&nbsp;arb borrow: <span class="arb borrow"></span>&nbsp;<br/>
           </div>
+		  <br/>
+		  <h6>Dolo</h6>
+		  <div class="container">
+			<span class="dethHealthRatio"></span>&nbsp;
+			eth - supply: <span class="deth supply"></span>&nbsp;borrow: <span class="deth borrow"></span>&nbsp;<br/>
+          </div>
+		  <div class="container">
+			<span class="darbHealthRatio"></span>&nbsp;
+			arb - supply: <span class="darb supply"></span>&nbsp;borrow: <span class="darb borrow"></span>&nbsp;<br/>
+          </div>
+		  <br/>
 		  <!--<div class="container">
 			<span class="btcHealthRatio"></span>&nbsp;
 			btc supply: <span class="btc supply"></span>&nbsp;eth borrow: <span class="btc eth borrow"></span>&nbsp;<br/>
@@ -494,10 +505,10 @@
 					$("span.darb.supply").text(supply);
 					$("span.darb.borrow").text(borrow);
 					
-					var health = (parseFloat(supply)*0.85) / parseFloat(borrow);
-					$("span.darbHealthRatio").text(String(health).slice(0, -14));
+					var healthRatio = Math.floor((1 - ((Math.floor(borrow)) / ((Math.floor(supply)) / 0.85)))*100);
+					$("span.darbHealthRatio").text(healthRatio + '%');
 					
-					if(health <= 1.1){
+					if(healthRatio <= 10){
 						alertCall('DOLO');
 					}
 				},
@@ -517,10 +528,10 @@
 					$("span.deth.supply").text(supply);
 					$("span.deth.borrow").text(borrow);
 					
-					var health = (parseFloat(supply)*0.85) / parseFloat(borrow);
-					$("span.dethHealthRatio").text(String(health).slice(0, -14));
+					var healthRatio = Math.floor((1 - ((Math.floor(borrow)) / ((Math.floor(supply)) / 0.85)))*100);
+					$("span.dethHealthRatio").text(healthRatio + '%');
 					
-					if(health <= 1.1){
+					if(healthRatio <= 10){
 						alertCall('DOLO');
 					}
 				},
