@@ -60,7 +60,7 @@
 
           <div class="container">
 			ZTX: <span class="ztx price"></span>&nbsp;deus: <span class="deus price"></span>&nbsp;pion: <span class="pion price"></span><br/>
-			eth: <span class="eth price"></span>&nbsp;btc: <span class="btc price"></span>&nbsp;arb: <span class="arb price"></span>&nbsp;link: <span class="link price"></span><br/>
+			eth: <span class="eth price"></span>&nbsp;btc: <span class="btc price"></span>&nbsp;arb: <span class="arb price"></span>&nbsp;blue: <span class="blue price"></span><br/>
 			thena: <span class="thena price"></span>&nbsp;ram: <span class="ram price"></span>&nbsp;neadram: <span class="neadram price"></span><br/>			
 			Total Reward: <span class="reward"></span>&nbsp;<br/>
 			ztx:<span class="ztxTvl"></span>&nbsp;gamma:<span class="gammaTvl"></span>&nbsp;retro:<span class="retroTvl"></span>&nbsp;total:<span class="userTvl"></span>&nbsp;r:<span class="avgApr"></span>%
@@ -189,12 +189,13 @@
 		var rpc = 'https://arbitrum.blockpi.network/v1/rpc/public';
 		var ztxPrice = 0;
 		var oretroPrice = 0;
-		var usdcePrice = 1;
+		var usdcePrice = 0;
 		var btcPrice = 0;
 		var ethPrice = 0;
 		var arbPrice = 0;
 		var ramPrice = 0;
 		var linkPrice = 0;
+		var bluePrice = 0;
 		var lastmail = '';
 		var lastcall = '';
 		var ztxReward = 0;
@@ -333,10 +334,10 @@
 					var borrowArb = web3.eth.abi.decodeParameter('uint256', data.result);					
 					arbBorrow = String(borrowArb).slice(0, -15) / 1000;
 					
-					if(ethPrice >0 && arbPrice > 0){
+					if(ethPrice >0 && arbPrice > 0 && arbBorrow > 0){
 						$(".arb.borrow").text(arbBorrow + " (" + (Math.floor(arbBorrow * arbPrice * 100) / 100) + ")");
 						
-						if(ethSupply > 0 && usdcSupply > 0 && arbBorrow > 0){
+						if(ethSupply > 0 && usdcSupply > 0){
 							healthRatio = Math.floor((1 - ((Math.floor(arbBorrow * arbPrice)) / ((Math.floor(ethSupply * ethPrice) * 0.85) + (Math.floor(usdcSupply * (usdcePrice || 1)) * 0.9))))*100);
 							
 							$(".ethHealthRatio").text(healthRatio + "%");
@@ -350,7 +351,6 @@
 				error: function (e) {
 				}
 			});
-
 			/*
 			$.ajax({
 				type : "POST",
@@ -782,7 +782,7 @@
 									if(lastReward != 0 && lastReward == ramReward){
 										$(tr).find(".inrange").text('No');
 										$(tr).find(".inrange").addClass("alert");
-										alertCall('Alert - ram');
+										//alertCall('Alert - ram');
 									}
 									
 									getTokenPrice(nftId, tr);
@@ -923,16 +923,16 @@
 									if(pool.rewardsPerToken){
 										var pendingReward = 0;
 										$(pool.rewardsPerToken).each(function(){
-											var reward = $(this)[0]['0x3A29CAb2E124919d14a6F735b6033a3AaD2B260F'];
-											if(reward && reward.unclaimed > 0){
-												pendingReward += reward.unclaimed;												
+											var reward = $(this)[0]['0xEdb73D4ED90bE7A49D06d0D940055e6d181d22fa'];
+											if(reward){												
+												pendingReward += reward.breakdownOfUnclaimed[Object.keys(reward.breakdownOfUnclaimed)[0]];												
 											}
 										});
 										
 										if(pendingReward > 0){
-											$(tr).find(".reward").text(parseFloat(pendingReward * oretroPrice).toFixed(2));
+											$(tr).find(".reward").text(parseFloat(pendingReward * bluePrice).toFixed(2));
 											retroReward += pendingReward;
-											$("span.reward").text(Math.round((ztxReward * ztxPrice)) + ' + ' + Math.round((retroReward * oretroPrice)));
+											$("span.reward").text(Math.round(Math.round((retroReward * bluePrice))));
 										}
 									}
 								}
@@ -983,6 +983,18 @@
 							}
 						}
 						*/
+					},
+					error: function (e) {
+					}
+				});
+				
+				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/ethereum/0xffce67ff3460eefee418a639b8642a28c4ed989d",
+					dataType: "json",
+					success : function(data) {
+						$("span.price.blue").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
+						bluePrice = data.pair.priceUsd;
 					},
 					error: function (e) {
 					}
@@ -1083,7 +1095,9 @@
 					},
 					error: function (e) {
 					}
-				});			
+				});		
+
+				
 				/*
 				$.ajax({
 					type : "GET",
@@ -1119,7 +1133,7 @@
 			//fecthBalance();
 			fecthRamNft();
 			getSilo();
-			getDolo();
+			//getDolo();
 			
 			setInterval(function () {
 				fetchPool();
@@ -1128,7 +1142,7 @@
 			setInterval(function () {
 				fecthRamNft();
 				getSilo();
-				getDolo();
+				//getDolo();
 			}, 20000);
 			
 		});
