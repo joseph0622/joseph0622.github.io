@@ -282,7 +282,7 @@
 					if(ethPrice >0 && arbPrice > 0){
 						$(".eth.supply").text(ethSupply + " (" + (Math.floor(ethSupply * ethPrice * 100) / 100) + ")");
 						
-						if(ethSupply > 0 && usdcSupply > 0){
+						if(ethSupply > 0 && usdcSupply > 0 && arbBorrow > 0){
 							healthRatio = Math.floor((1 - ((Math.floor(arbBorrow * arbPrice)) / ((Math.floor(ethSupply * ethPrice) * 0.85) + (Math.floor(usdcSupply * (usdcePrice || 1)) * 0.9))))*100);
 							
 							$(".ethHealthRatio").text(healthRatio + "%");
@@ -309,7 +309,7 @@
 					if(ethPrice >0 && arbPrice > 0){
 						$(".usdc.supply").text(usdcSupply + " (" + (Math.floor(usdcSupply * 1 * 100) / 100) + ")");
 						
-						if(ethSupply > 0 && usdcSupply > 0){
+						if(ethSupply > 0 && usdcSupply > 0 && arbBorrow > 0){
 							healthRatio = Math.floor((1 - ((Math.floor(arbBorrow * arbPrice)) / ((Math.floor(ethSupply * ethPrice) * 0.85) + (Math.floor(usdcSupply * (usdcePrice || 1)) * 0.9))))*100);
 							
 							$(".ethHealthRatio").text(healthRatio + "%");
@@ -336,7 +336,7 @@
 					if(ethPrice >0 && arbPrice > 0){
 						$(".arb.borrow").text(arbBorrow + " (" + (Math.floor(arbBorrow * arbPrice * 100) / 100) + ")");
 						
-						if(ethSupply > 0 && usdcSupply > 0){
+						if(ethSupply > 0 && usdcSupply > 0 && arbBorrow > 0){
 							healthRatio = Math.floor((1 - ((Math.floor(arbBorrow * arbPrice)) / ((Math.floor(ethSupply * ethPrice) * 0.85) + (Math.floor(usdcSupply * (usdcePrice || 1)) * 0.9))))*100);
 							
 							$(".ethHealthRatio").text(healthRatio + "%");
@@ -350,7 +350,8 @@
 				error: function (e) {
 				}
 			});
-			
+
+			/*
 			$.ajax({
 				type : "POST",
 				url: rpc,
@@ -377,7 +378,7 @@
 				error: function (e) {
 				}
 			});
-			
+			*/
 			/*
 			$.ajax({
 				type : "POST",
