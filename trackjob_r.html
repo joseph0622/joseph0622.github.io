@@ -827,7 +827,7 @@
 									$(tr).find(".bal1").text(parseFloat(pool.userBalanceToken1).toFixed(3));
 									$(tr).find(".total").text(Math.round(pool.userTVL) + ' (' + Math.round((pool.userTVL / pool.tvl)*100) + '%)');
 									$(tr).find(".inrange").text(((pool.userInRangeLiquidity/pool.userTotalLiquidity)*100)+ '%');
-									$(tr).find(".apr").text(Math.round(pool.aprs['User current APR ']) + '%');
+									$(tr).find(".apr").text(Math.round(pool.aprs['User current APR (based on last distribution boost)']) + '%');
 									
 									$(tr).appendTo($("table.table tbody"));
 									
@@ -884,12 +884,12 @@
 				
 				$.ajax({
 					type : "GET",
-					url: "https://api.angle.money/v2/merkl?user=0xf712ab8c4505eb4b36a2ff9fa746470be81e6538&chainIds%5B0%5D=137",
+					url: "https://api.angle.money/v3/merkl?user=0xf712ab8c4505eb4b36a2ff9fa746470be81e6538&chainIds=1",
 					dataType: "json",
 					success : function(data) {
 						$("table.table tbody tr.polygon").empty();
 						//console.log(data);
-						var pools = data[137].pools;
+						var pools = data[1].pools;
 						$.each(pools, function(){
 							var pool = $(this)[0];
 							if(pool){
@@ -905,7 +905,7 @@
 									$(tr).find(".bal1").text(parseFloat(pool.userBalanceToken1).toFixed(3));
 									$(tr).find(".total").text(Math.round(pool.userTVL) + ' (' + Math.round((pool.userTVL / pool.tvl)*100) + '%)');
 									$(tr).find(".inrange").text(((pool.userInRangeLiquidity/pool.userTotalLiquidity)*100)+ '%');
-									$(tr).find(".apr").text(Math.round(pool.aprs['User current APR (based on last distribution boost)']) + '%');
+									$(tr).find(".apr").text(Math.round(pool.aprs['User current APR ']) + '%');
 									
 									$(tr).appendTo($("table.table tbody"));
 									
