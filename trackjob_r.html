@@ -208,7 +208,7 @@
 		var showToken = [];
 		var tokenAbi = [{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"}];
 		var ethSupply = 0;
-		var usdcSupply = 0;
+		var usdcSupply = 1;
 		var aethSupply = 0;
 		var btcSupply = 0
 		var arbBorrow = 0;
@@ -631,9 +631,9 @@
 					$(tr).find("td.total").text(inRange + "%");
 					
 					$(tr).find(".inrange").removeClass("alert");
-					if(inRange <= 0){
-						$(tr).find(".inrange").text('No');
-						$(tr).find(".inrange").addClass("alert");
+					if(inRange < 0){
+						//$(tr).find(".inrange").text('No');
+						//$(tr).find(".inrange").addClass("alert");
 						alertCall('Alert - ram');
 					}else{
 						$(tr).find(".inrange").text('Yes');
@@ -773,9 +773,16 @@
 									var ramReward = xoRamReward + ' xoRam - ' + arbReward + ' arb';
 									$(tr).find(".reward").text(ramReward + ' (' + Math.floor(((xoRamReward * (ramPrice * 0.75 )) + arbReward * arbPrice)*100)/100 + ')');
 									
-									
+									var lastReward = sessionStorage.getItem(nftId);
 									
 									sessionStorage.setItem(nftId, ramReward);
+									
+									$(tr).find(".inrange").removeClass("alert");
+									if(lastReward != 0 && lastReward == ramReward){
+										$(tr).find(".inrange").text('No');
+										$(tr).find(".inrange").addClass("alert");
+										alertCall('Alert - ram');
+									}
 									
 									getTokenPrice(nftId, tr);
 									getPosition(nftId, tr);
@@ -800,7 +807,7 @@
 								
 				$.ajax({
 					type : "GET",
-					url: "https://api.angle.money/v2/merkl?user=0xf712ab8c4505eb4b36a2ff9fa746470be81e6538&chainIds%5B0%5D=42161",
+					url: "https://api.angle.money/v3/merkl?user=0xf712ab8c4505eb4b36a2ff9fa746470be81e6538&chainIds=42161",
 					dataType: "json",
 					success : function(data) {
 						$("table.table tbody tr.arb").empty();
