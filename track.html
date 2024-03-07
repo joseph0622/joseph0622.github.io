@@ -153,6 +153,16 @@
 					<td class="apr"></td>
 					<td class="reward"></td>
 				</tr>
+				<tr class="eth">
+					<td class="t0"></td>
+					<td class="t1"></td>
+					<td class="bal0"></td>
+					<td class="bal1"></td>
+					<td class="total"></td>
+					<td class="inrange"></td>
+					<td class="apr"></td>
+					<td class="reward"></td>
+				</tr>
 				<tr class="ram">
 					<td class="t0"></td>
 					<td class="t1"></td>
@@ -887,7 +897,7 @@
 					url: "https://api.angle.money/v3/merkl?user=0xf712ab8c4505eb4b36a2ff9fa746470be81e6538&chainIds=1",
 					dataType: "json",
 					success : function(data) {
-						$("table.table tbody tr.polygon").empty();
+						$("table.table tbody tr.eth").empty();
 						//console.log(data);
 						var pools = data[1].pools;
 						$.each(pools, function(){
@@ -897,7 +907,7 @@
 									retroTvl += pool.userTVL;
 									aprMap.set(pool.symbolToken0 + '-' + pool.symbolToken1, {tvl: pool.userTVL, apr: pool.aprs['User current APR (based on last distribution boost)']});									
 									
-									var tr = $("table.table tfoot tr.polygon").clone();
+									var tr = $("table.table tfoot tr.eth").clone();
 								
 									$(tr).find(".t0").text(pool.symbolToken0);
 									$(tr).find(".t1").text(pool.symbolToken1);
@@ -932,6 +942,79 @@
 											$(tr).find(".reward").text(parseFloat(pendingReward * bluePrice).toFixed(2));
 											retroReward += pendingReward;
 											$("span.reward").text(Math.round(Math.round((retroReward * bluePrice))));
+										}
+									}
+								}
+							}
+						});
+						
+						$("span.retroTvl").text(Math.round(retroTvl));
+						$("span.userTvl").text(Math.round(ztxTvl + retroTvl + gammaTvl));
+						userTvl = Math.round(ztxTvl + retroTvl + gammaTvl);
+						var aprCount = 0;
+						aprMap.forEach((obj, key) => {
+							if(!$.isNumeric(obj.apr) || !$.isNumeric(obj.tvl)){
+								return;
+							}
+							aprCount += obj.tvl * obj.apr;
+						});
+						
+						$("span.avgApr").text(Math.round((aprCount/(ztxTvl+retroTvl))));
+					},
+					error: function (e) {
+					}
+				});
+				
+				$.ajax({
+					type : "GET",
+					url: "https://api.angle.money/v3/merkl?user=0xf712ab8c4505eb4b36a2ff9fa746470be81e6538&chainIds=137",
+					dataType: "json",
+					success : function(data) {
+						$("table.table tbody tr.polygon").empty();
+						//console.log(data);
+						var pools = data[137].pools;
+						$.each(pools, function(){
+							var pool = $(this)[0];
+							if(pool){
+								if(pool.userTVL > 0){
+									retroTvl += pool.userTVL;
+									aprMap.set(pool.symbolToken0 + '-' + pool.symbolToken1, {tvl: pool.userTVL, apr: pool.aprs['User current APR (based on last distribution boost)']});									
+									
+									var tr = $("table.table tfoot tr.polygon").clone();
+								
+									$(tr).find(".t0").text(pool.symbolToken0);
+									$(tr).find(".t1").text(pool.symbolToken1);
+									$(tr).find(".bal0").text(parseFloat(pool.userBalanceToken0).toFixed(3));
+									$(tr).find(".bal1").text(parseFloat(pool.userBalanceToken1).toFixed(3));
+									$(tr).find(".total").text(Math.round(pool.userTVL) + ' (' + Math.round((pool.userTVL / pool.tvl)*100) + '%)');
+									$(tr).find(".inrange").text(((pool.userInRangeLiquidity/pool.userTotalLiquidity)*100)+ '%');
+									$(tr).find(".apr").text(Math.round(pool.aprs['User current APR ']) + '%');
+									
+									$(tr).appendTo($("table.table tbody"));
+									
+									if(pool.userInRangeLiquidity == 0){
+										$(tr).find(".inrange").addClass("alert");
+										//alertCall();
+										
+										if(lastmail == '' || (new Date() - lastmail > 1200000)){
+											sendEmail(pool.symbolToken0 + " - " + pool.symbolToken1);
+											lastmail = new Date();
+										}
+									}
+									
+									if(pool.rewardsPerToken){
+										var pendingReward = 0;
+										$(pool.rewardsPerToken).each(function(){
+											var reward = $(this)[0]['0x3A29CAb2E124919d14a6F735b6033a3AaD2B260F'];
+											if(reward){												
+												pendingReward += reward.unclaimed;												
+											}
+										});
+										
+										if(pendingReward > 0){
+											$(tr).find(".reward").text(parseFloat(pendingReward * oretroPrice).toFixed(2));
+											retroReward += pendingReward;
+											$("span.reward").text(Math.round(Math.round((retroReward * oretroPrice))));
 										}
 									}
 								}
@@ -1009,7 +1092,7 @@
 					},
 					error: function (e) {
 					}
-				});
+				});*/
 				
 				$.ajax({
 					type : "GET",
@@ -1022,7 +1105,7 @@
 					error: function (e) {
 					}
 				});
-				*/
+				
 				
 				
 				
