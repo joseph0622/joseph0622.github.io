@@ -60,7 +60,7 @@
           <div class="container">
 			ZTX: <span class="ztx price"></span>&nbsp;deus: <span class="deus price"></span>&nbsp;pion: <span class="pion price"></span><br/>
 			eth: <span class="eth price"></span>&nbsp;btc: <span class="btc price"></span>&nbsp;arb: <span class="arb price"></span>&nbsp;blue: <span class="blue price"></span><br/>
-			thena: <span class="thena price"></span>&nbsp;ram: <span class="ram price"></span>&nbsp;neadram: <span class="neadram price"></span><br/>			
+			thena: <span class="thena price"></span>&nbsp;ram: <span class="ram price"></span>&nbsp;neadram: <span class="neadram price"></span>&nbsp;phar: <span class="phar price"></span><br/>			
 			Total Reward: <span class="reward"></span>&nbsp;<br/>
 			ztx:<span class="ztxTvl"></span>&nbsp;gamma:<span class="gammaTvl"></span>&nbsp;retro:<span class="retroTvl"></span>&nbsp;total:<span class="userTvl"></span>&nbsp;r:<span class="avgApr"></span>%
           </div>
@@ -153,6 +153,16 @@
 					<td class="apr"></td>
 					<td class="reward"></td>
 				</tr>
+				<tr class="eth">
+					<td class="t0"></td>
+					<td class="t1"></td>
+					<td class="bal0"></td>
+					<td class="bal1"></td>
+					<td class="total"></td>
+					<td class="inrange"></td>
+					<td class="apr"></td>
+					<td class="reward"></td>
+				</tr>
 				<tr class="ram">
 					<td class="t0"></td>
 					<td class="t1"></td>
@@ -185,7 +195,9 @@
 
     <script>
 		var web3 = new Web3('https://arb1.arbitrum.io/rpc');
+		var avaxWeb3 = new Web3('https://avalanche.blockpi.network/v1/rpc/public');
 		var rpc = 'https://arbitrum.blockpi.network/v1/rpc/public';
+		var avaxRpc = 'https://avalanche.blockpi.network/v1/rpc/public';
 		var ztxPrice = 0;
 		var oretroPrice = 0;
 		var usdcePrice = 0;
@@ -195,6 +207,7 @@
 		var ramPrice = 0;
 		var linkPrice = 0;
 		var bluePrice = 0;
+		var pharPrice = 0;
 		var lastmail = '';
 		var lastcall = '';
 		var ztxReward = 0;
@@ -572,6 +585,37 @@
 			});
 		}
 		
+		function getAvaxTokenPrice(nftId, tr){
+			var nftIdCode = web3.eth.abi.encodeParameter('uint256', nftId);
+			nftIdCode = nftIdCode.replace('0x', '0x99fbab88');
+			
+			if(showToken.indexOf(nftId) >= 0){
+				return;
+			}
+			
+			$.ajax({
+				type : "POST",
+				url: avaxRpc,
+				contentType: 'application/json',
+				data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"' + nftIdCode + '","to":"0xaaa78e8c4241990b4ce159e105da08129345946a"},"latest"]}',
+				success : function(data) {
+					var info = avaxWeb3.eth.abi.decodeParameters(['uint96', 'address', 'address', 'address'], data.result);
+					var token0 = info[2];
+					var token1 = info[3];
+					
+					var c0 = new avaxWeb3.eth.Contract(tokenAbi, token0);
+					c0.methods.symbol().call().then(function(result){ $(tr).find(".t1").text(result);});
+					
+					var c1 = new avaxWeb3.eth.Contract(tokenAbi, token1);
+					c1.methods.symbol().call().then(function(result){ $(tr).find(".bal0").text(result);});
+					
+					showToken.push(nftId);
+				},
+				error: function (e) {
+				}
+			});
+		}
+		
 		function getPosition(nftId, tr){
 			var nftIdCode = web3.eth.abi.encodeParameter('uint256', nftId);
 			nftIdCode = nftIdCode.replace('0x', '0x99fbab88');
@@ -631,10 +675,82 @@
 					$(tr).find("td.total").text(inRange + "%");
 					
 					$(tr).find(".inrange").removeClass("alert");
-					if(inRange < 0 || inRange > 100){
+					if(inRange < 0){
 						//$(tr).find(".inrange").text('No');
 						//$(tr).find(".inrange").addClass("alert");
 						alertCall('Alert - ram');
+					}else{
+						$(tr).find(".inrange").text('Yes');
+					}
+				},
+				error: function (e) {
+				}
+			});
+		}
+		
+		function getAvaxPosition(nftId, tr){
+			var nftIdCode = web3.eth.abi.encodeParameter('uint256', nftId);
+			nftIdCode = nftIdCode.replace('0x', '0x99fbab88');
+			
+			$.ajax({
+				type : "POST",
+				url: avaxRpc,
+				contentType: 'application/json',
+				data: '{"jsonrpc":"2.0","id":9,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"' + nftIdCode + '","to":"0xaaa78e8c4241990b4ce159e105da08129345946a"},"latest"]}',
+				success : function(data) {
+					var info = web3.eth.abi.decodeParameters(['uint96', 'address', 'address', 'address', 'uint24', 'int24', 'int24', 'uint128'], data.result);
+					var token0 = info[2];
+					var token1 = info[3];
+					var fee = info[4];
+					var tickLower = info[5].toString();
+					var tickUpper = info[6].toString();
+					var liquidity = info[7];
+					var tick;
+					var pool;
+					
+					if(sessionStorage.getItem(nftId + 'pool')){
+						pool = sessionStorage.getItem(nftId + 'pool');
+					}else{
+						var q = web3.eth.abi.encodeParameters(['address', 'address', 'uint24'], [token0, token1, fee]).replace('0x', '0x1698ee82');
+						$.ajax({
+							type : "POST",
+							url: avaxRpc,
+							async: false,
+							contentType: 'application/json',
+							data: '{"jsonrpc":"2.0","id":8,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"' + q + '","to":"0xAAA32926fcE6bE95ea2c51cB4Fcb60836D320C42"},"latest"]}',
+							success : function(data) {
+								pool = web3.eth.abi.decodeParameter('address', data.result);
+								sessionStorage.setItem(nftId + 'pool', pool);
+							}
+						});
+					}
+					
+					
+					$.ajax({
+						type : "POST",
+						url: avaxRpc,
+						contentType: 'application/json',
+						data: '{"jsonrpc":"2.0","id":8,"method":"eth_call","params":[{"data":"0x3850c7bd","to":"' + pool + '"},"latest"]}',
+						success : function(data) {
+							var info = web3.eth.abi.decodeParameters(['uint160', 'int24'], data.result);
+							tick = info[1].toString();
+							sessionStorage.setItem(nftId + 'tick', tick);
+						}
+					});
+					
+					tick = sessionStorage.getItem(nftId + 'tick');
+
+					
+					var range = tickUpper - tickLower;
+					var tickPos = ((tick - tickLower) / range) * 100;
+					var inRange = Math.floor(tickPos * 100) / 100;
+					$(tr).find("td.total").text(inRange + "%");
+					
+					$(tr).find(".inrange").removeClass("alert");
+					if(inRange < 0){
+						//$(tr).find(".inrange").text('No');
+						//$(tr).find(".inrange").addClass("alert");
+						alertCall('Alert - phar');
 					}else{
 						$(tr).find(".inrange").text('Yes');
 					}
@@ -781,7 +897,7 @@
 									if(lastReward != 0 && lastReward == ramReward){
 										$(tr).find(".inrange").text('No');
 										$(tr).find(".inrange").addClass("alert");
-										//alertCall('Alert - ram');
+										alertCall('Alert - ram');
 									}
 									
 									getTokenPrice(nftId, tr);
@@ -795,7 +911,67 @@
 					error: function (e) {
 					}
 				});
+				
+				$.ajax({
+					type : "POST",
+					url: avaxRpc,
+					contentType: 'application/json',
+					data: '{"jsonrpc":"2.0","id":22,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0xdef76a4b000000000000000000000000f712ab8c4505eb4b36a2ff9fa746470be81e6538","to":"0x999958e7fb698ae6a11bf82d431b5dfd477d4b84"},"latest"]}',
+					success : function(data) {
+						var nfts = web3.eth.abi.decodeParameters(['uint256[]'], data.result)[0];
+						
+						$.each(nfts, function(idx, val){
+							var nftId = (''+val).replace(/[^0-9]/gi, '');
+							var nftCode = web3.eth.abi.encodeParameter('uint256', nftId);
+							nftCode = nftCode.replace('0x', '0x4d6ed8c4');
+							//console.log(nftCode);
+							
+							$.ajax({
+								type : "POST",
+								url: avaxRpc,
+								contentType: 'application/json',
+								data: '{"jsonrpc":"2.0","id":22,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"' + nftCode + '","to":"0x999958e7fb698ae6a11bf82d431b5dfd477d4b84"},"latest"]}',
+								success : function(data) {
+									var ramPool = web3.eth.abi.decodeParameters(['uint256[]'], data.result)[0];
+									
+									var tr = $("table.table tr.ram." + nftId);
+									if(!tr || tr.length == 0){
+										tr = $("table.table tfoot tr.ram").clone();
+										$(tr).addClass("ram");
+										$(tr).addClass(nftId);
+										$(tr).appendTo($("table.table tbody"));
+									}
+									
+									$(tr).find(".t0").text(nftId);
+									//$(tr).find(".inrange").text(ramPool[0]=='0'?'Yes':'No');
+									var xpharReward = String(ramPool[0]).slice(0, -14) / 10000;
+									var pharReward = xpharReward + ' xPhar';
+									$(tr).find(".reward").text(pharReward + ' (' + Math.floor(((xpharReward * (pharPrice * 0.6 )))*100)/100 + ')');
+									
+									var lastReward = sessionStorage.getItem(nftId);
+									
+									sessionStorage.setItem(nftId, pharReward);
+									
+									$(tr).find(".inrange").removeClass("alert");
+									if(lastReward != 0 && lastReward == pharReward){
+										$(tr).find(".inrange").text('No');
+										$(tr).find(".inrange").addClass("alert");
+										//alertCall('Alert - phar');
+									}
+									
+									getAvaxTokenPrice(nftId, tr);
+									getAvaxPosition(nftId, tr);
+								},
+								error: function (e) {
+								}
+							});
+						});
+					},
+					error: function (e) {
+					}
+				});
 			}
+			
 		
 			function fetchPool(){
 				var ts = new Date().getUTCMilliseconds();
@@ -887,7 +1063,7 @@
 					url: "https://api.angle.money/v3/merkl?user=0xf712ab8c4505eb4b36a2ff9fa746470be81e6538&chainIds=1",
 					dataType: "json",
 					success : function(data) {
-						$("table.table tbody tr.polygon").empty();
+						$("table.table tbody tr.eth").empty();
 						//console.log(data);
 						var pools = data[1].pools;
 						$.each(pools, function(){
@@ -897,7 +1073,7 @@
 									retroTvl += pool.userTVL;
 									aprMap.set(pool.symbolToken0 + '-' + pool.symbolToken1, {tvl: pool.userTVL, apr: pool.aprs['User current APR (based on last distribution boost)']});									
 									
-									var tr = $("table.table tfoot tr.polygon").clone();
+									var tr = $("table.table tfoot tr.eth").clone();
 								
 									$(tr).find(".t0").text(pool.symbolToken0);
 									$(tr).find(".t1").text(pool.symbolToken1);
@@ -932,6 +1108,79 @@
 											$(tr).find(".reward").text(parseFloat(pendingReward * bluePrice).toFixed(2));
 											retroReward += pendingReward;
 											$("span.reward").text(Math.round(Math.round((retroReward * bluePrice))));
+										}
+									}
+								}
+							}
+						});
+						
+						$("span.retroTvl").text(Math.round(retroTvl));
+						$("span.userTvl").text(Math.round(ztxTvl + retroTvl + gammaTvl));
+						userTvl = Math.round(ztxTvl + retroTvl + gammaTvl);
+						var aprCount = 0;
+						aprMap.forEach((obj, key) => {
+							if(!$.isNumeric(obj.apr) || !$.isNumeric(obj.tvl)){
+								return;
+							}
+							aprCount += obj.tvl * obj.apr;
+						});
+						
+						$("span.avgApr").text(Math.round((aprCount/(ztxTvl+retroTvl))));
+					},
+					error: function (e) {
+					}
+				});
+				
+				$.ajax({
+					type : "GET",
+					url: "https://api.angle.money/v3/merkl?user=0xf712ab8c4505eb4b36a2ff9fa746470be81e6538&chainIds=137",
+					dataType: "json",
+					success : function(data) {
+						$("table.table tbody tr.polygon").empty();
+						//console.log(data);
+						var pools = data[137].pools;
+						$.each(pools, function(){
+							var pool = $(this)[0];
+							if(pool){
+								if(pool.userTVL > 0){
+									retroTvl += pool.userTVL;
+									aprMap.set(pool.symbolToken0 + '-' + pool.symbolToken1, {tvl: pool.userTVL, apr: pool.aprs['User current APR (based on last distribution boost)']});									
+									
+									var tr = $("table.table tfoot tr.polygon").clone();
+								
+									$(tr).find(".t0").text(pool.symbolToken0);
+									$(tr).find(".t1").text(pool.symbolToken1);
+									$(tr).find(".bal0").text(parseFloat(pool.userBalanceToken0).toFixed(3));
+									$(tr).find(".bal1").text(parseFloat(pool.userBalanceToken1).toFixed(3));
+									$(tr).find(".total").text(Math.round(pool.userTVL) + ' (' + Math.round((pool.userTVL / pool.tvl)*100) + '%)');
+									$(tr).find(".inrange").text(((pool.userInRangeLiquidity/pool.userTotalLiquidity)*100)+ '%');
+									$(tr).find(".apr").text(Math.round(pool.aprs['User current APR ']) + '%');
+									
+									$(tr).appendTo($("table.table tbody"));
+									
+									if(pool.userInRangeLiquidity == 0){
+										$(tr).find(".inrange").addClass("alert");
+										//alertCall();
+										
+										if(lastmail == '' || (new Date() - lastmail > 1200000)){
+											sendEmail(pool.symbolToken0 + " - " + pool.symbolToken1);
+											lastmail = new Date();
+										}
+									}
+									
+									if(pool.rewardsPerToken){
+										var pendingReward = 0;
+										$(pool.rewardsPerToken).each(function(){
+											var reward = $(this)[0]['0x3A29CAb2E124919d14a6F735b6033a3AaD2B260F'];
+											if(reward){												
+												pendingReward += reward.unclaimed;												
+											}
+										});
+										
+										if(pendingReward > 0){
+											$(tr).find(".reward").text(parseFloat(pendingReward * oretroPrice).toFixed(2));
+											retroReward += pendingReward;
+											$("span.reward").text(Math.round(Math.round((retroReward * oretroPrice))));
 										}
 									}
 								}
@@ -1009,7 +1258,7 @@
 					},
 					error: function (e) {
 					}
-				});
+				});*/
 				
 				$.ajax({
 					type : "GET",
@@ -1022,7 +1271,7 @@
 					error: function (e) {
 					}
 				});
-				*/
+				
 				
 				
 				
@@ -1095,6 +1344,21 @@
 					error: function (e) {
 					}
 				});		
+				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/avalanche/0xaaa3f202babcf7d6493afbc0caee03af9c64f984",
+					dataType: "json",
+					success : function(data) {
+						$("span.price.phar").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
+						pharPrice = data.pair.priceUsd;
+					},
+					error: function (e) {
+					}
+				});
+				
+				
+				
+				
 
 				
 				/*
