@@ -675,7 +675,7 @@
 					$(tr).find("td.total").text(inRange + "%");
 					
 					$(tr).find(".inrange").removeClass("alert");
-					if(inRange < 0){
+					if(inRange < 3 || inRange > 97){
 						//$(tr).find(".inrange").text('No');
 						//$(tr).find(".inrange").addClass("alert");
 						alertCall('Alert - ram');
@@ -747,7 +747,7 @@
 					$(tr).find("td.total").text(inRange + "%");
 					
 					$(tr).find(".inrange").removeClass("alert");
-					if(inRange < 0){
+					if(inRange < 3 || inRange > 97){
 						//$(tr).find(".inrange").text('No');
 						//$(tr).find(".inrange").addClass("alert");
 						alertCall('Alert - phar');
@@ -887,7 +887,7 @@
 									var xoRamReward = String(ramPool[1]).slice(0, -15) / 1000;
 									var arbReward = String(ramPool[2]).slice(0, -15) / 1000
 									var ramReward = xoRamReward + ' xoRam - ' + arbReward + ' arb';
-									$(tr).find(".reward").text(ramReward + ' (' + Math.floor(((xoRamReward * (ramPrice * 0.75 )) + arbReward * arbPrice)*100)/100 + ')');
+									$(tr).find(".reward").text(ramReward + ' (' + Math.floor(((xoRamReward * (ramPrice * 0.6 )) + arbReward * arbPrice)*100)/100 + ')');
 									
 									var lastReward = sessionStorage.getItem(nftId);
 									
