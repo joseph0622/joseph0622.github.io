@@ -61,7 +61,7 @@
 			ZTX: <span class="ztx price"></span>&nbsp;deus: <span class="deus price"></span>&nbsp;pion: <span class="pion price"></span><br/>
 			eth: <span class="eth price"></span>&nbsp;btc: <span class="btc price"></span>&nbsp;arb: <span class="arb price"></span>&nbsp;blue: <span class="blue price"></span><br/>
 			thena: <span class="thena price"></span>&nbsp;ram: <span class="ram price"></span>&nbsp;neadram: <span class="neadram price"></span>&nbsp;phar: <span class="phar price"></span><br/>			
-			Total Reward: <span class="reward"></span>&nbsp;<br/>
+			coq: <span class="coq price"></span>&nbsp;<br/>
 			ztx:<span class="ztxTvl"></span>&nbsp;gamma:<span class="gammaTvl"></span>&nbsp;retro:<span class="retroTvl"></span>&nbsp;total:<span class="userTvl"></span>&nbsp;r:<span class="avgApr"></span>%
           </div>
 		  <br/>
@@ -675,7 +675,7 @@
 					$(tr).find("td.total").text(inRange + "%");
 					
 					$(tr).find(".inrange").removeClass("alert");
-					if(inRange < 0){
+					if(inRange < 3 || inRange > 97){
 						//$(tr).find(".inrange").text('No');
 						//$(tr).find(".inrange").addClass("alert");
 						alertCall('Alert - ram');
@@ -747,7 +747,7 @@
 					$(tr).find("td.total").text(inRange + "%");
 					
 					$(tr).find(".inrange").removeClass("alert");
-					if(inRange < 0){
+					if(inRange < 3 || inRange > 97){
 						//$(tr).find(".inrange").text('No');
 						//$(tr).find(".inrange").addClass("alert");
 						alertCall('Alert - phar');
@@ -1355,7 +1355,16 @@
 					error: function (e) {
 					}
 				});
-				
+				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/avalanche/0x41ab86eecbd110a82ca602d032a461f453066f1e",
+					dataType: "json",
+					success : function(data) {
+						$("span.price.coq").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
+					},
+					error: function (e) {
+					}
+				});
 				
 				
 				
