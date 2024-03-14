@@ -60,8 +60,8 @@
           <div class="container">
 			ZTX: <span class="ztx price"></span>&nbsp;deus: <span class="deus price"></span>&nbsp;pion: <span class="pion price"></span><br/>
 			eth: <span class="eth price"></span>&nbsp;btc: <span class="btc price"></span>&nbsp;arb: <span class="arb price"></span>&nbsp;blue: <span class="blue price"></span><br/>
-			thena: <span class="thena price"></span>&nbsp;ram: <span class="ram price"></span>&nbsp;neadram: <span class="neadram price"></span>&nbsp;phar: <span class="phar price"></span><br/>			
-			Total Reward: <span class="reward"></span>&nbsp;<br/>
+			thena: <span class="thena price"></span>&nbsp;ram: <span class="ram price"></span>&nbsp;neadram: <span class="neadram price"></span>&nbsp;aero: <span class="aero price"></span><br/>			
+			coq: <span class="coq price"></span>&nbsp;<br/>
 			ztx:<span class="ztxTvl"></span>&nbsp;gamma:<span class="gammaTvl"></span>&nbsp;retro:<span class="retroTvl"></span>&nbsp;total:<span class="userTvl"></span>&nbsp;r:<span class="avgApr"></span>%
           </div>
 		  <br/>
@@ -912,6 +912,7 @@
 					}
 				});
 				
+				/*
 				$.ajax({
 					type : "POST",
 					url: avaxRpc,
@@ -969,7 +970,7 @@
 					},
 					error: function (e) {
 					}
-				});
+				});*/
 			}
 			
 		
@@ -1346,16 +1347,27 @@
 				});		
 				$.ajax({
 					type : "GET",
-					url: "https://api.dexscreener.com/latest/dex/pairs/avalanche/0xaaa3f202babcf7d6493afbc0caee03af9c64f984",
+					url: "https://api.dexscreener.com/latest/dex/pairs/base/0x6cdcb1c4a4d1c3c6d054b27ac5b77e89eafb971d",
 					dataType: "json",
 					success : function(data) {
-						$("span.price.phar").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
-						pharPrice = data.pair.priceUsd;
+						$("span.price.aero").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
+						if(data.pair.priceChange.h1 >10 || data.pair.priceChange.h6 > 20){
+							alertCall('aero');
+						}
 					},
 					error: function (e) {
 					}
 				});
-				
+				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/avalanche/0x41ab86eecbd110a82ca602d032a461f453066f1e",
+					dataType: "json",
+					success : function(data) {
+						$("span.price.coq").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
+					},
+					error: function (e) {
+					}
+				});
 				
 				
 				
