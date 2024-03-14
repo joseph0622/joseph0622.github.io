@@ -69,7 +69,7 @@
 		  <div class="container">
 			<!-- usdce: <span class="usdce price"></span> <br/> -->
 			<span class="ethHealthRatio"></span>&nbsp;
-			eth supply: <span class="eth supply"></span>&nbsp;usdc supply: <span class="usdc supply"></span>&nbsp;eth borrow: <span class="eth borrow"></span>&nbsp;arb borrow: <span class="arb borrow"></span>&nbsp;<br/>
+			eth supply: <span class="eth supply"></span>&nbsp;usdc supply: <span class="usdc supply"></span>&nbsp;eth borrow: <span class="eth borrow"></span>&nbsp;arb borrow: <span class="arb borrow"></span>&nbsp;usdc borrow: <span class="usdc borrow"></span>&nbsp;<br/>
           </div>
 		  <br/>
 		  <h6>Dolo</h6>
@@ -226,6 +226,7 @@
 		var btcSupply = 0
 		var arbBorrow = 0;
 		var ethBorrow = 0;
+		var usdcBorrow = 0;
 		var alinkBorrow = 0;
 		var ethUsdcBorrow = 0;
 		var ethBorrow = 0;
@@ -295,8 +296,8 @@
 					if(ethPrice >0 && arbPrice > 0){
 						$(".eth.supply").text(ethSupply + " (" + (Math.floor(ethSupply * ethPrice * 100) / 100) + ")");
 						
-						if(ethSupply > 0 && usdcSupply > 0 && arbBorrow > 0){
-							healthRatio = Math.floor((1 - ((Math.floor(arbBorrow * arbPrice)) / ((Math.floor(ethSupply * ethPrice) * 0.85) + (Math.floor(usdcSupply * (usdcePrice || 1)) * 0.9))))*100);
+						if(ethSupply > 0 && usdcSupply >= 0 && arbBorrow > 0){
+							healthRatio = Math.floor((1 - ((Math.floor(arbBorrow * arbPrice) + Math.floor(usdcBorrow * (usdcePrice || 1))) / ((Math.floor(ethSupply * ethPrice) * 0.85) + (Math.floor(usdcSupply * (usdcePrice || 1)) * 0.9))))*100);
 							
 							$(".ethHealthRatio").text(healthRatio + "%");
 							
@@ -322,8 +323,8 @@
 					if(ethPrice >0 && arbPrice > 0){
 						$(".usdc.supply").text(usdcSupply + " (" + (Math.floor(usdcSupply * 1 * 100) / 100) + ")");
 						
-						if(ethSupply > 0 && usdcSupply > 0 && arbBorrow > 0){
-							healthRatio = Math.floor((1 - ((Math.floor(arbBorrow * arbPrice)) / ((Math.floor(ethSupply * ethPrice) * 0.85) + (Math.floor(usdcSupply * (usdcePrice || 1)) * 0.9))))*100);
+						if(ethSupply > 0 && usdcSupply >= 0 && arbBorrow > 0){
+							healthRatio = Math.floor((1 - ((Math.floor(arbBorrow * arbPrice) + Math.floor(usdcBorrow * (usdcePrice || 1))) / ((Math.floor(ethSupply * ethPrice) * 0.85) + (Math.floor(usdcSupply * (usdcePrice || 1)) * 0.9))))*100);
 							
 							$(".ethHealthRatio").text(healthRatio + "%");
 							
@@ -349,8 +350,35 @@
 					if(ethPrice >0 && arbPrice > 0 && arbBorrow > 0){
 						$(".arb.borrow").text(arbBorrow + " (" + (Math.floor(arbBorrow * arbPrice * 100) / 100) + ")");
 						
-						if(ethSupply > 0 && usdcSupply > 0){
-							healthRatio = Math.floor((1 - ((Math.floor(arbBorrow * arbPrice)) / ((Math.floor(ethSupply * ethPrice) * 0.85) + (Math.floor(usdcSupply * (usdcePrice || 1)) * 0.9))))*100);
+						if(ethSupply > 0 && usdcSupply >= 0){
+							healthRatio = Math.floor((1 - ((Math.floor(arbBorrow * arbPrice) + Math.floor(usdcBorrow * (usdcePrice || 1))) / ((Math.floor(ethSupply * ethPrice) * 0.85) + (Math.floor(usdcSupply * (usdcePrice || 1)) * 0.9))))*100);
+							
+							$(".ethHealthRatio").text(healthRatio + "%");
+							
+							if(healthRatio <= 10){
+								alertCall('silo');
+							}
+						}
+					}
+				},
+				error: function (e) {
+				}
+			});
+			
+			$.ajax({
+				type : "POST",
+				url: rpc,
+				contentType: 'application/json',
+				data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0x70a08231000000000000000000000000f712ab8c4505eb4b36a2ff9fa746470be81e6538","to":"0x985bbaf88f91c39abe78f83ba6f5688e926b6537"},"latest"]}',
+				success : function(data) {
+					var borrowUsdc = web3.eth.abi.decodeParameter('uint256', data.result);					
+					usdcBorrow = String(borrowUsdc).slice(0, -3) / 1000;
+					
+					if(ethPrice >0 && arbPrice > 0 && arbBorrow > 0){
+						$(".usdc.borrow").text(usdcBorrow + " (" + (Math.floor(usdcBorrow * (usdcePrice || 1) * 100) / 100) + ")");
+						
+						if(ethSupply > 0 && usdcSupply >= 0){
+							healthRatio = Math.floor((1 - ((Math.floor(arbBorrow * arbPrice) + Math.floor(usdcBorrow * (usdcePrice || 1))) / ((Math.floor(ethSupply * ethPrice) * 0.85) + (Math.floor(usdcSupply * (usdcePrice || 1)) * 0.9))))*100);
 							
 							$(".ethHealthRatio").text(healthRatio + "%");
 							
