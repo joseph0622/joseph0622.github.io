@@ -61,7 +61,7 @@
 			ZTX: <span class="ztx price"></span>&nbsp;deus: <span class="deus price"></span>&nbsp;pion: <span class="pion price"></span><br/>
 			eth: <span class="eth price"></span>&nbsp;btc: <span class="btc price"></span>&nbsp;arb: <span class="arb price"></span>&nbsp;blue: <span class="blue price"></span><br/>
 			thena: <span class="thena price"></span>&nbsp;ram: <span class="ram price"></span>&nbsp;neadram: <span class="neadram price"></span>&nbsp;<br/>			
-			aero: <span class="aero price"></span>&nbsp;tarot: <span class="tarot price"></span><br/>
+			aero: <span class="aero price"></span>&nbsp;tarot: <span class="tarot price"></span>&nbsp;star: <span class="star price"></span><br/>
 			ztx:<span class="ztxTvl"></span>&nbsp;gamma:<span class="gammaTvl"></span>&nbsp;retro:<span class="retroTvl"></span>&nbsp;total:<span class="userTvl"></span>&nbsp;r:<span class="avgApr"></span>%
           </div>
 		  <br/>
@@ -1379,7 +1379,7 @@
 					dataType: "json",
 					success : function(data) {
 						$("span.price.aero").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
-						if(data.pair.priceChange.h1 >10 || data.pair.priceChange.h6 > 20){
+						if(data.pair.priceChange.h1 >10 || data.pair.priceChange.h6 > 20 || data.pair.priceChange.h1 < -10){
 							alertCall('aero');
 						}
 					},
@@ -1392,14 +1392,26 @@
 					dataType: "json",
 					success : function(data) {
 						$("span.price.tarot").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
-						if(data.pair.priceChange.h1 >10 || data.pair.priceChange.h6 > 20){
+						if(data.pair.priceChange.h1 >10 || data.pair.priceChange.h6 > 20 || data.pair.priceChange.h1 < -10){
 							alertCall('tarot');
 						}
 					},
 					error: function (e) {
 					}
 				});
-				
+				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/base/0x7a823ff83d2a87ae7570a9934b0dc8b87be9c14a",
+					dataType: "json",
+					success : function(data) {
+						$("span.price.star").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
+						if(data.pair.priceChange.h1 >10 || data.pair.priceChange.h6 > 20 || data.pair.priceChange.h1 < -10){
+							alertCall('star');
+						}
+					},
+					error: function (e) {
+					}
+				});
 				
 
 				
@@ -1437,7 +1449,7 @@
 			fetchPool();
 			//fecthBalance();
 			fecthRamNft();
-			getSilo();
+			//getSilo();
 			//getDolo();
 			
 			setInterval(function () {
