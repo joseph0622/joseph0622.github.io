@@ -940,7 +940,7 @@
 					}
 				});
 				
-				/*
+				
 				$.ajax({
 					type : "POST",
 					url: avaxRpc,
@@ -973,7 +973,7 @@
 									
 									$(tr).find(".t0").text(nftId);
 									//$(tr).find(".inrange").text(ramPool[0]=='0'?'Yes':'No');
-									var xpharReward = String(ramPool[0]).slice(0, -14) / 10000;
+									var xpharReward = String(ramPool[3]).slice(0, -14) / 10000;
 									var pharReward = xpharReward + ' xPhar';
 									$(tr).find(".reward").text(pharReward + ' (' + Math.floor(((xpharReward * (pharPrice * 0.6 )))*100)/100 + ')');
 									
@@ -998,7 +998,7 @@
 					},
 					error: function (e) {
 					}
-				});*/
+				});
 			}
 			
 		
@@ -1340,6 +1340,17 @@
 				
 				$.ajax({
 					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/avalanche/0xaaa3f202babcf7d6493afbc0caee03af9c64f984",
+					dataType: "json",
+					success : function(data) {
+						pharPrice = data.pair.priceUsd;
+					},
+					error: function (e) {
+					}
+				});
+				
+				$.ajax({
+					type : "GET",
 					url: "https://api.dexscreener.com/latest/dex/pairs/arbitrum/0x307FeCfc2f14082F9Abe641CD09737B77856b640",
 					dataType: "json",
 					success : function(data) {						
@@ -1449,7 +1460,7 @@
 			fetchPool();
 			//fecthBalance();
 			fecthRamNft();
-			getSilo();
+			//getSilo();
 			//getDolo();
 			
 			setInterval(function () {
@@ -1458,7 +1469,7 @@
 			
 			setInterval(function () {
 				fecthRamNft();
-				getSilo();
+				//getSilo();
 				//getDolo();
 			}, 2000);
 			
