@@ -61,6 +61,7 @@
 			ZTX: <span class="ztx price"></span>&nbsp;deus: <span class="deus price"></span>&nbsp;pion: <span class="pion price"></span><br/>
 			eth: <span class="eth price"></span>&nbsp;btc: <span class="btc price"></span>&nbsp;arb: <span class="arb price"></span>&nbsp;blue: <span class="blue price"></span><br/>
 			thena: <span class="thena price"></span>&nbsp;ram: <span class="ram price"></span>&nbsp;neadram: <span class="neadram price"></span>&nbsp;<br/>			
+			avax: <span class="avax price"></span>&nbsp;<br/>
 			aero: <span class="aero price"></span>&nbsp;tarot: <span class="tarot price"></span>&nbsp;star: <span class="star price"></span><br/>
 			ztx:<span class="ztxTvl"></span>&nbsp;gamma:<span class="gammaTvl"></span>&nbsp;retro:<span class="retroTvl"></span>&nbsp;total:<span class="userTvl"></span>&nbsp;r:<span class="avgApr"></span>%
           </div>
@@ -72,6 +73,11 @@
 			eth supply: <span class="eth supply"></span>&nbsp;usdc supply: <span class="usdc supply"></span>&nbsp;eth borrow: <span class="eth borrow"></span>&nbsp;arb borrow: <span class="arb borrow"></span>&nbsp;usdc borrow: <span class="usdc borrow"></span>&nbsp;<br/>
           </div>
 		  <br/>
+		  <div class="container">
+			<span class="aaveHealthRatio"></span>&nbsp;
+			usdc - supply: <span class="ausdc supply"></span>&nbsp;borrow: <span class="avax borrow"></span>&nbsp;<br/>
+          </div>
+		  <!--
 		  <h6>Dolo</h6>
 		  <div class="container">
 			<span class="dethHealthRatio"></span>&nbsp;
@@ -81,6 +87,7 @@
 			<span class="darbHealthRatio"></span>&nbsp;
 			arb - supply: <span class="darb supply"></span>&nbsp;borrow: <span class="darb borrow"></span>&nbsp;<br/>
           </div>
+		  -->
 		  <br/>
 		  <!--<div class="container">
 			<span class="btcHealthRatio"></span>&nbsp;
@@ -203,6 +210,7 @@
 		var usdcePrice = 0;
 		var btcPrice = 0;
 		var ethPrice = 0;
+		var avaxPrice = 0;
 		var arbPrice = 0;
 		var ramPrice = 0;
 		var linkPrice = 0;
@@ -223,9 +231,11 @@
 		var ethSupply = 0;
 		var usdcSupply = 1;
 		var aethSupply = 0;
+		var ausdcSupply = 0;
 		var btcSupply = 0
 		var arbBorrow = 0;
 		var ethBorrow = 0;
+		var avaxBorrow = 0;
 		var usdcBorrow = 0;
 		var alinkBorrow = 0;
 		var ethUsdcBorrow = 0;
@@ -274,6 +284,72 @@
 			*/
 			$.ajax({
 				type : "GET",
+				url: "https://api.dexscreener.com/latest/dex/pairs/avalanche/0xd446eb1660f766d533beceef890df7a69d26f7d1",
+				dataType: "json",
+				success : function(data) {
+					$("span.price.avax").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
+					avaxPrice = data.pair.priceUsd;
+				},
+				error: function (e) {
+				}
+			});
+			
+			$.ajax({
+				type : "POST",
+				url: avaxRpc,
+				contentType: 'application/json',
+				data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0x70a08231000000000000000000000000f712ab8c4505eb4b36a2ff9fa746470be81e6538","to":"0x625e7708f30ca75bfd92586e17077590c60eb4cd"},"latest"]}',
+				success : function(data) {
+					var supplyUsdc = web3.eth.abi.decodeParameter('uint256', data.result);					
+					ausdcSupply = String(supplyUsdc.toString()).slice(0, -3) / 1000;
+					
+					if(avaxPrice >0){
+						$(".ausdc.supply").text(ausdcSupply);
+						
+						if(ausdcSupply > 0 && avaxBorrow > 0){
+							healthRatio = Math.floor((1 - ((Math.floor(avaxBorrow * avaxPrice * 100) / 100) / (Math.floor(ausdcSupply * 1 * 100) / 100) / 0.85))*100);
+							
+							$(".aaveHealthRatio").text(healthRatio + "%");
+							
+							if(healthRatio <= 10){
+								alertCall('aave');
+							}
+						}
+					}
+				},
+				error: function (e) {
+				}
+			});
+			
+			$.ajax({
+				type : "POST",
+				url: avaxRpc,
+				contentType: 'application/json',
+				data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0x70a08231000000000000000000000000f712ab8c4505eb4b36a2ff9fa746470be81e6538","to":"0x4a1c3ad6ed28a636ee1751c69071f6be75deb8b8"},"latest"]}',
+				success : function(data) {
+					var borrowAvax = web3.eth.abi.decodeParameter('uint256', data.result);					
+					avaxBorrow = String(borrowAvax.toString()).slice(0, -15) / 1000;
+					
+					if(avaxPrice >0){
+						$(".avax.borrow").text(avaxBorrow + ' avax (' + (Math.floor(avaxBorrow * avaxPrice * 100) / 100) + ')');
+						
+						if(ausdcSupply > 0 && avaxBorrow > 0){
+							healthRatio = Math.floor((1 - ((Math.floor(avaxBorrow * avaxPrice * 100) / 100) / (Math.floor(ausdcSupply * 1 * 100) / 100) / 0.85))*100);
+							
+							$(".aaveHealthRatio").text(healthRatio + "%");
+							
+							if(healthRatio <= 10){
+								alertCall('aave');
+							}
+						}
+					}
+				},
+				error: function (e) {
+				}
+			});
+			
+			/*$.ajax({
+				type : "GET",
 				url: "https://api.dexscreener.com/latest/dex/pairs/arbitrum/0xc86eb7b85807020b4548ee05b54bfc956eebbfcd",
 				dataType: "json",
 				success : function(data) {
@@ -282,8 +358,8 @@
 				},
 				error: function (e) {
 				}
-			});
-			
+			});*/
+			/*
 			$.ajax({
 				type : "POST",
 				url: rpc,
@@ -1460,7 +1536,7 @@
 			fetchPool();
 			//fecthBalance();
 			fecthRamNft();
-			//getSilo();
+			getSilo();
 			//getDolo();
 			
 			setInterval(function () {
@@ -1469,7 +1545,7 @@
 			
 			setInterval(function () {
 				fecthRamNft();
-				//getSilo();
+				getSilo();
 				//getDolo();
 			}, 2000);
 			
