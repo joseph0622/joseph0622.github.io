@@ -1481,6 +1481,19 @@
 					url: "https://api.dexscreener.com/latest/dex/pairs/base/0x2d25e0514f23c6367687de89bd5167dc754d4934",
 					dataType: "json",
 					success : function(data) {
+						$("span.price.aero").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
+						if(data.pair.priceChange.h1 >10 || data.pair.priceChange.h6 > 20 || data.pair.priceChange.h1 < -10){
+							alertCall('tarot');
+						}
+					},
+					error: function (e) {
+					}
+				});
+				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/base/0x2d25e0514f23c6367687de89bd5167dc754d4934",
+					dataType: "json",
+					success : function(data) {
 						$("span.price.tarot").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
 						if(data.pair.priceChange.h1 >10 || data.pair.priceChange.h6 > 20 || data.pair.priceChange.h1 < -10){
 							alertCall('tarot');
