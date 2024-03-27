@@ -62,7 +62,7 @@
 			eth: <span class="eth price"></span>&nbsp;btc: <span class="btc price"></span>&nbsp;arb: <span class="arb price"></span>&nbsp;blue: <span class="blue price"></span><br/>
 			thena: <span class="thena price"></span>&nbsp;ram: <span class="ram price"></span>&nbsp;neadram: <span class="neadram price"></span>&nbsp;<br/>			
 			avax: <span class="avax price"></span>&nbsp;<br/>
-			aero: <span class="aero price"></span>&nbsp;tarot: <span class="tarot price"></span>&nbsp;star: <span class="star price"></span><br/>
+			aero: <span class="aero price"></span>&nbsp;tarot: <span class="tarot price"></span>&nbsp;ovn: <span class="ovn price"></span>&nbsp;usd+: <span class="usdp price"></span><br/>
 			ztx:<span class="ztxTvl"></span>&nbsp;gamma:<span class="gammaTvl"></span>&nbsp;retro:<span class="retroTvl"></span>&nbsp;total:<span class="userTvl"></span>&nbsp;r:<span class="avgApr"></span>%
           </div>
 		  <br/>
@@ -1486,6 +1486,7 @@
 					error: function (e) {
 					}
 				});
+				/*
 				$.ajax({
 					type : "GET",
 					url: "https://api.dexscreener.com/latest/dex/pairs/base/0x7a823ff83d2a87ae7570a9934b0dc8b87be9c14a",
@@ -1494,6 +1495,32 @@
 						$("span.price.star").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
 						if(data.pair.priceChange.h1 >10 || data.pair.priceChange.h6 > 20 || data.pair.priceChange.h1 < -10){
 							alertCall('star');
+						}
+					},
+					error: function (e) {
+					}
+				});*/
+				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/base/0x418457ca08fa5ec77f811b105f2c585cd051ac10,
+					dataType: "json",
+					success : function(data) {
+						$("span.price.usdp").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
+						if(data.pair.priceChange.h1 < -5 || data.pair.priceChange.h1 < -10){
+							alertCall('usd+');
+						}
+					},
+					error: function (e) {
+					}
+				});
+				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/base/0x61366a4e6b1db1b85dd701f2f4bfa275ef271197",
+					dataType: "json",
+					success : function(data) {
+						$("span.price.ovn").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
+						if(data.pair.priceChange.h1 < -10 || data.pair.priceChange.h6 < -20){
+							alertCall('ovn');
 						}
 					},
 					error: function (e) {

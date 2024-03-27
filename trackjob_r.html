@@ -1502,6 +1502,7 @@
 					error: function (e) {
 					}
 				});
+				/*
 				$.ajax({
 					type : "GET",
 					url: "https://api.dexscreener.com/latest/dex/pairs/base/0x7a823ff83d2a87ae7570a9934b0dc8b87be9c14a",
@@ -1510,6 +1511,32 @@
 						$("span.price.star").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
 						if(data.pair.priceChange.h1 >10 || data.pair.priceChange.h6 > 20 || data.pair.priceChange.h1 < -10){
 							alertCall('star');
+						}
+					},
+					error: function (e) {
+					}
+				});*/
+				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/base/0x418457ca08fa5ec77f811b105f2c585cd051ac10,
+					dataType: "json",
+					success : function(data) {
+						$("span.price.usdp").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
+						if(data.pair.priceChange.h1 < -5 || data.pair.priceChange.h1 < -10){
+							alertCall('usd+');
+						}
+					},
+					error: function (e) {
+					}
+				});
+				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/base/0x61366a4e6b1db1b85dd701f2f4bfa275ef271197",
+					dataType: "json",
+					success : function(data) {
+						$("span.price.ovn").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
+						if(data.pair.priceChange.h1 < -10 || data.pair.priceChange.h6 < -20){
+							alertCall('ovn');
 						}
 					},
 					error: function (e) {
