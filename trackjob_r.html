@@ -1518,7 +1518,7 @@
 				});*/
 				$.ajax({
 					type : "GET",
-					url: "https://api.dexscreener.com/latest/dex/pairs/base/0x418457ca08fa5ec77f811b105f2c585cd051ac10,
+					url: "https://api.dexscreener.com/latest/dex/pairs/base/0x418457ca08fa5ec77f811b105f2c585cd051ac10",
 					dataType: "json",
 					success : function(data) {
 						$("span.price.usdp").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
