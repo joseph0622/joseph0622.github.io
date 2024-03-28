@@ -62,7 +62,7 @@
 			eth: <span class="eth price"></span>&nbsp;btc: <span class="btc price"></span>&nbsp;arb: <span class="arb price"></span>&nbsp;blue: <span class="blue price"></span><br/>
 			thena: <span class="thena price"></span>&nbsp;ram: <span class="ram price"></span>&nbsp;neadram: <span class="neadram price"></span>&nbsp;<br/>			
 			avax: <span class="avax price"></span>&nbsp;<br/>
-			aero: <span class="aero price"></span>&nbsp;tarot: <span class="tarot price"></span>&nbsp;star: <span class="star price"></span><br/>
+			aero: <span class="aero price"></span>&nbsp;tarot: <span class="tarot price"></span>&nbsp;ovn: <span class="ovn price"></span>&nbsp;usdp: <span class="usdp price"></span><br/>
 			ztx:<span class="ztxTvl"></span>&nbsp;gamma:<span class="gammaTvl"></span>&nbsp;retro:<span class="retroTvl"></span>&nbsp;total:<span class="userTvl"></span>&nbsp;r:<span class="avgApr"></span>%
           </div>
 		  <br/>
@@ -878,7 +878,7 @@
 		}
 	
 		function alertCall(msg){
-			if(lastcall == '' || (new Date() - lastcall > 300000)){
+			if(lastcall == '' || (new Date() - lastcall > 300000))
 				$.ajax({
 					type : "POST",
 					url: "https://api.pushover.net/1/messages.json",
@@ -1466,24 +1466,8 @@
 					dataType: "json",
 					success : function(data) {
 						$("span.price.aero").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
-						if(data.pair.priceChange.h1 >10 || data.pair.priceChange.h6 > 20 || data.pair.priceChange.h1 < -10){
-							//alertCall('aero');
-						}
-						if(data.pair.priceUsd > 2){
+						if(data.pair.priceChange.h1 >10 || data.pair.priceChange.h6 > 20 || data.pair.priceChange.h1 < -10 || data.pair.priceChange.h6 < -20){
 							alertCall('aero');
-						}
-					},
-					error: function (e) {
-					}
-				});
-				$.ajax({
-					type : "GET",
-					url: "https://api.dexscreener.com/latest/dex/pairs/base/0x2d25e0514f23c6367687de89bd5167dc754d4934",
-					dataType: "json",
-					success : function(data) {
-						$("span.price.aero").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
-						if(data.pair.priceChange.h1 >10 || data.pair.priceChange.h6 > 20 || data.pair.priceChange.h1 < -10){
-							alertCall('tarot');
 						}
 					},
 					error: function (e) {
@@ -1590,7 +1574,7 @@
 				fecthRamNft();
 				getSilo();
 				//getDolo();
-			}, 20000);
+			}, 60000);
 			
 		});
     </script>
