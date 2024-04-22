@@ -959,7 +959,7 @@
 									if(!tr || tr.length == 0){
 										tr = $("table.table tfoot tr.ram").clone();
 										$(tr).addClass("ram");
-										$(tr).addClass(id);
+										$(tr).addClass(''+ id);
 										$(tr).appendTo($("table.table tbody"));
 									}
 									
