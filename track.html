@@ -59,10 +59,10 @@
 
           <div class="container">
 			ZTX: <span class="ztx price"></span>&nbsp;deus: <span class="deus price"></span>&nbsp;pion: <span class="pion price"></span><br/>
-			eth: <span class="eth price"></span>&nbsp;btc: <span class="btc price"></span>&nbsp;arb: <span class="arb price"></span>&nbsp;blue: <span class="blue price"></span><br/>
+			eth: <span class="eth price"></span>&nbsp;btc: <span class="btc price"></span>&nbsp;mnt: <span class="mnt price"></span>&nbsp;blue: <span class="blue price"></span><br/>
 			thena: <span class="thena price"></span>&nbsp;ram: <span class="ram price"></span>&nbsp;neadram: <span class="neadram price"></span>&nbsp;<br/>			
 			avax: <span class="avax price"></span>&nbsp;<br/>
-			aero: <span class="aero price"></span>&nbsp;tarot: <span class="tarot price"></span>&nbsp;ovn: <span class="ovn price"></span>&nbsp;usdp: <span class="usdp price"></span><br/>
+			aero: <span class="aero price"></span>&nbsp;ovn: <span class="ovn price"></span>&nbsp;usdp: <span class="usdp price"></span><br/>
 			ztx:<span class="ztxTvl"></span>&nbsp;gamma:<span class="gammaTvl"></span>&nbsp;retro:<span class="retroTvl"></span>&nbsp;total:<span class="userTvl"></span>&nbsp;r:<span class="avgApr"></span>%
           </div>
 		  <br/>
@@ -889,6 +889,112 @@
 		}
 		
 		$(function () {
+			function fecthCleo(){
+			$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/arbitrum/0xc31e54c7a869b9fcbecc14363cf510d1c41fa443",
+					dataType: "json",
+					success : function(data) {
+						$("span.price.eth").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
+						ethPrice = data.pair.priceUsd;
+					},
+					error: function (e) {
+						$.ajax({
+							type : "POST",
+							url: rpc,
+							contentType: 'application/json',
+							data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"data":"0xfeaf968c","to":"0x639Fe6ab55C921f74e7fac1ee960C0B6293ba612"},"latest"]}',
+							success : function(data) {
+								var info = web3.eth.abi.decodeParameters(['uint80', 'int256'], data.result);
+								ethPrice = String(info[1].toString()).slice(0, -5) / 1000;
+								$("span.price.eth").text(ethPrice);
+							},
+							error: function (e) {
+							}
+						});
+					}
+				});				
+				
+				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/arbitrum/0x2f5e87c9312fa29aed5c179e456625d79015299c",
+					dataType: "json",
+					success : function(data) {
+						$("span.price.btc").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
+						btcPrice = data.pair.priceUsd;
+					},
+					error: function (e) {
+					}
+				});
+				
+				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/ethereum/0xf4c5e0f4590b6679b3030d29a84857f226087fef",
+					dataType: "json",
+					success : function(data) {
+						$("span.price.mnt").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
+					},
+					error: function (e) {
+					}
+				});
+				
+				$.ajax({
+					type : "GET",
+					url: "https://cleopatra-api-production.up.railway.app/nfp_ids?wallet=0xf712ab8c4505eb4b36a2ff9fa746470be81e6538",
+					dataType: "json",
+					success : function(data) {
+						$.each(data, function(idx, val){
+							var nftId = val;							
+							//console.log(nftId);
+							
+							$.ajax({
+								type : "GET",
+								url: "https://cleopatra-api-production.up.railway.app/apr_backtest?nft_ids=" + nftId,
+								dataType: "json",		
+								success : function(data) {
+									var pool = data[0];
+									var id = pool.nft_id;
+									
+									var tr = $("table.table tr.ram." + id);
+									if(!tr || tr.length == 0){
+										tr = $("table.table tfoot tr.ram").clone();
+										$(tr).addClass("ram");
+										$(tr).addClass(id);
+										$(tr).appendTo($("table.table tbody"));
+									}
+									
+									$(tr).find(".t0").text(pool.symbol0);
+									$(tr).find(".t1").text(pool.symbol1);
+									//$(tr).find(".inrange").text(ramPool[0]=='0'?'Yes':'No');
+									var tick = Math.abs(pool.tick);
+									var tickUpper = Math.abs(pool.max_tick);
+									var tickLower = Math.abs(pool.min_tick);
+									var range = tickUpper - tickLower;
+									var tickPos = ((tick - tickLower) / range) * 100;
+									var inRange = Math.floor(tickPos * 100) / 100;
+									$(tr).find("td.total").text(inRange + "%");
+									
+									$(tr).find(".inrange").removeClass("alert");
+									if(inRange < 3 || inRange > 97){
+										//$(tr).find(".inrange").text('No');
+										//$(tr).find(".inrange").addClass("alert");
+										alertCall('Alert - cleo');
+									}else{
+										$(tr).find(".inrange").text('Yes');
+									}
+									
+								},
+								error: function (e) {
+								}
+							});
+						});
+					},
+					error: function (e) {
+						
+					}
+				});
+			}
+		
 			function fecthRamNft(){
 				$.ajax({
 					type : "GET",
@@ -1561,18 +1667,21 @@
 			}
 
 			fetchPool();
+			fecthCleo();
 			//fecthBalance();
-			fecthRamNft();
-			getSilo();
+			//fecthRamNft();
+			//getSilo();
 			//getDolo();
 			
 			setInterval(function () {
 				fetchPool();
+				fecthCleo();
 			}, 60000);
 			
 			setInterval(function () {
-				fecthRamNft();
-				getSilo();
+				//fecthRamNft();
+				//fecthCleo();
+				//getSilo();
 				//getDolo();
 			}, 2000);
 			
