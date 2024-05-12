@@ -1555,7 +1555,7 @@
 					success : function(data) {
 						$("span.price.usdp").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
 						if(data.pair.priceChange.h1 < -5 || data.pair.priceChange.h1 < -10){
-							alertCall('usd+');
+							//alertCall('usd+');
 						}
 					},
 					error: function (e) {
@@ -1568,7 +1568,7 @@
 					success : function(data) {
 						$("span.price.ovn").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
 						if(data.pair.priceChange.h1 < -10 || data.pair.priceChange.h6 < -20){
-							alertCall('ovn');
+							//alertCall('ovn');
 						}
 					},
 					error: function (e) {
