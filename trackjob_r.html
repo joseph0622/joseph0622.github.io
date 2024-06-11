@@ -691,6 +691,8 @@
 		}
 		
 		function checkAero(){
+			var aeroLimit = 13500000;
+			var aeroUsage = 13500000;
 			$.ajax({
 				type : "POST",
 				url: baseRpc,
@@ -699,9 +701,27 @@
 				success : function(data) {
 					var info = web3.eth.abi.decodeParameters(['address', 'address', 'address', 'address', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256'], data.result);
 					
-					if(BigInt(info[31]) / BigInt(1000000000000000000) > 13500000){
+					aeroLimit = BigInt(info[31]) / BigInt(1000000000000000000);
+					if(aeroLimit > 13500000){
 						alertCall('aero limit');
 					}	
+					
+					$.ajax({
+						type : "POST",
+						url: baseRpc,
+						contentType: 'application/json',
+						data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0x13c8e60d0000000000000000000000000000000000000000000000000000000000000039","to":"0xbb505c54d71e9e599cb8435b4f0ceec05fc71cbd"},"latest"]}',
+						success : function(data) {
+							var info = web3.eth.abi.decodeParameters(['uint256', 'uint256'], data.result);
+							
+							aeroUsage = BigInt(info[0]) / BigInt(1000000000000000000);
+							if(aeroLimit > aeroUsage && (aeroLimit - aeroUsage > 5000)){
+								alertCall('aero opened -' + aeroLimit - aeroUsage);
+							}
+						},
+						error: function (e) {
+						}
+					});
 				},
 				error: function (e) {
 				}
