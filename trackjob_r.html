@@ -61,14 +61,20 @@
 			ZTX: <span class="ztx price"></span>&nbsp;deus: <span class="deus price"></span>&nbsp;pion: <span class="pion price"></span><br/>
 			eth: <span class="eth price"></span>&nbsp;btc: <span class="btc price"></span>&nbsp;mnt: <span class="mnt price"></span>&nbsp;blue: <span class="blue price"></span><br/>
 			thena: <span class="thena price"></span>&nbsp;ram: <span class="ram price"></span>&nbsp;neadram: <span class="neadram price"></span>&nbsp;<br/>			
-			avax: <span class="avax price"></span>&nbsp;<br/>
 			aero: <span class="aero price"></span>&nbsp;ovn: <span class="ovn price"></span>&nbsp;usdp: <span class="usdp price"></span><br/>
 			ztx:<span class="ztxTvl"></span>&nbsp;gamma:<span class="gammaTvl"></span>&nbsp;retro:<span class="retroTvl"></span>&nbsp;total:<span class="userTvl"></span>&nbsp;r:<span class="avgApr"></span>%
           </div>
 		  <br/>
+		  <h6>Aero</h6>
+		  <div class="container">
+			usdc-aero: <span class="uaero usage"></span> / <span class="uaero supply"></span><br/>
+			weth-aero: <span class="waero usage"></span> / <span class="waero supply"></span><br/>
+          </div>
+		  <br/>
+		  <!--
 		  <h6>Silo</h6>
 		  <div class="container">
-			<!-- usdce: <span class="usdce price"></span> <br/> -->
+			usdce: <span class="usdce price"></span> <br/>
 			<span class="ethHealthRatio"></span>&nbsp;
 			eth supply: <span class="eth supply"></span>&nbsp;usdc supply: <span class="usdc supply"></span>&nbsp;eth borrow: <span class="eth borrow"></span>&nbsp;arb borrow: <span class="arb borrow"></span>&nbsp;usdc borrow: <span class="usdc borrow"></span>&nbsp;<br/>
           </div>
@@ -77,6 +83,7 @@
 			<span class="aaveHealthRatio"></span>&nbsp;
 			usdc - supply: <span class="ausdc supply"></span>&nbsp;borrow: <span class="avax borrow"></span>&nbsp;<br/>
           </div>
+		  -->
 		  <!--
 		  <h6>Dolo</h6>
 		  <div class="container">
@@ -690,44 +697,6 @@
 			});
 		}
 		
-		function checkAero(){
-			var aeroLimit = 13500000;
-			var aeroUsage = 13500000;
-			$.ajax({
-				type : "POST",
-				url: baseRpc,
-				contentType: 'application/json',
-				data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0x9403b634000000000000000000000000000000000000000000000000000000000000001c","to":"0xf9cfb8a62f50e10adde5aa888b44cf01c5957055"},"latest"]}',
-				success : function(data) {
-					var info = web3.eth.abi.decodeParameters(['address', 'address', 'address', 'address', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256'], data.result);
-					
-					aeroLimit = BigInt(info[31]) / BigInt(1000000000000000000);
-					if(aeroLimit > 13500000){
-						alertCall('aero limit');
-					}	
-					
-					$.ajax({
-						type : "POST",
-						url: baseRpc,
-						contentType: 'application/json',
-						data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0x13c8e60d0000000000000000000000000000000000000000000000000000000000000039","to":"0xbb505c54d71e9e599cb8435b4f0ceec05fc71cbd"},"latest"]}',
-						success : function(data) {
-							var info = web3.eth.abi.decodeParameters(['uint256', 'uint256'], data.result);
-							
-							aeroUsage = BigInt(info[0]) / BigInt(1000000000000000000);
-							if(aeroLimit > aeroUsage && (aeroLimit - aeroUsage > 5000)){
-								alertCall('aero opened -' + aeroLimit - aeroUsage);
-							}
-						},
-						error: function (e) {
-						}
-					});
-				},
-				error: function (e) {
-				}
-			});
-		}
-		
 		function getAvaxTokenPrice(nftId, tr){
 			var nftIdCode = web3.eth.abi.encodeParameter('uint256', nftId);
 			nftIdCode = nftIdCode.replace('0x', '0x99fbab88');
@@ -1160,6 +1129,77 @@
 					}
 				});
 			}
+			
+		function checkAero(){
+			var aeroLimit = 13500000;
+			var aeroUsage = 13500000;
+			$.ajax({
+				type : "POST",
+				url: baseRpc,
+				contentType: 'application/json',
+				data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0x9403b634000000000000000000000000000000000000000000000000000000000000001c","to":"0xf9cfb8a62f50e10adde5aa888b44cf01c5957055"},"latest"]}',
+				success : function(data) {
+					var info = web3.eth.abi.decodeParameters(['address', 'address', 'address', 'address', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256'], data.result);
+					
+					aeroLimit = BigInt(info[31]) / BigInt(1000000000000000000);
+					$("span.uaero.supply").text(aeroLimit);
+					
+					$.ajax({
+						type : "POST",
+						url: baseRpc,
+						contentType: 'application/json',
+						data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0x13c8e60d0000000000000000000000000000000000000000000000000000000000000039","to":"0xbb505c54d71e9e599cb8435b4f0ceec05fc71cbd"},"latest"]}',
+						success : function(data) {
+							var info = web3.eth.abi.decodeParameters(['uint256', 'uint256'], data.result);
+							
+							aeroUsage = BigInt(info[0]) / BigInt(1000000000000000000);
+							$("span.uaero.usage").text(aeroUsage);
+							if(aeroLimit > aeroUsage && (aeroLimit - aeroUsage > 5000)){
+								alertCall('aero opened -' + aeroLimit - aeroUsage);
+							}
+						},
+						error: function (e) {
+						}
+					});
+				},
+				error: function (e) {
+				}
+			});
+			
+			$.ajax({
+				type : "POST",
+				url: baseRpc,
+				contentType: 'application/json',
+				data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0x9403b6340000000000000000000000000000000000000000000000000000000000000016","to":"0xf9cfb8a62f50e10adde5aa888b44cf01c5957055"},"latest"]}',
+				success : function(data) {
+					var info = web3.eth.abi.decodeParameters(['address', 'address', 'address', 'address', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256'], data.result);
+					
+					var waeroLimit = BigInt(info[30]) / BigInt(1000000000000);
+					$("span.waero.supply").text(waeroLimit);
+					
+					$.ajax({
+						type : "POST",
+						url: baseRpc,
+						contentType: 'application/json',
+						data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0x13c8e60d000000000000000000000000000000000000000000000000000000000000002b","to":"0xbb505c54d71e9e599cb8435b4f0ceec05fc71cbd"},"latest"]}',
+						success : function(data) {
+							var info = web3.eth.abi.decodeParameters(['uint256', 'uint256'], data.result);
+							
+							var waeroUsage = BigInt(info[0]) / BigInt(1000000000000000000);
+							$("span.waero.usage").text(waeroUsage);
+							if(waeroLimit > waeroUsage && (waeroLimit - waeroUsage > 2000)){
+								alertCall('waero opened -' + waeroLimit - waeroUsage);
+							}
+						},
+						error: function (e) {
+						}
+					});
+				},
+				error: function (e) {
+				}
+			});
+			
+		}
 			
 		
 			function fetchPool(){
@@ -1667,7 +1707,7 @@
 				//getSilo();
 				//getDolo();
 				checkAero();
-			}, 30000);
+			}, 10000);
 			
 		});
     </script>
