@@ -59,7 +59,7 @@
 
           <div class="container">
 			ZTX: <span class="ztx price"></span>&nbsp;deus: <span class="deus price"></span>&nbsp;pion: <span class="pion price"></span><br/>
-			eth: <span class="eth price"></span>&nbsp;btc: <span class="btc price"></span>&nbsp;mnt: <span class="mnt price"></span>&nbsp;blue: <span class="blue price"></span><br/>
+			eth: <span class="eth price"></span>&nbsp;btc: <span class="btc price"></span>&nbsp;arb: <span class="arb price"></span>&nbsp;blue: <span class="blue price"></span><br/>
 			thena: <span class="thena price"></span>&nbsp;ram: <span class="ram price"></span>&nbsp;neadram: <span class="neadram price"></span>&nbsp;<br/>			
 			aero: <span class="aero price"></span>&nbsp;ovn: <span class="ovn price"></span>&nbsp;usdp: <span class="usdp price"></span><br/>
 			ztx:<span class="ztxTvl"></span>&nbsp;gamma:<span class="gammaTvl"></span>&nbsp;retro:<span class="retroTvl"></span>&nbsp;total:<span class="userTvl"></span>&nbsp;r:<span class="avgApr"></span>%
@@ -71,13 +71,13 @@
 			weth-aero: <span class="waero usage"></span> / <span class="waero supply"></span><br/>
           </div>
 		  <br/>
-		  <!--
+		  
 		  <h6>Silo</h6>
 		  <div class="container">
-			usdce: <span class="usdce price"></span> <br/>
 			<span class="ethHealthRatio"></span>&nbsp;
 			eth supply: <span class="eth supply"></span>&nbsp;usdc supply: <span class="usdc supply"></span>&nbsp;eth borrow: <span class="eth borrow"></span>&nbsp;arb borrow: <span class="arb borrow"></span>&nbsp;usdc borrow: <span class="usdc borrow"></span>&nbsp;<br/>
           </div>
+		  <!--
 		  <br/>
 		  <div class="container">
 			<span class="aaveHealthRatio"></span>&nbsp;
@@ -290,7 +290,7 @@
 				}
 			});
 			*/
-			$.ajax({
+			/*$.ajax({
 				type : "GET",
 				url: "https://api.dexscreener.com/latest/dex/pairs/avalanche/0xd446eb1660f766d533beceef890df7a69d26f7d1",
 				dataType: "json",
@@ -300,9 +300,9 @@
 				},
 				error: function (e) {
 				}
-			});
+			});*/
 			
-			$.ajax({
+			/*$.ajax({
 				type : "POST",
 				url: avaxRpc,
 				contentType: 'application/json',
@@ -355,8 +355,9 @@
 				error: function (e) {
 				}
 			});
+			*/
 			
-			/*$.ajax({
+			$.ajax({
 				type : "GET",
 				url: "https://api.dexscreener.com/latest/dex/pairs/arbitrum/0xc86eb7b85807020b4548ee05b54bfc956eebbfcd",
 				dataType: "json",
@@ -366,8 +367,8 @@
 				},
 				error: function (e) {
 				}
-			});*/
-			/*
+			});
+			
 			$.ajax({
 				type : "POST",
 				url: rpc,
@@ -475,7 +476,7 @@
 				error: function (e) {
 				}
 			});
-			/*
+			
 			$.ajax({
 				type : "POST",
 				url: rpc,
@@ -502,8 +503,8 @@
 				error: function (e) {
 				}
 			});
-			*/
-			/*
+			
+			
 			$.ajax({
 				type : "POST",
 				url: rpc,
@@ -529,7 +530,7 @@
 				},
 				error: function (e) {
 				}
-			});*/
+			});
 			
 			/*
 			$.ajax({
@@ -934,7 +935,7 @@
 					error: function (e) {
 					}
 				});
-				
+				/*
 				$.ajax({
 					type : "GET",
 					url: "https://api.dexscreener.com/latest/dex/pairs/ethereum/0xf4c5e0f4590b6679b3030d29a84857f226087fef",
@@ -944,8 +945,8 @@
 					},
 					error: function (e) {
 					}
-				});
-				
+				});*/
+				/*
 				$.ajax({
 					type : "GET",
 					url: "https://cleopatra-api-production.up.railway.app/nfp_ids?wallet=0xf712ab8c4505eb4b36a2ff9fa746470be81e6538",
@@ -1000,7 +1001,7 @@
 					error: function (e) {
 						
 					}
-				});
+				});*/
 			}
 		
 			function fecthRamNft(){
@@ -1165,7 +1166,7 @@
 				error: function (e) {
 				}
 			});
-			
+			/*
 			$.ajax({
 				type : "POST",
 				url: baseRpc,
@@ -1198,7 +1199,7 @@
 				error: function (e) {
 				}
 			});
-			
+			*/
 		}
 			
 		
@@ -1506,7 +1507,7 @@
 				*/
 				
 				
-				
+				/*
 				$.ajax({
 					type : "GET",
 					url: "https://api.dexscreener.com/latest/dex/pairs/polygon/0x6e7a5fafcec6bb1e78bae2a1f0b612012bf14827",
@@ -1517,7 +1518,7 @@
 					error: function (e) {
 					}
 				});
-				
+				*/
 				$.ajax({
 					type : "GET",
 					url: "https://api.dexscreener.com/latest/dex/pairs/bsc/0x51bd5e6d3da9064d59bcaa5a76776560ab42ceb8",
@@ -1540,7 +1541,7 @@
 					error: function (e) {
 					}
 				});
-				
+				/*
 				$.ajax({
 					type : "GET",
 					url: "https://api.dexscreener.com/latest/dex/pairs/avalanche/0xaaa3f202babcf7d6493afbc0caee03af9c64f984",
@@ -1551,6 +1552,7 @@
 					error: function (e) {
 					}
 				});
+				*/
 				
 				$.ajax({
 					type : "GET",
@@ -1600,6 +1602,7 @@
 					error: function (e) {
 					}
 				});
+				/*
 				$.ajax({
 					type : "GET",
 					url: "https://api.dexscreener.com/latest/dex/pairs/base/0x2d25e0514f23c6367687de89bd5167dc754d4934",
@@ -1613,6 +1616,7 @@
 					error: function (e) {
 					}
 				});
+				*/
 				/*
 				$.ajax({
 					type : "GET",
@@ -1627,6 +1631,7 @@
 					error: function (e) {
 					}
 				});*/
+				/*
 				$.ajax({
 					type : "GET",
 					url: "https://api.dexscreener.com/latest/dex/pairs/base/0x418457ca08fa5ec77f811b105f2c585cd051ac10",
@@ -1653,7 +1658,7 @@
 					error: function (e) {
 					}
 				});
-				
+				*/
 
 				
 				/*
@@ -1691,7 +1696,7 @@
 			//fecthCleo();
 			//fecthBalance();
 			fecthRamNft();
-			//getSilo();
+			getSilo();
 			//getDolo();
 			checkAero();
 			
@@ -1704,10 +1709,10 @@
 			setInterval(function () {
 				//fecthRamNft();
 				//fecthCleo();
-				//getSilo();
+				getSilo();
 				//getDolo();
 				checkAero();
-			}, 5000);
+			}, 10000);
 			
 		});
     </script>
