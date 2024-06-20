@@ -730,6 +730,7 @@
 		}
 		
 		function getPosition(nftId, tr){
+			//https://api-v2-production-a6e6.up.railway.app/apr_backtest?nft_ids=136455
 			var nftIdCode = web3.eth.abi.encodeParameter('uint256', nftId);
 			nftIdCode = nftIdCode.replace('0x', '0x99fbab88');
 			
