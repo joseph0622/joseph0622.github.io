@@ -802,6 +802,41 @@
 			});
 		}
 		
+		function getRamPosition(nftId, tr){
+			$.ajax({
+				type : "GET",
+				url: "https://api-v2-production-a6e6.up.railway.app/apr_backtest",
+				contentType: 'application/json',
+				data: '{nft_ids: nftId}',
+				success : function(data) {
+					var token0 = data['amount0'];
+					var token1 = data['amount1'];
+					var fee = '';
+					var tickLower = data['tick_lower'];
+					var tickUpper = data['tick_upper'];
+					var liquidity = '';
+					var tick = data['tick'];
+					var pool;
+										
+					var range = tickUpper - tickLower;
+					var tickPos = ((tick - tickLower) / range) * 100;
+					var inRange = Math.floor(tickPos * 100) / 100;
+					$(tr).find("td.bal0").text(token0);
+					$(tr).find("td.bal1").text(token1);
+					$(tr).find("td.total").text(inRange + "%");
+					$(tr).find(".inrange").text(inRange + "%");
+					
+					if(inRange < 3 || inRange > 97){
+						//$(tr).find(".inrange").text('No');
+						//$(tr).find(".inrange").addClass("alert");
+						alertCall('Alert - ram');
+					}
+				},
+				error: function (e) {
+				}
+			});
+		}
+		
 		function getAvaxPosition(nftId, tr){
 			var nftIdCode = web3.eth.abi.encodeParameter('uint256', nftId);
 			nftIdCode = nftIdCode.replace('0x', '0x99fbab88');
@@ -1103,6 +1138,8 @@
 									
 									$(tr).find(".t0").text(pool.symbol0);
 									$(tr).find(".t1").text(pool.symbol1);
+									$(tr).find(".bal0").text(pool.amount0.toFixed(2));
+									$(tr).find(".bal1").text(pool.amount1.toFixed(2));
 									//$(tr).find(".inrange").text(ramPool[0]=='0'?'Yes':'No');
 									var tick = Math.abs(pool.tick);
 									var tickUpper = Math.abs(pool.tick_upper);
@@ -1110,15 +1147,18 @@
 									var range = tickUpper - tickLower;
 									var tickPos = ((tick - tickLower) / range) * 100;
 									var inRange = Math.floor(tickPos * 100) / 100;
-									$(tr).find("td.total").text(inRange + "%");
+									var total = '';
+									if(arbPrice > 0 && ethPrice > 0 && pool.amount0 > 0 && pool.amount1 > 0){
+										total = (pool.amount0 * ethPrice) + (pool.amount1 * arbPrice);
+										$(tr).find("td.total").text(total.toFixed(2));
+									}
+									$(tr).find("td.inrange").text(inRange + "%");
 									
-									$(tr).find(".inrange").removeClass("alert");
+									//$(tr).find(".inrange").removeClass("alert");
 									if(inRange < 0 || inRange > 100){
 										//$(tr).find(".inrange").text('No');
 										//$(tr).find(".inrange").addClass("alert");
 										alertCall('Alert - ram');
-									}else{
-										$(tr).find(".inrange").text('Yes');
 									}
 									
 								},
