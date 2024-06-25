@@ -1197,7 +1197,7 @@
 							aeroUsage = BigInt(info[0]) / BigInt(1000000000000000000);
 							$("span.uaero.usage").text(aeroUsage);
 							if(aeroLimit > aeroUsage && (aeroLimit - aeroUsage > 5000)){
-								alertCall('aero opened -' + aeroLimit - aeroUsage);
+								alertCall('aero opened -' + (aeroLimit - aeroUsage));
 							}
 						},
 						error: function (e) {
