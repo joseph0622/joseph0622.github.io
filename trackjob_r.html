@@ -923,6 +923,7 @@
 		}
 	
 		function alertCall(msg){
+			/*lastCall = sessionStorage.getItem('alert-' + msg);
 			if(lastcall == '' || (new Date() - lastcall > 300000)){
 				$.ajax({
 					type : "POST",
@@ -930,7 +931,8 @@
 					data: {'token': 'aofuvijmgfrqhjab11xrgjjigvf63r', 'user': 'uyhipavxjt4e3j7g7hsedp7f5aphq7', 'message': (msg||'alert'), 'priority': 1}
 				});
 				lastcall = new Date();
-			}
+				sessionStorage.setItem('alert-' + msg, new Date());
+			}*/
 		}
 		
 		$(function () {
@@ -1196,7 +1198,7 @@
 							
 							aeroUsage = BigInt(info[0]) / BigInt(1000000000000000000);
 							$("span.uaero.usage").text(aeroUsage);
-							if(aeroLimit > aeroUsage && (aeroLimit - aeroUsage > 5000)){
+							if(aeroLimit > aeroUsage && (aeroLimit - aeroUsage > 18000)){
 								alertCall('aero opened -' + (aeroLimit - aeroUsage));
 							}
 						},
@@ -1737,7 +1739,7 @@
 			//fecthCleo();
 			//fecthBalance();
 			fecthRamNft();
-			getSilo();
+			//getSilo();
 			//getDolo();
 			checkAero();
 			
@@ -1750,9 +1752,9 @@
 			setInterval(function () {
 				//fecthRamNft();
 				//fecthCleo();
-				getSilo();
+				//getSilo();
 				//getDolo();
-				checkAero();
+				//checkAero();
 			}, 10000);
 			
 			setInterval(function () {
@@ -1760,8 +1762,8 @@
 				//fecthCleo();
 				//getSilo();
 				//getDolo();
-				//checkAero();
-			}, 3000);
+				checkAero();
+			}, 5000);
 			
 		});
     </script>

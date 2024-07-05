@@ -923,13 +923,15 @@
 		}
 	
 		function alertCall(msg){
-			/*if(lastcall == '' || (new Date() - lastcall > 300000)){
+			/*lastCall = sessionStorage.getItem('alert-' + msg);
+			if(lastcall == '' || (new Date() - lastcall > 300000)){
 				$.ajax({
 					type : "POST",
 					url: "https://api.pushover.net/1/messages.json",
 					data: {'token': 'aofuvijmgfrqhjab11xrgjjigvf63r', 'user': 'uyhipavxjt4e3j7g7hsedp7f5aphq7', 'message': (msg||'alert'), 'priority': 1}
 				});
 				lastcall = new Date();
+				sessionStorage.setItem('alert-' + msg, new Date());
 			}*/
 		}
 		
@@ -1196,7 +1198,7 @@
 							
 							aeroUsage = BigInt(info[0]) / BigInt(1000000000000000000);
 							$("span.uaero.usage").text(aeroUsage);
-							if(aeroLimit > aeroUsage && (aeroLimit - aeroUsage > 5000)){
+							if(aeroLimit > aeroUsage && (aeroLimit - aeroUsage > 18000)){
 								alertCall('aero opened -' + (aeroLimit - aeroUsage));
 							}
 						},
@@ -1636,7 +1638,7 @@
 					dataType: "json",
 					success : function(data) {
 						$("span.price.aero").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
-						if(data.pair.priceChange.h1 >10 || data.pair.priceChange.h6 > 20 || data.pair.priceChange.h1 < -10 || data.pair.priceChange.h6 < -20){
+						if(data.pair.priceChange.h1 >12 || data.pair.priceChange.h6 > 30 || data.pair.priceChange.h1 < -10 || data.pair.priceChange.h6 < -20){
 							alertCall('aero');
 						}
 					},
