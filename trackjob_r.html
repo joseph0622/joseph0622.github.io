@@ -1638,7 +1638,7 @@
 					dataType: "json",
 					success : function(data) {
 						$("span.price.aero").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
-						if(data.pair.priceChange.h1 >10 || data.pair.priceChange.h6 > 20 || data.pair.priceChange.h1 < -10 || data.pair.priceChange.h6 < -20){
+						if(data.pair.priceChange.h1 >12 || data.pair.priceChange.h6 > 30 || data.pair.priceChange.h1 < -10 || data.pair.priceChange.h6 < -20){
 							alertCall('aero');
 						}
 					},
