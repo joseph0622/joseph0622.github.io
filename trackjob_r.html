@@ -1654,6 +1654,9 @@
 						if(data.pair.priceChange.h1 >12 || data.pair.priceChange.h6 > 30 || data.pair.priceChange.h1 < -10 || data.pair.priceChange.h6 < -20){
 							alertCall('chi');
 						}
+						if(data.pair.liquidity.usd < 13000000){
+							alertCall('chi');
+						}
 					},
 					error: function (e) {
 					}
