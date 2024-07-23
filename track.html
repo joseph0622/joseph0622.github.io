@@ -1650,7 +1650,7 @@
 					url: "https://api.dexscreener.com/latest/dex/pairs/scroll/0x1afbc62f221be90d82e0f4cfeef011451942d6e1",
 					dataType: "json",
 					success : function(data) {
-						$("span.price.chi").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
+						$("span.price.chi").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')' + ' - (' + data.pair.liquidity.usd + ')');
 						if(data.pair.priceChange.h1 >12 || data.pair.priceChange.h6 > 30 || data.pair.priceChange.h1 < -10 || data.pair.priceChange.h6 < -20){
 							alertCall('chi');
 						}
