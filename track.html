@@ -61,7 +61,7 @@
 			ZTX: <span class="ztx price"></span>&nbsp;deus: <span class="deus price"></span>&nbsp;pion: <span class="pion price"></span><br/>
 			eth: <span class="eth price"></span>&nbsp;btc: <span class="btc price"></span>&nbsp;arb: <span class="arb price"></span>&nbsp;blue: <span class="blue price"></span><br/>
 			thena: <span class="thena price"></span>&nbsp;ram: <span class="ram price"></span>&nbsp;neadram: <span class="neadram price"></span>&nbsp;<br/>			
-			aero: <span class="aero price"></span>&nbsp;ovn: <span class="ovn price"></span>&nbsp;chi: <span class="chi price"></span><br/>
+			aero: <span class="aero price"></span>&nbsp;tkn: <span class="tkn price"></span>&nbsp;chi: <span class="chi price"></span><br/>
 			ztx:<span class="ztxTvl"></span>&nbsp;gamma:<span class="gammaTvl"></span>&nbsp;retro:<span class="retroTvl"></span>&nbsp;total:<span class="userTvl"></span>&nbsp;r:<span class="avgApr"></span>%
           </div>
 		  <br/>
@@ -1654,8 +1654,21 @@
 						if(data.pair.priceChange.h1 >12 || data.pair.priceChange.h6 > 30 || data.pair.priceChange.h1 < -10 || data.pair.priceChange.h6 < -20){
 							alertCall('chi');
 						}
-						if(data.pair.liquidity.usd < 13000000){
+						if(data.pair.liquidity.usd < 15000000){
 							alertCall('chi');
+						}
+					},
+					error: function (e) {
+					}
+				});
+				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/scroll/0x838d141bdbeceaa2eb1c576b6a4309f26f795cf2",
+					dataType: "json",
+					success : function(data) {
+						$("span.price.tkn").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')' + ' - (' + data.pair.liquidity.usd + ')');
+						if(data.pair.priceChange.h1 < -10 || data.pair.priceChange.h6 < -20){
+							alertCall('tkn');
 						}
 					},
 					error: function (e) {
