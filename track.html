@@ -77,6 +77,11 @@
 			<span class="ethHealthRatio"></span>&nbsp;
 			eth supply: <span class="eth supply"></span>&nbsp;usdc supply: <span class="usdc supply"></span>&nbsp;eth borrow: <span class="eth borrow"></span>&nbsp;arb borrow: <span class="arb borrow"></span>&nbsp;usdc borrow: <span class="usdc borrow"></span>&nbsp;<br/>
           </div>
+		  <h6>Radi</h6>
+		  <div class="container">
+			<span class="radiHealthRatio"></span>&nbsp;
+			eth supply: <span class="reth supply"></span>&nbsp;</span>&nbsp;usdc borrow: <span class="rusdc borrow"></span>&nbsp;<br/>
+          </div>
 		  <!--
 		  <br/>
 		  <div class="container">
@@ -212,7 +217,7 @@
 		var avaxWeb3 = new Web3('https://avalanche.blockpi.network/v1/rpc/public');
 		var rpc = 'https://arbitrum.blockpi.network/v1/rpc/public';
 		var avaxRpc = 'https://avalanche.blockpi.network/v1/rpc/public';
-		var baseRpc = 'https://base.blockpi.network/v1/rpc/public';
+		var baseRpc = 'https://mainnet.base.org';
 		var ztxPrice = 0;
 		var oretroPrice = 0;
 		var usdcePrice = 0;
@@ -249,6 +254,8 @@
 		var ethUsdcBorrow = 0;
 		var ethBorrow = 0;
 		var healthRatio = 0;
+		var rEth = 0;
+		var rdUsdc = 0;
 		
 		function getSilo(){	
 			/*$.ajax({
@@ -616,6 +623,74 @@
 				}
 			});
 			*/
+			
+		}
+		
+		function getRadi(){	
+			$.ajax({
+				type : "GET",
+				url: 'https://min-api.cryptocompare.com/data/pricemultifull?fsyms=ETH&tsyms=USD',
+				contentType: 'application/json',
+				success : function(data) {
+					ethPrice = data.RAW.ETH.USD.PRICE;
+				},
+				error: function (e) {
+				}
+			});
+			
+			$.ajax({
+				type : "POST",
+				url: baseRpc,
+				contentType: 'application/json',
+				data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0x70a08231000000000000000000000000f712ab8c4505eb4b36a2ff9fa746470be81e6538","to":"0x392376c337413ce2e9ad7dd5f3468ae58f323b00"},"latest"]}',
+				success : function(data) {
+					var borrowUsdc = web3.eth.abi.decodeParameter('uint256', data.result);					
+					rdUsdc = String(borrowUsdc.toString()).slice(0, -3) / 1000;
+					
+					if(ethPrice >0 && rdUsdc > 0){
+						$(".rusdc.borrow").text(rdUsdc + " (" + rdUsdc + ")");
+						
+						if(rEth > 0 && rdUsdc > 0){
+							healthRatio = Math.floor((1 - ((Math.floor(rdUsdc * 100) / 100) / (Math.floor(rEth * ethPrice * 100) / 100) / 0.75))*100);
+							
+							$(".radiHealthRatio").text(healthRatio + "%");
+							
+							if(healthRatio <= 10){
+								alertCall('radi');
+							}
+						}
+					}
+				},
+				error: function (e) {
+				}
+			});
+			
+			$.ajax({
+				type : "POST",
+				url: baseRpc,
+				contentType: 'application/json',
+				data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0x70a08231000000000000000000000000f712ab8c4505eb4b36a2ff9fa746470be81e6538","to":"0x47CeFa4f2170e6CbA87452E9053540e05182A556"},"latest"]}',
+				success : function(data) {
+					var supplyEth = web3.eth.abi.decodeParameter('uint256', data.result);					
+					rEth = String(supplyEth.toString()).slice(0, -15) / 1000;
+					
+					if(ethPrice >0 && rdUsdc > 0){
+						$(".reth.supply").text(rEth + " (" + (Math.floor(rEth * ethPrice * 100) / 100) + ")");
+						
+						if(rEth > 0 && rdUsdc > 0){
+							healthRatio = Math.floor((1 - ((Math.floor(rdUsdc * 100) / 100) / (Math.floor(rEth * ethPrice * 100) / 100) / 0.75))*100);
+							
+							$(".radiHealthRatio").text(healthRatio + "%");
+							
+							if(healthRatio <= 10){
+								alertCall('radi');
+							}
+						}
+					}
+				},
+				error: function (e) {
+				}
+			});
 			
 		}
 		
@@ -1199,7 +1274,9 @@
 							aeroUsage = BigInt(info[0]) / BigInt(1000000000000000000);
 							$("span.uaero.usage").text(aeroUsage);
 							if(aeroLimit > aeroUsage && (aeroLimit - aeroUsage > 18000)){
-								alertCall('aero opened -' + (aeroLimit - aeroUsage));
+								if(new Date().getUTCHours() < 16 || new Date().getUTCHours() > 22){
+									alertCall('aero opened -' + (aeroLimit - aeroUsage));
+								}
 							}
 						},
 						error: function (e) {
@@ -1784,6 +1861,7 @@
 				//getSilo();
 				//getDolo();
 				//checkAero();
+				getRadi();
 			}, 10000);
 			
 			setInterval(function () {
