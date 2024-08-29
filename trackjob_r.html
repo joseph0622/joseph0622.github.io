@@ -1367,7 +1367,37 @@
 					error: function (e) {
 					}
 				});
-								
+				
+				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/arbitrum/0xC6F780497A95e246EB9449f5e4770916DCd6396A",
+					dataType: "json",
+					success : function(data) {
+						$("span.price.arb").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
+						arbPrice = data.pair.priceUsd;
+						
+						if(ethPrice > 0){
+							$("span.price.arb").text($("span.price.arb").text() + ' (' + (Math.floor((arbPrice / ethPrice) * 1000000) / 10000) + ')');
+						}
+					},
+					error: function (e) {
+						$.ajax({
+							type : "POST",
+							url: rpc,
+							contentType: 'application/json',
+							data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"data":"0xfeaf968c","to":"0xb2A824043730FE05F3DA2efaFa1CBbe83fa548D6"},"latest"]}',
+							success : function(data) {
+								var info = web3.eth.abi.decodeParameters(['uint80', 'int256'], data.result);
+								arbPrice = String(info[1].toString()).slice(0, -5) / 1000;
+								$("span.price.arb").text(arbPrice);
+							},
+							error: function (e) {
+							}
+						});
+					}
+				});
+							
+				/*
 				$.ajax({
 					type : "GET",
 					url: "https://api.angle.money/v3/merkl?user=0xf712ab8c4505eb4b36a2ff9fa746470be81e6538&chainIds=42161",
@@ -1590,6 +1620,7 @@
 					error: function (e) {
 					}
 				});
+				*/
 				
 				$.ajax({
 					type : "GET",
@@ -1898,19 +1929,14 @@
 			//getSilo();
 			//getDolo();
 			checkAero();
-			
-			setInterval(function () {
-				fetchPool();
-				//fecthCleo();
-				//fecthRamNft();
-			}, 60000);
-			
+						
 			setInterval(function () {
 				//fecthRamNft();
 				//fecthCleo();
 				//getSilo();
 				//getDolo();
 				//checkAero();
+				fetchPool();
 				getRadi();
 			}, 10000);
 			
