@@ -59,9 +59,9 @@
 
           <div class="container">
 			ZTX: <span class="ztx price"></span>&nbsp;deus: <span class="deus price"></span>&nbsp;pion: <span class="pion price"></span><br/>
-			eth: <span class="eth price"></span>&nbsp;btc: <span class="btc price"></span>&nbsp;arb: <span class="arb price"></span>&nbsp;blue: <span class="blue price"></span><br/>
-			thena: <span class="thena price"></span>&nbsp;ram: <span class="ram price"></span>&nbsp;neadram: <span class="neadram price"></span>&nbsp;<br/>			
-			aero: <span class="aero price"></span>&nbsp;tkn: <span class="tkn price"></span>&nbsp;chi: <span class="chi price"></span><br/>
+			eth: <span class="eth price"></span>&nbsp;btc: <span class="btc price"></span>&nbsp;arb: <span class="arb price"></span><br/>
+			thena: <span class="thena price"></span>&nbsp;ram: <span class="ram price"></span>&nbsp;aero: <span class="aero price"></span><br/>			
+			tkn: <span class="tkn price"></span>&nbsp;chi: <span class="chi price"></span>&nbsp;wukre: <span class="wukre price"></span><br/>
 			ztx:<span class="ztxTvl"></span>&nbsp;gamma:<span class="gammaTvl"></span>&nbsp;retro:<span class="retroTvl"></span>&nbsp;total:<span class="userTvl"></span>&nbsp;r:<span class="avgApr"></span>%
           </div>
 		  <br/>
@@ -626,7 +626,7 @@
 			
 		}
 		
-		function getRadi(){	
+		function getRadi(){						
 			$.ajax({
 				type : "GET",
 				url: 'https://min-api.cryptocompare.com/data/pricemultifull?fsyms=ETH&tsyms=USD',
@@ -656,7 +656,7 @@
 							$(".radiHealthRatio").text(healthRatio + "%");
 							
 							if(healthRatio <= 10){
-								alertCall('radi');
+								alertCall('radi');z
 							}
 						}
 					}
@@ -1330,6 +1330,43 @@
 				ztxTvl = 0;
 				retroTvl = 0;
 				aprMap.clear();
+				
+				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/arbitrum/0xc31e54c7a869b9fcbecc14363cf510d1c41fa443",
+					dataType: "json",
+					success : function(data) {
+						$("span.price.eth").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
+						ethPrice = data.pair.priceUsd;
+					},
+					error: function (e) {
+						$.ajax({
+							type : "POST",
+							url: rpc,
+							contentType: 'application/json',
+							data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"data":"0xfeaf968c","to":"0x639Fe6ab55C921f74e7fac1ee960C0B6293ba612"},"latest"]}',
+							success : function(data) {
+								var info = web3.eth.abi.decodeParameters(['uint80', 'int256'], data.result);
+								ethPrice = String(info[1].toString()).slice(0, -5) / 1000;
+								$("span.price.eth").text(ethPrice);
+							},
+							error: function (e) {
+							}
+						});
+					}
+				});				
+				
+				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/arbitrum/0x2f5e87c9312fa29aed5c179e456625d79015299c",
+					dataType: "json",
+					success : function(data) {
+						$("span.price.btc").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
+						btcPrice = data.pair.priceUsd;
+					},
+					error: function (e) {
+					}
+				});
 								
 				$.ajax({
 					type : "GET",
@@ -1751,6 +1788,19 @@
 					error: function (e) {
 					}
 				});
+				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/scroll/0xdc76497e8785d77b5aa0431bddb1e52ec26273fb",
+					dataType: "json",
+					success : function(data) {
+						$("span.price.wukre").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')' + ' - (' + data.pair.liquidity.usd + ')');
+						if(data.pair.priceChange.h1 < -6 || data.pair.priceChange.h6 < -10){
+							alertCall('wukre');
+						}
+					},
+					error: function (e) {
+					}
+				});
 				/*
 				$.ajax({
 					type : "GET",
@@ -1844,7 +1894,7 @@
 			fetchPool();
 			//fecthCleo();
 			//fecthBalance();
-			fecthRamNft();
+			//fecthRamNft();
 			//getSilo();
 			//getDolo();
 			checkAero();
@@ -1852,7 +1902,7 @@
 			setInterval(function () {
 				fetchPool();
 				//fecthCleo();
-				fecthRamNft();
+				//fecthRamNft();
 			}, 60000);
 			
 			setInterval(function () {
