@@ -223,6 +223,7 @@
 		var usdcePrice = 0;
 		var btcPrice = 0;
 		var ethPrice = 0;
+		var wstEthPrice = 0;
 		var avaxPrice = 0;
 		var arbPrice = 0;
 		var ramPrice = 0;
@@ -639,6 +640,20 @@
 			});
 			
 			$.ajax({
+				type : "GET",
+				url: "https://api.dexscreener.com/latest/dex/pairs/base/0xa6385c73961dd9c58db2ef0c4eb98ce4b60651e8",
+				dataType: "json",
+				success : function(data) {
+					$("span.price.blue").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
+					wstEthPrice = data.pair.priceUsd;
+				},
+				error: function (e) {
+				}
+			});
+			
+			
+		
+			$.ajax({
 				type : "POST",
 				url: baseRpc,
 				contentType: 'application/json',
@@ -647,11 +662,11 @@
 					var borrowUsdc = web3.eth.abi.decodeParameter('uint256', data.result);					
 					rdUsdc = String(borrowUsdc.toString()).slice(0, -3) / 1000;
 					
-					if(ethPrice >0 && rdUsdc > 0){
+					if(wstEthPrice >0 && rdUsdc > 0){
 						$(".rusdc.borrow").text(rdUsdc + " (" + rdUsdc + ")");
 						
 						if(rEth > 0 && rdUsdc > 0){
-							healthRatio = Math.floor((1 - ((Math.floor(rdUsdc * 100) / 100) / (Math.floor(rEth * ethPrice * 100) / 100) / 0.75))*100);
+							healthRatio = Math.floor((1 - ((Math.floor(rdUsdc * 100) / 100) / (Math.floor(rEth * wstEthPrice * 100) / 100) / 0.75))*100);
 							
 							$(".radiHealthRatio").text(healthRatio + "%");
 							
@@ -669,16 +684,16 @@
 				type : "POST",
 				url: baseRpc,
 				contentType: 'application/json',
-				data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0x70a08231000000000000000000000000f712ab8c4505eb4b36a2ff9fa746470be81e6538","to":"0x47CeFa4f2170e6CbA87452E9053540e05182A556"},"latest"]}',
+				data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0x70a08231000000000000000000000000f712ab8c4505eb4b36a2ff9fa746470be81e6538","to":"0x43095e6e52a603fa571dde18a7a123ec407433fe"},"latest"]}',
 				success : function(data) {
 					var supplyEth = web3.eth.abi.decodeParameter('uint256', data.result);					
 					rEth = String(supplyEth.toString()).slice(0, -15) / 1000;
 					
-					if(ethPrice >0 && rdUsdc > 0){
-						$(".reth.supply").text(rEth + " (" + (Math.floor(rEth * ethPrice * 100) / 100) + ")");
+					if(wstEthPrice >0 && rdUsdc > 0){
+						$(".reth.supply").text(rEth + " (" + (Math.floor(rEth * wstEthPrice * 100) / 100) + ")");
 						
 						if(rEth > 0 && rdUsdc > 0){
-							healthRatio = Math.floor((1 - ((Math.floor(rdUsdc * 100) / 100) / (Math.floor(rEth * ethPrice * 100) / 100) / 0.75))*100);
+							healthRatio = Math.floor((1 - ((Math.floor(rdUsdc * 100) / 100) / (Math.floor(rEth * wstEthPrice * 100) / 100) / 0.75))*100);
 							
 							$(".radiHealthRatio").text(healthRatio + "%");
 							
