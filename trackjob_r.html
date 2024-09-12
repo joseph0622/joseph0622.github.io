@@ -71,12 +71,13 @@
 			weth-aero: <span class="waero usage"></span> / <span class="waero supply"></span><br/>
           </div>
 		  <br/>
-		  
+		  <!--
 		  <h6>Silo</h6>
 		  <div class="container">
 			<span class="ethHealthRatio"></span>&nbsp;
 			eth supply: <span class="eth supply"></span>&nbsp;usdc supply: <span class="usdc supply"></span>&nbsp;eth borrow: <span class="eth borrow"></span>&nbsp;arb borrow: <span class="arb borrow"></span>&nbsp;usdc borrow: <span class="usdc borrow"></span>&nbsp;<br/>
           </div>
+		  -->
 		  <h6>Radi</h6>
 		  <div class="container">
 			<span class="radiHealthRatio"></span>&nbsp;
@@ -224,6 +225,7 @@
 		var btcPrice = 0;
 		var ethPrice = 0;
 		var wstEthPrice = 0;
+		var cbEthPrice = 0;
 		var avaxPrice = 0;
 		var arbPrice = 0;
 		var ramPrice = 0;
@@ -256,6 +258,7 @@
 		var ethBorrow = 0;
 		var healthRatio = 0;
 		var rEth = 0;
+		var rCbEth = 0;
 		var rdUsdc = 0;
 		
 		function getSilo(){	
@@ -644,8 +647,18 @@
 				url: "https://api.dexscreener.com/latest/dex/pairs/base/0xa6385c73961dd9c58db2ef0c4eb98ce4b60651e8",
 				dataType: "json",
 				success : function(data) {
-					$("span.price.blue").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
 					wstEthPrice = data.pair.priceUsd;
+				},
+				error: function (e) {
+				}
+			});
+			
+			$.ajax({
+				type : "GET",
+				url: "https://api.dexscreener.com/latest/dex/pairs/base/0x47ca96ea59c13f72745928887f84c9f52c3d7348",
+				dataType: "json",
+				success : function(data) {
+					cbEthPrice = data.pair.priceUsd;
 				},
 				error: function (e) {
 				}
@@ -661,17 +674,18 @@
 				success : function(data) {
 					var borrowUsdc = web3.eth.abi.decodeParameter('uint256', data.result);					
 					rdUsdc = String(borrowUsdc.toString()).slice(0, -3) / 1000;
+					$(".rusdc.borrow").text(rdUsdc);
 					
-					if(wstEthPrice >0 && rdUsdc > 0){
-						$(".rusdc.borrow").text(rdUsdc + " (" + rdUsdc + ")");
+					if(wstEthPrice >0 && cbEthPrice > 0 && rdUsdc > 0){
+						$(".reth.supply").text((rEth + rCbEth) + " (" + (Math.floor(((rEth * wstEthPrice) + (rCbEth * cbEthPrice)) * 100) / 100) + ")");
 						
-						if(rEth > 0 && rdUsdc > 0){
-							healthRatio = Math.floor((1 - ((Math.floor(rdUsdc * 100) / 100) / (Math.floor(rEth * wstEthPrice * 100) / 100) / 0.75))*100);
+						if(rEth > 0 && rCbEth > 0 && rdUsdc > 0){
+							healthRatio = Math.floor((1 - ((Math.floor(rdUsdc * 100) / 100) / (Math.floor(((rEth * wstEthPrice) + (rCbEth * cbEthPrice)) * 100) / 100) / 0.75))*100);
 							
 							$(".radiHealthRatio").text(healthRatio + "%");
 							
 							if(healthRatio <= 10){
-								alertCall('radi');z
+								alertCall('radi');
 							}
 						}
 					}
@@ -689,11 +703,11 @@
 					var supplyEth = web3.eth.abi.decodeParameter('uint256', data.result);					
 					rEth = String(supplyEth.toString()).slice(0, -15) / 1000;
 					
-					if(wstEthPrice >0 && rdUsdc > 0){
-						$(".reth.supply").text(rEth + " (" + (Math.floor(rEth * wstEthPrice * 100) / 100) + ")");
+					if(wstEthPrice >0 && cbEthPrice > 0 && rdUsdc > 0){
+						$(".reth.supply").text((rEth + rCbEth) + " (" + (Math.floor(((rEth * wstEthPrice) + (rCbEth * cbEthPrice)) * 100) / 100) + ")");
 						
-						if(rEth > 0 && rdUsdc > 0){
-							healthRatio = Math.floor((1 - ((Math.floor(rdUsdc * 100) / 100) / (Math.floor(rEth * wstEthPrice * 100) / 100) / 0.75))*100);
+						if(rEth > 0 && rCbEth > 0 && rdUsdc > 0){
+							healthRatio = Math.floor((1 - ((Math.floor(rdUsdc * 100) / 100) / (Math.floor(((rEth * wstEthPrice) + (rCbEth * cbEthPrice)) * 100) / 100) / 0.75))*100);
 							
 							$(".radiHealthRatio").text(healthRatio + "%");
 							
@@ -706,6 +720,35 @@
 				error: function (e) {
 				}
 			});
+			
+			$.ajax({
+				type : "POST",
+				url: baseRpc,
+				contentType: 'application/json',
+				data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0x70a08231000000000000000000000000f712ab8c4505eb4b36a2ff9fa746470be81e6538","to":"0x20508ba938fedae646fcad48416bc9b6a448786e"},"latest"]}',
+				success : function(data) {
+					var supplyEth = web3.eth.abi.decodeParameter('uint256', data.result);					
+					rCbEth = String(supplyEth.toString()).slice(0, -15) / 1000;
+					
+					if(wstEthPrice >0 && cbEthPrice > 0 && rdUsdc > 0){
+						$(".reth.supply").text((rEth + rCbEth) + " (" + (Math.floor(((rEth * wstEthPrice) + (rCbEth * cbEthPrice)) * 100) / 100) + ")");
+						
+						if(rEth > 0 && rCbEth > 0 && rdUsdc > 0){
+							healthRatio = Math.floor((1 - ((Math.floor(rdUsdc * 100) / 100) / (Math.floor(((rEth * wstEthPrice) + (rCbEth * cbEthPrice)) * 100) / 100) / 0.75))*100);
+							
+							$(".radiHealthRatio").text(healthRatio + "%");
+							
+							if(healthRatio <= 10){
+								alertCall('radi');
+							}
+						}
+					}
+				},
+				error: function (e) {
+				}
+			});
+			
+			
 			
 		}
 		
@@ -1411,8 +1454,8 @@
 						});
 					}
 				});
-								
-								/*
+				
+/**				
 				$.ajax({
 					type : "GET",
 					url: "https://api.angle.money/v3/merkl?user=0xf712ab8c4505eb4b36a2ff9fa746470be81e6538&chainIds=42161",
@@ -1635,8 +1678,7 @@
 					error: function (e) {
 					}
 				});
-				*/
-				
+				**/
 				$.ajax({
 					type : "GET",
 					url: "https://api.dexscreener.com/latest/dex/pairs/arbitrum/0xe6ea93ba4ae9ee6520e55affebbdb38ed6c233a4",
