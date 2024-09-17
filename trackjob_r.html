@@ -660,7 +660,7 @@
 						$(".eth.supply").text(ethSupply + " (" + (Math.floor(ethSupply * ethPrice * 100) / 100) + ")");
 						
 						if(ethSupply > 0 && btcSupply >= 0 && usdcBorrow > 0){
-							healthRatio = Math.floor((1 - (Math.floor(usdcBorrow)) / ((Math.floor(ethSupply * ethPrice) * 0.9) + (Math.floor(btcSupply * (cBtcPrice)) * 0.85)))*100);
+							healthRatio = Math.floor((1 - (Math.floor(usdcBorrow)) / ((Math.floor(ethSupply * ethPrice) * 0.85) + (Math.floor(btcSupply * (cBtcPrice)) * 0.9)))*100);
 							
 							$(".siloHealthRatio").text(healthRatio + "%");
 							
@@ -687,7 +687,7 @@
 						$(".usdc.borrow").text(usdcBorrow + " (" + (Math.floor(usdcBorrow) + ")"));
 						
 						if(ethSupply > 0 && btcSupply >= 0 && usdcBorrow > 0){
-							healthRatio = Math.floor((1 - (Math.floor(usdcBorrow)) / ((Math.floor(ethSupply * ethPrice) * 0.9) + (Math.floor(btcSupply * (cBtcPrice)) * 0.85)))*100);
+							healthRatio = Math.floor((1 - (Math.floor(usdcBorrow)) / ((Math.floor(ethSupply * ethPrice) * 0.85) + (Math.floor(btcSupply * (cBtcPrice)) * 0.9)))*100);
 							
 							$(".siloHealthRatio").text(healthRatio + "%");
 							
@@ -712,10 +712,10 @@
 					btcSupply = String(supplyBtc.toString()).slice(0, -5) / 1000;
 					
 					if(ethPrice >0 && cBtcPrice > 0){
-						$(".cBtc.supply").text(usdcBorrow + " (" + Math.floor(btcSupply * (cBtcPrice)) + ")");
+						$(".cBtc.supply").text(btcSupply + " (" + Math.floor(btcSupply * (cBtcPrice)) + ")");
 						
 						if(ethSupply > 0 && btcSupply >= 0 && usdcBorrow > 0){
-							healthRatio = Math.floor((1 - (Math.floor(usdcBorrow)) / ((Math.floor(ethSupply * ethPrice) * 0.9) + (Math.floor(btcSupply * (cBtcPrice)) * 0.85)))*100);
+							healthRatio = Math.floor((1 - (Math.floor(usdcBorrow)) / ((Math.floor(ethSupply * ethPrice) * 0.85) + (Math.floor(btcSupply * (cBtcPrice)) * 0.9)))*100);
 							
 							$(".siloHealthRatio").text(healthRatio + "%");
 							
