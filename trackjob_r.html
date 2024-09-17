@@ -71,18 +71,19 @@
 			weth-aero: <span class="waero usage"></span> / <span class="waero supply"></span><br/>
           </div>
 		  <br/>
-		  <!--
+		 
 		  <h6>Silo</h6>
 		  <div class="container">
-			<span class="ethHealthRatio"></span>&nbsp;
-			eth supply: <span class="eth supply"></span>&nbsp;usdc supply: <span class="usdc supply"></span>&nbsp;eth borrow: <span class="eth borrow"></span>&nbsp;arb borrow: <span class="arb borrow"></span>&nbsp;usdc borrow: <span class="usdc borrow"></span>&nbsp;<br/>
+			<span class="siloHealthRatio"></span>&nbsp;
+			eth supply: <span class="eth supply"></span>&nbsp;btc supply: <span class="cBtc supply"></span>&nbsp;usdc borrow: <span class="usdc borrow"></span>&nbsp;<br/>
           </div>
-		  -->
+		  <!--
 		  <h6>Radi</h6>
 		  <div class="container">
 			<span class="radiHealthRatio"></span>&nbsp;
 			eth supply: <span class="reth supply"></span>&nbsp;</span>&nbsp;usdc borrow: <span class="rusdc borrow"></span>&nbsp;<br/>
           </div>
+		  -->
 		  <!--
 		  <br/>
 		  <div class="container">
@@ -260,6 +261,8 @@
 		var rEth = 0;
 		var rCbEth = 0;
 		var rdUsdc = 0;
+		var cBtcPrice = 0;
+		var trackjob = true;
 		
 		function getSilo(){	
 			/*$.ajax({
@@ -628,6 +631,103 @@
 			});
 			*/
 			
+		}
+		
+		function getBaseSilo(){
+			$.ajax({
+				type : "GET",
+				url: "https://api.dexscreener.com/latest/dex/pairs/base/0x70acdf2ad0bf2402c957154f944c19ef4e1cbae1",
+				dataType: "json",
+				success : function(data) {
+					$("span.price.cBtc").text(data.pair.priceUsd);
+					cBtcPrice = data.pair.priceUsd;
+				},
+				error: function (e) {
+				}
+			});
+			
+		
+			$.ajax({
+				type : "POST",
+				url: baseRpc,
+				contentType: 'application/json',
+				data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0x70a08231000000000000000000000000f712ab8c4505eb4b36a2ff9fa746470be81e6538","to":"0x045a8e383b64378faf7fc73fdef6049cc0c05c85"},"latest"]}',
+				success : function(data) {
+					var supplyEth = web3.eth.abi.decodeParameter('uint256', data.result);					
+					ethSupply = String(supplyEth.toString()).slice(0, -15) / 1000;
+					
+					if(ethPrice >0 && cBtcPrice > 0){
+						$(".eth.supply").text(ethSupply + " (" + (Math.floor(ethSupply * ethPrice * 100) / 100) + ")");
+						
+						if(ethSupply > 0 && btcSupply >= 0 && usdcBorrow > 0){
+							healthRatio = Math.floor((1 - (Math.floor(usdcBorrow)) / ((Math.floor(ethSupply * ethPrice) * 0.9) + (Math.floor(btcSupply * (cBtcPrice)) * 0.85)))*100);
+							
+							$(".siloHealthRatio").text(healthRatio + "%");
+							
+							if(healthRatio < 10){
+								alertCall('silo');
+							}
+						}
+					}
+				},
+				error: function (e) {
+				}
+			});					
+			
+			$.ajax({
+				type : "POST",
+				url: baseRpc,
+				contentType: 'application/json',
+				data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0x70a08231000000000000000000000000f712ab8c4505eb4b36a2ff9fa746470be81e6538","to":"0x9019cd36d21879ae8b1cc701327de9fd1e142cda"},"latest"]}',
+				success : function(data) {
+					var borrowUsdc = web3.eth.abi.decodeParameter('uint256', data.result);					
+					usdcBorrow = String(borrowUsdc).slice(0, -3) / 1000;
+					
+					if(ethPrice >0 && cBtcPrice > 0){
+						$(".usdc.borrow").text(usdcBorrow + " (" + (Math.floor(usdcBorrow) + ")"));
+						
+						if(ethSupply > 0 && btcSupply >= 0 && usdcBorrow > 0){
+							healthRatio = Math.floor((1 - (Math.floor(usdcBorrow)) / ((Math.floor(ethSupply * ethPrice) * 0.9) + (Math.floor(btcSupply * (cBtcPrice)) * 0.85)))*100);
+							
+							$(".siloHealthRatio").text(healthRatio + "%");
+							
+							if(healthRatio < 10){
+								alertCall('silo');
+							}
+						}
+					}
+				},
+				error: function (e) {
+				}
+			});
+			
+			
+			$.ajax({
+				type : "POST",
+				url: baseRpc,
+				contentType: 'application/json',
+				data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0x70a08231000000000000000000000000f712ab8c4505eb4b36a2ff9fa746470be81e6538","to":"0x6b69a1cdc054c3d873a882ef53bd0612422c365f"},"latest"]}',
+				success : function(data) {
+					var supplyBtc = web3.eth.abi.decodeParameter('uint256', data.result);					
+					btcSupply = String(supplyBtc.toString()).slice(0, -5) / 1000;
+					
+					if(ethPrice >0 && cBtcPrice > 0){
+						$(".cBtc.supply").text(usdcBorrow + " (" + Math.floor(btcSupply * (cBtcPrice)) + ")");
+						
+						if(ethSupply > 0 && btcSupply >= 0 && usdcBorrow > 0){
+							healthRatio = Math.floor((1 - (Math.floor(usdcBorrow)) / ((Math.floor(ethSupply * ethPrice) * 0.9) + (Math.floor(btcSupply * (cBtcPrice)) * 0.85)))*100);
+							
+							$(".siloHealthRatio").text(healthRatio + "%");
+							
+							if(healthRatio < 10){
+								alertCall('silo');
+							}
+						}
+					}
+				},
+				error: function (e) {
+				}
+			});
 		}
 		
 		function getRadi(){						
@@ -1056,6 +1156,10 @@
 		}
 	
 		function alertCall(msg){
+			if(!trackjob){
+				return;
+			}
+		
 			lastCall = sessionStorage.getItem('alert-' + msg);
 			if(lastcall == '' || (new Date() - lastcall > 300000)){
 				$.ajax({
@@ -1389,6 +1493,10 @@
 				retroTvl = 0;
 				aprMap.clear();
 				
+				if(!trackjob){
+					return false;
+				}
+				
 				$.ajax({
 					type : "GET",
 					url: "https://api.dexscreener.com/latest/dex/pairs/arbitrum/0xc31e54c7a869b9fcbecc14363cf510d1c41fa443",
@@ -1454,8 +1562,7 @@
 						});
 					}
 				});
-				
-/**				
+								
 				$.ajax({
 					type : "GET",
 					url: "https://api.angle.money/v3/merkl?user=0xf712ab8c4505eb4b36a2ff9fa746470be81e6538&chainIds=42161",
@@ -1678,7 +1785,7 @@
 					error: function (e) {
 					}
 				});
-				**/
+				
 				$.ajax({
 					type : "GET",
 					url: "https://api.dexscreener.com/latest/dex/pairs/arbitrum/0xe6ea93ba4ae9ee6520e55affebbdb38ed6c233a4",
@@ -1990,11 +2097,11 @@
 			setInterval(function () {
 				//fecthRamNft();
 				//fecthCleo();
-				//getSilo();
+				getBaseSilo();
 				//getDolo();
 				//checkAero();
 				fetchPool();
-				getRadi();
+				//getRadi();
 			}, 10000);
 			
 			setInterval(function () {
