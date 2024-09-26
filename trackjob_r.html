@@ -1435,7 +1435,7 @@
 							$("span.uaero.usage").text(aeroUsage);
 							if(aeroLimit > aeroUsage && (aeroLimit - aeroUsage > 18000)){
 								if(new Date().getUTCHours() < 16 || new Date().getUTCHours() > 22){
-									alertCall('aero opened -' + (aeroLimit - aeroUsage));
+									//alertCall('aero opened -' + (aeroLimit - aeroUsage));
 								}
 							}
 						},
