@@ -67,8 +67,8 @@
 		  <br/>
 		  <h6>Aero</h6>
 		  <div class="container">
-			usdc-aero: <span class="uaero usage"></span> / <span class="uaero supply"></span><br/>
-			weth-aero: <span class="waero usage"></span> / <span class="waero supply"></span><br/>
+			aero: <span class="uaero usage"></span> / <span class="uaero supply"></span><br/>
+			usdc: <span class="uusdc usage"></span> / <span class="uusdc supply"></span><br/>
           </div>
 		  <br/>
 		 
@@ -1412,6 +1412,8 @@
 		function checkAero(){
 			var aeroLimit = 13500000;
 			var aeroUsage = 13500000;
+			var usdcLimit = 10000000;
+			var usdcUsage = 10000000;
 			$.ajax({
 				type : "POST",
 				url: baseRpc,
@@ -1421,7 +1423,10 @@
 					var info = web3.eth.abi.decodeParameters(['address', 'address', 'address', 'address', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256'], data.result);
 					
 					aeroLimit = BigInt(info[31]) / BigInt(1000000000000000000);
+					usdcLimit = BigInt(info[30]) / BigInt(10000000000);
+					
 					$("span.uaero.supply").text(aeroLimit);
+					$("span.uusdc.supply").text(usdcLimit);
 					
 					$.ajax({
 						type : "POST",
@@ -1436,6 +1441,26 @@
 							if(aeroLimit > aeroUsage && (aeroLimit - aeroUsage > 18000)){
 								if(new Date().getUTCHours() < 16 || new Date().getUTCHours() > 22){
 									alertCall('aero opened -' + (aeroLimit - aeroUsage));
+								}
+							}
+						},
+						error: function (e) {
+						}
+					});					
+					
+					$.ajax({
+						type : "POST",
+						url: baseRpc,
+						contentType: 'application/json',
+						data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0x13c8e60d0000000000000000000000000000000000000000000000000000000000000038","to":"0xbb505c54d71e9e599cb8435b4f0ceec05fc71cbd"},"latest"]}',
+						success : function(data) {
+							var info = web3.eth.abi.decodeParameters(['uint256', 'uint256'], data.result);
+							
+							aeroUsage = BigInt(info[0]) / BigInt(1000000);
+							$("span.uusdc.usage").text(aeroUsage);
+							if(usdcLimit > usdcUsage && (usdcLimit - usdcUsage > 10000)){
+								if(new Date().getUTCHours() < 16 || new Date().getUTCHours() > 22){
+									//alertCall('usdc opened -' + (usdcLimit - usdcUsage));
 								}
 							}
 						},
