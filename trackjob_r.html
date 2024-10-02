@@ -61,7 +61,7 @@
 			ZTX: <span class="ztx price"></span>&nbsp;deus: <span class="deus price"></span>&nbsp;pion: <span class="pion price"></span><br/>
 			eth: <span class="eth price"></span>&nbsp;btc: <span class="btc price"></span>&nbsp;arb: <span class="arb price"></span><br/>
 			thena: <span class="thena price"></span>&nbsp;ram: <span class="ram price"></span>&nbsp;aero: <span class="aero price"></span><br/>			
-			tkn: <span class="tkn price"></span>&nbsp;chi: <span class="chi price"></span>&nbsp;wukre: <span class="wukre price"></span><br/>
+			tkn: <span class="tkn price"></span>&nbsp;chi: <span class="chi price"></span>&nbsp;wukre: <span class="wukre price"></span>&nbsp;zen: <span class="zen price"></span><br/>
 			ztx:<span class="ztxTvl"></span>&nbsp;gamma:<span class="gammaTvl"></span>&nbsp;retro:<span class="retroTvl"></span>&nbsp;total:<span class="userTvl"></span>&nbsp;r:<span class="avgApr"></span>%
           </div>
 		  <br/>
@@ -1646,9 +1646,6 @@
 						if(data.pair.priceChange.h1 >12 || data.pair.priceChange.h6 > 30 || data.pair.priceChange.h1 < -10 || data.pair.priceChange.h6 < -20){
 							alertCall('aero');
 						}
-						if(data.pair.priceUsd > 1.46){
-							alertCall('aero');
-						}
 					},
 					error: function (e) {
 					}
@@ -1662,7 +1659,7 @@
 						if(data.pair.priceChange.h1 >12 || data.pair.priceChange.h6 > 30 || data.pair.priceChange.h1 < -10 || data.pair.priceChange.h6 < -20){
 							alertCall('chi');
 						}
-						if(data.pair.liquidity.usd < 23000000){
+						if(data.pair.liquidity.usd < 33000000){
 							alertCall('chi');
 						}
 					},
@@ -1690,6 +1687,19 @@
 						$("span.price.wukre").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')' + ' - (' + data.pair.liquidity.usd + ')');
 						if(data.pair.priceChange.h1 < -6 || data.pair.priceChange.h6 < -10){
 							alertCall('wukre');
+						}
+					},
+					error: function (e) {
+					}
+				});
+				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/scroll/0xffce6db18f18d711ef7bf45b501a6b652b44bc43",
+					dataType: "json",
+					success : function(data) {
+						$("span.price.zen").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')' + ' - (' + data.pair.liquidity.usd + ')');
+						if(data.pair.priceChange.h1 < -10 || data.pair.priceChange.h6 < -20){
+							alertCall('zen');
 						}
 					},
 					error: function (e) {
