@@ -2074,6 +2074,9 @@
 					url: "http://34.30.240.131/s2134214sz314244zxvv/api",
 					success : function(data) {
 						$(".arc.healthRatio").text(Math.round(data.health_factor * 10000) / 100 + "%");
+						if((Math.round(data.health_factor * 10000) / 100) < 5){
+							alertCall('arcadia');
+						}
 						$(".arc.tick").text(Math.round(data.assets[2].asset_details.ticks.tick_lower_price * 10000) /10000 + " - " + Math.round(data.assets[2].asset_details.ticks.tick_upper_price * 10000) / 10000 + " (" + Math.round(data.assets[2].asset_details.ticks.tick_current_price * 10000) / 10000 + ")");
 						if(data.assets[2].out_of_range == true){
 							$(".arc.tick").css('color', 'red');
