@@ -84,6 +84,12 @@
 			eth supply: <span class="reth supply"></span>&nbsp;</span>&nbsp;usdc borrow: <span class="rusdc borrow"></span>&nbsp;<br/>
           </div>
 		  
+		  <br/>
+		  <h6>Arcadia</h6>
+		  <div class="container">
+			<span class="arc healthRatio"></span>&nbsp;
+			net: <span class="arc netValue"></span>&nbsp;</span>&nbsp;tick: <span class="arc tick"></span>&nbsp;<br/>
+          </div>
 		  <!--
 		  <br/>
 		  <div class="container">
@@ -2059,6 +2065,28 @@
 					});					
 				}
 			}
+			
+			function getArc(){				
+				$.ajax({
+					type : "GET",
+					dataType: 'json',
+					//url: "http://api.arcadia.finance/v1/api/accounts/overview?chain_id=8453&account=0x97aee25121Eb472D8ADf9cc578dbd0c396B953f1",
+					url: "http://34.30.240.131/s2134214sz314244zxvv/api",
+					success : function(data) {
+						$(".arc.healthRatio").text(Math.round(data.health_factor * 10000) / 100 + "%");
+						$(".arc.tick").text(Math.round(data.assets[2].asset_details.ticks.tick_lower_price * 10000) /10000 + " - " + Math.round(data.assets[2].asset_details.ticks.tick_upper_price * 10000) / 10000 + " (" + Math.round(data.assets[2].asset_details.ticks.tick_current_price * 10000) / 10000 + ")");
+						if(data.assets[2].out_of_range == true){
+							$(".arc.tick").css('color', 'red');
+							alertCall('arcadia');
+						}else{
+							$(".arc.tick").css('color', 'inherit');
+						}
+						$(".arc.netValue").text(Math.round((data.total_value - data.debt) / 100000) /10);
+					},
+					error: function (e) {
+					}
+				});
+			}
 
 			fetchPool();
 			//fecthCleo();
@@ -2067,6 +2095,7 @@
 			//getSilo();
 			//getDolo();
 			checkAero();
+			getArc();
 						
 			setInterval(function () {
 				//fecthRamNft();
@@ -2076,6 +2105,7 @@
 				//checkAero();
 				fetchPool();
 				getRadi();
+				getArc();
 			}, 10000);
 			
 			setInterval(function () {
@@ -2084,7 +2114,7 @@
 				//getSilo();
 				//getDolo();
 				checkAero();
-			}, 3000);
+			}, 5000);
 			
 		});
     </script>
