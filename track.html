@@ -1720,7 +1720,7 @@
 					success : function(data) {
 						$("span.price.tkn").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')' + ' - (' + data.pair.liquidity.usd + ')');
 						if(data.pair.priceChange.h1 < -10 || data.pair.priceChange.h6 < -20){
-							alertCall('tkn');
+							//alertCall('tkn');
 						}
 					},
 					error: function (e) {
@@ -1733,7 +1733,7 @@
 					success : function(data) {
 						$("span.price.wukre").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')' + ' - (' + data.pair.liquidity.usd + ')');
 						if(data.pair.priceChange.h1 < -6 || data.pair.priceChange.h6 < -10){
-							alertCall('wukre');
+							//alertCall('wukre');
 						}
 					},
 					error: function (e) {
@@ -1746,7 +1746,7 @@
 					success : function(data) {
 						$("span.price.zen").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')' + ' - (' + data.pair.liquidity.usd + ')');
 						if(data.pair.priceChange.h1 < -10 || data.pair.priceChange.h6 < -20){
-							alertCall('zen');
+							//alertCall('zen');
 						}
 					},
 					error: function (e) {
