@@ -62,7 +62,7 @@
 			eth: <span class="eth price"></span>&nbsp;btc: <span class="btc price"></span>&nbsp;arb: <span class="arb price"></span><br/>
 			thena: <span class="thena price"></span>&nbsp;ram: <span class="ram price"></span>&nbsp;aero: <span class="aero price"></span><br/>			
 			tkn: <span class="tkn price"></span>&nbsp;chi: <span class="chi price"></span>&nbsp;wukre: <span class="wukre price"></span>&nbsp;zen: <span class="zen price"></span><br/>
-			tarot:<span class="tarot price"></span>&nbsp;gamma:<span class="gammaTvl"></span>&nbsp;retro:<span class="retroTvl"></span>&nbsp;total:<span class="userTvl"></span>&nbsp;r:<span class="avgApr"></span>%
+			more:<span class="more price"></span>&nbsp;tarot:<span class="tarot price"></span>&nbsp;gamma:<span class="gammaTvl"></span>&nbsp;retro:<span class="retroTvl"></span>&nbsp;total:<span class="userTvl"></span>&nbsp;r:<span class="avgApr"></span>%
           </div>
 		  <br/>
 		  <h6>Aero</h6>
@@ -1599,6 +1599,7 @@
 					}
 				});
 				
+				
 				$.ajax({
 					type : "GET",
 					url: "https://api.dexscreener.com/latest/dex/pairs/arbitrum/0xC6F780497A95e246EB9449f5e4770916DCd6396A",
@@ -1760,6 +1761,20 @@
 						$("span.price.tarot").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
 						if(data.pair.priceChange.h1 >10 || data.pair.priceChange.h6 > 20 || data.pair.priceChange.h1 < -10){
 							alertCall('tarot');
+						}
+					},
+					error: function (e) {
+					}
+				});
+				
+				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/scroll/0xb0a7cb220b586d4ae97133eff3d22e1c8559099c",
+					dataType: "json",
+					success : function(data) {
+						$("span.price.more").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
+						if(data.pair.priceChange.h1 < -5 || data.pair.priceChange.h6 < -10 || data.pair.priceChange.h1 < -10){
+							alertCall('more');
 						}
 					},
 					error: function (e) {
