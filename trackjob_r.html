@@ -1704,7 +1704,7 @@
 					success : function(data) {
 						$("span.price.chi").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')' + ' - (' + data.pair.liquidity.usd + ')');
 						if(data.pair.priceChange.h1 >12 || data.pair.priceChange.h6 > 30 || data.pair.priceChange.h1 < -10 || data.pair.priceChange.h6 < -20){
-							alertCall('chi');
+							//alertCall('chi');
 						}
 						if(data.pair.liquidity.usd < 33000000){
 							//alertCall('chi');
