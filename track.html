@@ -1776,7 +1776,7 @@
 							if(v.symbol == 'MORE'){
 								$("span.price.more").text(v.price);
 								
-								if(v.price > 0.98){
+								if(v.price < 0.98){
 									alertCall('More');
 								}
 							}
@@ -1784,7 +1784,7 @@
 							if(v.symbol == 'PEARL'){
 								$("span.price.pearl").text(v.price);
 								
-								if(v.price > 0.4){
+								if(v.price < 0.4){
 									alertCall('pearl');
 								}
 							}
