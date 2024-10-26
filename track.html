@@ -62,7 +62,7 @@
 			eth: <span class="eth price"></span>&nbsp;btc: <span class="btc price"></span>&nbsp;arb: <span class="arb price"></span><br/>
 			thena: <span class="thena price"></span>&nbsp;ram: <span class="ram price"></span>&nbsp;aero: <span class="aero price"></span><br/>			
 			tkn: <span class="tkn price"></span>&nbsp;chi: <span class="chi price"></span>&nbsp;wukre: <span class="wukre price"></span>&nbsp;zen: <span class="zen price"></span><br/>
-			more:<span class="more price"></span>&nbsp;tarot:<span class="tarot price"></span>&nbsp;gamma:<span class="gammaTvl"></span>&nbsp;retro:<span class="retroTvl"></span>&nbsp;total:<span class="userTvl"></span>&nbsp;r:<span class="avgApr"></span>%
+			more:<span class="more price"></span><br/>pearl:<span class="pearl price"></span><br/>&nbsp;tarot:<span class="tarot price"></span>&nbsp;gamma:<span class="gammaTvl"></span>&nbsp;retro:<span class="retroTvl"></span>&nbsp;total:<span class="userTvl"></span>&nbsp;r:<span class="avgApr"></span>%
           </div>
 		  <br/>
 		  <h6>Aero</h6>
@@ -1769,17 +1769,42 @@
 				
 				$.ajax({
 					type : "GET",
-					url: "https://api.dexscreener.com/latest/dex/pairs/scroll/0xb0a7cb220b586d4ae97133eff3d22e1c8559099c",
+					url: "https://newapi.pearl.exchange/api/v2/assets",
 					dataType: "json",
 					success : function(data) {
-						$("span.price.more").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
-						if(data.pair.priceChange.h1 < -5 || data.pair.priceChange.h6 < -10 || data.pair.priceChange.h1 < -10){
-							alertCall('more');
-						}
+						$.each(data.data, function(idx, v){
+							if(v.symbol == 'MORE'){
+								$("span.price.more").text(v.price);
+								
+								if(v.price > 0.98){
+									alertCall('More');
+								}
+							}
+							
+							if(v.symbol == 'PEARL'){
+								$("span.price.pearl").text(v.price);
+								
+								if(v.price > 0.4){
+									alertCall('pearl');
+								}
+							}
+						});
 					},
 					error: function (e) {
 					}
 				});
+				
+				$.ajax({
+					type : "GET",
+					url: "https://newapi.pearl.exchange/api/v2/assets",
+					dataType: "json",
+					success : function(data) {
+					},
+					error: function (e) {
+					}
+				});
+				
+				
 				
 				/*
 				$.ajax({
@@ -2113,7 +2138,7 @@
 			//getSilo();
 			//getDolo();
 			checkAero();
-			getArc();
+			//getArc();
 						
 			setInterval(function () {
 				//fecthRamNft();
