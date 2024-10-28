@@ -61,8 +61,9 @@
 			ZTX: <span class="ztx price"></span>&nbsp;deus: <span class="deus price"></span>&nbsp;pion: <span class="pion price"></span><br/>
 			eth: <span class="eth price"></span>&nbsp;btc: <span class="btc price"></span>&nbsp;arb: <span class="arb price"></span><br/>
 			thena: <span class="thena price"></span>&nbsp;ram: <span class="ram price"></span>&nbsp;aero: <span class="aero price"></span><br/>			
-			tkn: <span class="tkn price"></span>&nbsp;chi: <span class="chi price"></span>&nbsp;wukre: <span class="wukre price"></span>&nbsp;zen: <span class="zen price"></span><br/>
-			more:<span class="more price"></span><br/>pearl:<span class="pearl price"></span><br/>&nbsp;tarot:<span class="tarot price"></span>&nbsp;gamma:<span class="gammaTvl"></span>&nbsp;retro:<span class="retroTvl"></span>&nbsp;total:<span class="userTvl"></span>&nbsp;r:<span class="avgApr"></span>%
+			<!-- tkn: <span class="tkn price"></span>&nbsp;chi: <span class="chi price"></span>&nbsp;wukre: <span class="wukre price"></span>&nbsp;zen: <span class="zen price"></span><br/> -->
+			more:<span class="more price"></span>&nbsp;pearl:<span class="pearl price"></span>&nbsp;cvr:<span class="cvr price"></span>&nbsp;ukre:<span class="ukre price"></span><br/>
+			&nbsp;tarot:<span class="tarot price"></span>&nbsp;gamma:<span class="gammaTvl"></span>&nbsp;retro:<span class="retroTvl"></span>&nbsp;total:<span class="userTvl"></span>&nbsp;r:<span class="avgApr"></span>%
           </div>
 		  <br/>
 		  <h6>Aero</h6>
@@ -1776,7 +1777,7 @@
 							if(v.symbol == 'MORE'){
 								$("span.price.more").text(v.price);
 								
-								if(v.price < 0.98){
+								if(v.price < 0.988){
 									alertCall('More');
 								}
 							}
@@ -1786,6 +1787,22 @@
 								
 								if(v.price < 0.3){
 									alertCall('pearl');
+								}
+							}
+							
+							if(v.symbol == 'CVR'){
+								$("span.price.cvr").text(v.price);
+								
+								if(v.price < 0.3){
+									alertCall('cvr');
+								}
+							}
+							
+							if(v.symbol == 'UKRE'){
+								$("span.price.ukre").text(v.price);
+								
+								if(v.price < 90){
+									alertCall('ukre');
 								}
 							}
 						});
