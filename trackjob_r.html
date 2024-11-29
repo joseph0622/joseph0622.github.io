@@ -1649,6 +1649,9 @@
 					dataType: "json",
 					success : function(data) {
 						$("span.price.thena").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
+						if(data.pair.priceChange.h1 >25 || data.pair.priceChange.h6 > 50 || data.pair.priceChange.h1 < -20){
+							alertCall('thena');
+						}
 					},
 					error: function (e) {
 					}
@@ -1778,7 +1781,7 @@
 								$("span.price.more").text(v.price);
 								
 								if(v.price < 0.988){
-									//alertCall('More');
+									alertCall('More');
 								}
 							}
 							
@@ -1786,7 +1789,7 @@
 								$("span.price.pearl").text(v.price);
 								
 								if(v.price < 0.3){
-									//alertCall('pearl');
+									alertCall('pearl');
 								}
 							}
 							
@@ -1794,7 +1797,7 @@
 								$("span.price.cvr").text(v.price);
 								
 								if(v.price < 0.3){
-									//alertCall('cvr');
+									alertCall('cvr');
 								}
 							}
 							
@@ -1802,7 +1805,7 @@
 								$("span.price.ukre").text(v.price);
 								
 								if(v.price < 90){
-									//alertCall('ukre');
+									alertCall('ukre');
 								}
 							}
 						});
@@ -2164,7 +2167,7 @@
 				//getDolo();
 				//checkAero();
 				fetchPool();
-				getRadi();
+				//getRadi();
 				//getArc();
 			}, 10000);
 			
