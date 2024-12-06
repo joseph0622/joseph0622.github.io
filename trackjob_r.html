@@ -1728,34 +1728,18 @@
 						$.each(data.data, function(idx, v){
 							if(v.symbol == 'MORE'){
 								$("span.price.more").text(v.price);
-								
-								if(v.price < 0.988){
-									alertCall('More');
-								}
 							}
 							
 							if(v.symbol == 'PEARL'){
 								$("span.price.pearl").text(v.price);
-								
-								if(v.price < 0.3){
-									alertCall('pearl');
-								}
 							}
 							
 							if(v.symbol == 'CVR'){
 								$("span.price.cvr").text(v.price);
-								
-								if(v.price < 0.3){
-									alertCall('cvr');
-								}
 							}
 							
 							if(v.symbol == 'UKRE'){
 								$("span.price.ukre").text(v.price);
-								
-								if(v.price < 90){
-									alertCall('ukre');
-								}
 							}
 						});
 					},
