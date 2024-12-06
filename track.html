@@ -1697,63 +1697,8 @@
 						if(data.pair.priceChange.h1 >12 || data.pair.priceChange.h6 > 30 || data.pair.priceChange.h1 < -10 || data.pair.priceChange.h6 < -20){
 							alertCall('aero');
 						}
-						if(data.pair.priceUsd > 2.1){
+						if(data.pair.priceUsd > 2.3){
 							alertCall('aero');
-						}
-					},
-					error: function (e) {
-					}
-				});
-				$.ajax({
-					type : "GET",
-					url: "https://api.dexscreener.com/latest/dex/pairs/scroll/0x1afbc62f221be90d82e0f4cfeef011451942d6e1",
-					dataType: "json",
-					success : function(data) {
-						$("span.price.chi").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')' + ' - (' + data.pair.liquidity.usd + ')');
-						if(data.pair.priceChange.h1 >12 || data.pair.priceChange.h6 > 30 || data.pair.priceChange.h1 < -10 || data.pair.priceChange.h6 < -20){
-							//alertCall('chi');
-						}
-						if(data.pair.liquidity.usd < 33000000){
-							//alertCall('chi');
-						}
-					},
-					error: function (e) {
-					}
-				});
-				$.ajax({
-					type : "GET",
-					url: "https://api.dexscreener.com/latest/dex/pairs/scroll/0x838d141bdbeceaa2eb1c576b6a4309f26f795cf2",
-					dataType: "json",
-					success : function(data) {
-						$("span.price.tkn").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')' + ' - (' + data.pair.liquidity.usd + ')');
-						if(data.pair.priceChange.h1 < -10 || data.pair.priceChange.h6 < -20){
-							//alertCall('tkn');
-						}
-					},
-					error: function (e) {
-					}
-				});
-				$.ajax({
-					type : "GET",
-					url: "https://api.dexscreener.com/latest/dex/pairs/scroll/0xdc76497e8785d77b5aa0431bddb1e52ec26273fb",
-					dataType: "json",
-					success : function(data) {
-						$("span.price.wukre").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')' + ' - (' + data.pair.liquidity.usd + ')');
-						if(data.pair.priceChange.h1 < -6 || data.pair.priceChange.h6 < -10){
-							//alertCall('wukre');
-						}
-					},
-					error: function (e) {
-					}
-				});
-				$.ajax({
-					type : "GET",
-					url: "https://api.dexscreener.com/latest/dex/pairs/scroll/0xffce6db18f18d711ef7bf45b501a6b652b44bc43",
-					dataType: "json",
-					success : function(data) {
-						$("span.price.zen").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')' + ' - (' + data.pair.liquidity.usd + ')');
-						if(data.pair.priceChange.h1 < -10 || data.pair.priceChange.h6 < -20){
-							//alertCall('zen');
 						}
 					},
 					error: function (e) {
@@ -1773,6 +1718,7 @@
 					error: function (e) {
 					}
 				});
+				
 				
 				$.ajax({
 					type : "GET",
