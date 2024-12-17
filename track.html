@@ -58,7 +58,7 @@
         <div class="col-lg-12 text-center" >
 
           <div class="container">
-			ZTX: <span class="ztx price"></span>&nbsp;deus: <span class="deus price"></span>&nbsp;pion: <span class="pion price"></span><br/>
+			SYMM: <span class="symm price"></span>&nbsp;deus: <span class="deus price"></span>&nbsp;pion: <span class="pion price"></span><br/>
 			eth: <span class="eth price"></span>&nbsp;btc: <span class="btc price"></span>&nbsp;arb: <span class="arb price"></span><br/>
 			thena: <span class="thena price"></span>&nbsp;ram: <span class="ram price"></span>&nbsp;aero: <span class="aero price"></span><br/>			
 			<!-- tkn: <span class="tkn price"></span>&nbsp;chi: <span class="chi price"></span>&nbsp;wukre: <span class="wukre price"></span>&nbsp;zen: <span class="zen price"></span><br/> -->
@@ -1630,12 +1630,25 @@
 					}
 				});
 				
+				/*
 				$.ajax({
 					type : "GET",
 					url: "https://api.dexscreener.com/latest/dex/pairs/arbitrum/0xe6ea93ba4ae9ee6520e55affebbdb38ed6c233a4",
 					dataType: "json",
 					success : function(data) {
 						$("span.price.ztx").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24 +')');
+						ztxPrice = data.pair.priceUsd;
+					},
+					error: function (e) {
+					}
+				});*/
+				
+				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/base/0x3eb2a8015de1419a5089dab37b0056f0fc24f821",
+					dataType: "json",
+					success : function(data) {
+						$("span.price.symm").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24 +')');
 						ztxPrice = data.pair.priceUsd;
 					},
 					error: function (e) {
@@ -1697,7 +1710,7 @@
 						if(data.pair.priceChange.h1 >12 || data.pair.priceChange.h6 > 30 || data.pair.priceChange.h1 < -10 || data.pair.priceChange.h6 < -20){
 							alertCall('aero');
 						}
-						if(data.pair.priceUsd > 2.3){
+						if(data.pair.priceUsd > 2.5){
 							alertCall('aero');
 						}
 					},
