@@ -60,7 +60,7 @@
           <div class="container">
 			SYMM: <span class="symm price"></span>&nbsp;deus: <span class="deus price"></span>&nbsp;pion: <span class="pion price"></span><br/>
 			eth: <span class="eth price"></span>&nbsp;btc: <span class="btc price"></span>&nbsp;arb: <span class="arb price"></span><br/>
-			KIMA: <span class="kima price"></span>&nbsp;thena: <span class="thena price"></span>&nbsp;ram: <span class="ram price"></span>&nbsp;aero: <span class="aero price"></span><br/>			
+			USD+: <span class="USDP price"></span>&nbsp;thena: <span class="thena price"></span>&nbsp;ram: <span class="ram price"></span>&nbsp;aero: <span class="aero price"></span><br/>			
 			<!-- tkn: <span class="tkn price"></span>&nbsp;chi: <span class="chi price"></span>&nbsp;wukre: <span class="wukre price"></span>&nbsp;zen: <span class="zen price"></span><br/> -->
 			more:<span class="more price"></span>&nbsp;pearl:<span class="pearl price"></span>&nbsp;cvr:<span class="cvr price"></span>&nbsp;ukre:<span class="ukre price"></span><br/>
 			&nbsp;tarot:<span class="tarot price"></span>&nbsp;gamma:<span class="gammaTvl"></span>&nbsp;retro:<span class="retroTvl"></span>&nbsp;total:<span class="userTvl"></span>&nbsp;r:<span class="avgApr"></span>%
@@ -1734,12 +1734,26 @@
 				
 				$.ajax({
 					type : "GET",
-					url: "https://api.dexscreener.com/latest/dex/pairs/arbitrum/0xe4bfcc208f3447cc5d2f5ccb40c52778d4be2004",
+					url: "https://api.dexscreener.com/latest/dex/pairs/blast/0x6a1de1841c5c3712e3bc7c75ce3d57dedec6915f",
 					dataType: "json",
 					success : function(data) {
-						$("span.price.kima").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
-						if(data.pair.priceChange.h1 >10 || data.pair.priceChange.h6 > 20 || data.pair.priceChange.h1 < -10){
-							alertCall('kima');
+						$("span.price.USDP").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
+						if(data.pair.priceChange.h6 > -10 || data.pair.priceChange.h1 < -5){
+							alertCall('USD+');
+						}
+					},
+					error: function (e) {
+					}
+				});
+				
+				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/blast/0x878c963776f374412c896e4b2a3db84a36614c7c",
+					dataType: "json",
+					success : function(data) {
+						$("span.price.thrust").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
+						if(data.pair.priceChange.h6 > -20 || data.pair.priceChange.h1 < -10){
+							alertCall('THRUST');
 						}
 					},
 					error: function (e) {
