@@ -1738,7 +1738,7 @@
 					dataType: "json",
 					success : function(data) {
 						$("span.price.USDP").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
-						if(data.pair.priceChange.h6 > -10 || data.pair.priceChange.h1 < -5){
+						if(data.pair.priceChange.h6 < -10 || data.pair.priceChange.h1 < -5){
 							alertCall('USD+');
 						}
 					},
@@ -1748,12 +1748,12 @@
 				
 				$.ajax({
 					type : "GET",
-					url: "https://api.dexscreener.com/latest/dex/pairs/blast/0x878c963776f374412c896e4b2a3db84a36614c7c",
+					url: "https://api.dexscreener.com/latest/dex/pairs/blast/0xE16fbfcFB800E358De6c3210e86b5f23Fc0f2598",
 					dataType: "json",
 					success : function(data) {
 						$("span.price.thrust").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
-						if(data.pair.priceChange.h6 > -20 || data.pair.priceChange.h1 < -10){
-							alertCall('THRUST');
+						if(data.pair.priceChange.h6 < -20 || data.pair.priceChange.h1 < -10){
+							alertCall('HYPER');
 						}
 					},
 					error: function (e) {
