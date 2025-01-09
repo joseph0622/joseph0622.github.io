@@ -63,7 +63,8 @@
 			USD+: <span class="USDP price"></span>&nbsp;thena: <span class="thena price"></span>&nbsp;ram: <span class="ram price"></span>&nbsp;aero: <span class="aero price"></span><br/>			
 			<!-- tkn: <span class="tkn price"></span>&nbsp;chi: <span class="chi price"></span>&nbsp;wukre: <span class="wukre price"></span>&nbsp;zen: <span class="zen price"></span><br/> -->
 			more:<span class="more price"></span>&nbsp;pearl:<span class="pearl price"></span>&nbsp;cvr:<span class="cvr price"></span>&nbsp;ukre:<span class="ukre price"></span><br/>
-			&nbsp;tarot:<span class="tarot price"></span>&nbsp;gamma:<span class="gammaTvl"></span>&nbsp;retro:<span class="retroTvl"></span>&nbsp;total:<span class="userTvl"></span>&nbsp;r:<span class="avgApr"></span>%
+			&nbsp;SCUSD:<span class="scusd price"></span>&nbsp;WS:<span class="ws price"></span>
+			<!--gamma:<span class="gammaTvl"></span>&nbsp;retro:<span class="retroTvl"></span>&nbsp;total:<span class="userTvl"></span>&nbsp;r:<span class="avgApr"></span>%-->
           </div>
 		  <br/>
 		  <h6>Aero</h6>
@@ -1718,6 +1719,7 @@
 					}
 				});
 				
+				/*
 				$.ajax({
 					type : "GET",
 					url: "https://api.dexscreener.com/latest/dex/pairs/base/0x2d25e0514f23c6367687de89bd5167dc754d4934",
@@ -1726,6 +1728,35 @@
 						$("span.price.tarot").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
 						if(data.pair.priceChange.h1 >10 || data.pair.priceChange.h6 > 20 || data.pair.priceChange.h1 < -10){
 							alertCall('tarot');
+						}
+					},
+					error: function (e) {
+					}
+				});
+				*/
+				
+				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/sonic/0xcd4d2b142235d5650ffa6a38787ed0b7d7a51c0c",
+					dataType: "json",
+					success : function(data) {
+						$("span.price.scusd").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
+						if(data.pair.priceChange.h6 < -10 || data.pair.priceChange.h1 < -5){
+							alertCall('scusd');
+						}
+					},
+					error: function (e) {
+					}
+				});
+				
+				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/sonic/0x25f746bb206041ed8da6f08ed1d32454a5856d37",
+					dataType: "json",
+					success : function(data) {
+						$("span.price.ws").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
+						if(data.pair.priceChange.h6 < -20 || data.pair.priceChange.h1 < -10){
+							alertCall('ws');
 						}
 					},
 					error: function (e) {
