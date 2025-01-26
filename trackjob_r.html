@@ -1571,6 +1571,9 @@
 					success : function(data) {
 						$("span.price.eth").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
 						ethPrice = data.pair.priceUsd;
+						if(data.pair.priceUsd > 4000){
+							alertCall('eth');
+						}
 					},
 					error: function (e) {
 						$.ajax({
@@ -1756,6 +1759,10 @@
 					success : function(data) {
 						$("span.price.ws").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
 						if(data.pair.priceChange.h6 < -20 || data.pair.priceChange.h1 < -10){
+							alertCall('ws');
+						}
+						
+						if(data.pair.priceUsd > 0.7){
 							alertCall('ws');
 						}
 					},
