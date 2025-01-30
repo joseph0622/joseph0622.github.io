@@ -1762,7 +1762,7 @@
 							alertCall('ws');
 						}
 						
-						if(data.pair.priceUsd > 0.6){
+						if(data.pair.priceUsd > 0.6 || data.pair.priceUsd < 0.32){
 							alertCall('ws');
 						}
 					},
@@ -1791,7 +1791,7 @@
 					success : function(data) {
 						$("span.price.hyper").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
 						if(data.pair.priceChange.h6 < -20 || data.pair.priceChange.h1 < -10){
-							alertCall('HYPER');
+							//alertCall('HYPER');
 						}
 					},
 					error: function (e) {
