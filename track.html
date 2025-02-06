@@ -79,7 +79,7 @@
 			<span class="siloHealthRatio"></span>&nbsp;
 			eth supply: <span class="eth supply"></span>&nbsp;btc supply: <span class="cBtc supply"></span>&nbsp;usdc borrow: <span class="usdc borrow"></span>&nbsp;<br/>
           </div>
-		  -->
+		  
 		  <h6>Radi</h6>
 		  <div class="container">
 			<span class="radiHealthRatio"></span>&nbsp;
@@ -92,6 +92,7 @@
 			<span class="arc healthRatio"></span>&nbsp;
 			net: <span class="arc netValue"></span>&nbsp;</span>&nbsp;tick: <span class="arc tick"></span>&nbsp;<br/>
           </div>
+		  -->
 		  <!--
 		  <br/>
 		  <div class="container">
@@ -210,6 +211,15 @@
 					<td class="inrange"></td>
 					<td colspan="2" class="reward"></td>
 				</tr>
+				<tr class="avax">
+					<td class="t0"></td>
+					<td class="t1"></td>
+					<td class="bal0"></td>
+					<td class="bal1"></td>
+					<td class="total"></td>
+					<td class="inrange"></td>
+					<td colspan="2" class="reward"></td>
+				</tr>
           </table>
 
 		  <br/>
@@ -226,7 +236,7 @@
 		var web3 = new Web3('https://arb1.arbitrum.io/rpc');
 		var avaxWeb3 = new Web3('https://avalanche.blockpi.network/v1/rpc/public');
 		var rpc = 'https://arbitrum.blockpi.network/v1/rpc/public';
-		var avaxRpc = 'https://avalanche.blockpi.network/v1/rpc/public';
+		var avaxRpc = 'https://avalanche.drpc.org';
 		var baseRpc = 'https://mainnet.base.org';
 		var ztxPrice = 0;
 		var oretroPrice = 0;
@@ -1118,6 +1128,65 @@
 			});
 		}
 		
+		function getPhar(){
+			$("table.table tbody tr.avax").remove();
+			$.ajax({
+				type : "GET",
+				url: "https://pharaoh-api-production.up.railway.app/nfp_ids?wallet=0xf712ab8c4505eb4b36a2ff9fa746470be81e6538",
+				dataType: "json",
+				success : function(data) {
+					var timebuffer = 1000;
+					$.each(data, function(idx, nftId){
+						var newTr = $("table.table tfoot tr.avax").clone();
+						setTimeout(function(){
+							getPharPosition(nftId, newTr);
+						}, timebuffer);
+						timebuffer += 1000;
+						timebuffer += Math.floor(Math.random() * 1000);
+						$(newTr).appendTo($("table.table tbody"));
+					});
+				}
+			});	
+			
+		}
+		
+		function getPharPosition(nftId, tr){
+			$.ajax({
+				type : "GET",
+				url: "https://pharaoh-api-production.up.railway.app/apr_backtest?nft_ids=" + nftId,
+				contentType: 'application/json',
+				success : function(data) {
+					data = data[0];
+					var token0 = data['amount0'];
+					var token1 = data['amount1'];
+					var fee = '';
+					var tickLower = data['tick_lower'];
+					var tickUpper = data['tick_upper'];
+					var liquidity = '';
+					var tick = data['tick'];
+					var pool;
+										
+					var range = tickUpper - tickLower;
+					var tickPos = ((tick - tickLower) / range) * 100;
+					var inRange = Math.floor(tickPos * 100) / 100;
+					$(tr).find("td.t0").text(data['symbol0']);
+					$(tr).find("td.t1").text(data['symbol1']);
+					$(tr).find("td.bal0").text(token0);
+					$(tr).find("td.bal1").text(token1);
+					$(tr).find("td.total").text(token0 + token1);
+					$(tr).find(".inrange").text(inRange + "%");
+					
+					if(token0 < 0 || token1 < 0){
+						//$(tr).find(".inrange").text('No');
+						//$(tr).find(".inrange").addClass("alert");
+						alertCall('Alert - phar');
+					}
+				},
+				error: function (e) {
+				}
+			});
+		}
+		
 		function getAvaxPosition(nftId, tr){
 			var nftIdCode = web3.eth.abi.encodeParameter('uint256', nftId);
 			nftIdCode = nftIdCode.replace('0x', '0x99fbab88');
@@ -1712,10 +1781,10 @@
 					success : function(data) {
 						$("span.price.aero").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
 						if(data.pair.priceChange.h1 >12 || data.pair.priceChange.h6 > 30 || data.pair.priceChange.h1 < -10 || data.pair.priceChange.h6 < -20){
-							alertCall('aero');
+							//alertCall('aero');
 						}
 						if(data.pair.priceUsd > 2.5){
-							alertCall('aero');
+							//alertCall('aero');
 						}
 					},
 					error: function (e) {
@@ -1762,7 +1831,7 @@
 							alertCall('ws');
 						}
 						
-						if(data.pair.priceUsd > 0.6 || data.pair.priceUsd < 0.32){
+						if(data.pair.priceUsd > 0.68 || data.pair.priceUsd < 0.32){
 							alertCall('ws');
 						}
 					},
@@ -1913,6 +1982,7 @@
 				*/
 				
 				if(!trackjob){
+				/*
 					$.ajax({
 						type : "GET",
 						url: "https://api.angle.money/v3/merkl?user=0xf712ab8c4505eb4b36a2ff9fa746470be81e6538&chainIds=42161",
@@ -2134,7 +2204,7 @@
 						},
 						error: function (e) {
 						}
-					});					
+					});					*/
 				}
 			}
 			
@@ -2170,6 +2240,7 @@
 			//getSilo();
 			//getDolo();
 			checkAero();
+			getPhar();
 			//getArc();
 						
 			setInterval(function () {
@@ -2181,14 +2252,15 @@
 				fetchPool();
 				//getRadi();
 				//getArc();
-			}, 10000);
+				getPhar();
+			}, 30000);
 			
 			setInterval(function () {
 				//fecthRamNft();
 				//fecthCleo();
 				//getSilo();
 				//getDolo();
-				checkAero();
+				//checkAero();
 			}, 5000);
 			
 		});
