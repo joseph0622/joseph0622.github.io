@@ -1157,6 +1157,7 @@
 				contentType: 'application/json',
 				success : function(data) {
 					data = data[0];
+					
 					var token0 = data['amount0'];
 					var token1 = data['amount1'];
 					var fee = '';
@@ -1165,6 +1166,10 @@
 					var liquidity = '';
 					var tick = data['tick'];
 					var pool;
+					
+					if(data['boost'] = 0 || (token0 + token1 <= 1){
+						return;
+					}
 										
 					var range = tickUpper - tickLower;
 					var tickPos = ((tick - tickLower) / range) * 100;
