@@ -1180,6 +1180,8 @@
 					$(tr).find("td.bal1").text(token1);
 					$(tr).find("td.total").text(token0 + token1);
 					$(tr).find(".inrange").text(inRange + "%");
+
+                                        if(data['symbol1'] == 'EURC') return;
 					
 					if(token0 <= 0 || token1 <= 0){
 						//$(tr).find(".inrange").text('No');
