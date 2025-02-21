@@ -1838,7 +1838,7 @@
 							alertCall('ws');
 						}
 						
-						if(data.pair.priceUsd > 1.01 || data.pair.priceUsd < 0.32){
+						if(data.pair.priceUsd > 0.93 || data.pair.priceUsd < 0.32){
 							alertCall('ws');
 						}
 					},
@@ -2246,8 +2246,8 @@
 			//fecthRamNft();
 			//getSilo();
 			//getDolo();
-			checkAero();
-			getPhar();
+			//checkAero();
+			//getPhar();
 			//getArc();
 						
 			setInterval(function () {
@@ -2259,7 +2259,7 @@
 				fetchPool();
 				//getRadi();
 				//getArc();
-				getPhar();
+				//getPhar();
 			}, 30000);
 			
 			setInterval(function () {
