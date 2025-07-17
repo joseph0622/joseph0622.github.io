@@ -1959,16 +1959,52 @@
 					error: function (e) {
 					}
 				});
-								
+				
 				$.ajax({
 					type : "GET",
-					url: "https://api.dexscreener.com/latest/dex/pairs/blast/0xE16fbfcFB800E358De6c3210e86b5f23Fc0f2598",
+					url: 'https://min-api.cryptocompare.com/data/pricemultifull?fsyms=ETH&tsyms=USD',
+					contentType: 'application/json',
+					success : function(data) {
+						ethPrice = data.RAW.ETH.USD.PRICE;
+						if(ethPrice >= 4100){
+							alertCall('eth');
+						}
+					},
+					error: function (e) {
+					}
+				});
+				
+				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/base/0xa6385c73961dd9c58db2ef0c4eb98ce4b60651e8",
 					dataType: "json",
 					success : function(data) {
-						$("span.price.hyper").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
-						if(data.pair.priceChange.h6 < -20 || data.pair.priceChange.h1 < -10){
-							//alertCall('HYPER');
+						wstEthPrice = data.pair.priceUsd;
+						if(wstEthPrice >= 4300){
+							alertCall('wsteth');
 						}
+					},
+					error: function (e) {
+					}
+				});
+				
+				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/unichain/0x97e4442bca2c069f9060f3b8eef52eb25c98c245",
+					dataType: "json",
+					success : function(data) {
+						$("span.price.catx").text(data.pair.priceUsd);
+					},
+					error: function (e) {
+					}
+				});
+				
+				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/avalanche/0x0d9fd6dd9b1ff55fb0a9bb0e5f1b6a2d65b741a3",
+					dataType: "json",
+					success : function(data) {
+						$("span.price.black").text(data.pair.priceUsd);
 					},
 					error: function (e) {
 					}
