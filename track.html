@@ -60,10 +60,11 @@
           <div class="container">
 			SYMM: <span class="symm price"></span>&nbsp;deus: <span class="deus price"></span>&nbsp;pion: <span class="pion price"></span><br/>
 			eth: <span class="eth price"></span>&nbsp;btc: <span class="btc price"></span>&nbsp;arb: <span class="arb price"></span><br/>
-			EURC: <span class="eurc price"></span>&nbsp;thena: <span class="thena price"></span>&nbsp;ram: <span class="ram price"></span>&nbsp;aero: <span class="aero price"></span><br/>			
+			thena: <span class="thena price"></span>&nbsp;ram: <span class="ram price"></span>&nbsp;aero: <span class="aero price"></span><br/>			
 			<!-- tkn: <span class="tkn price"></span>&nbsp;chi: <span class="chi price"></span>&nbsp;wukre: <span class="wukre price"></span>&nbsp;zen: <span class="zen price"></span><br/> -->
 			<!-- more:<span class="more price"></span>&nbsp;pearl:<span class="pearl price"></span>&nbsp;cvr:<span class="cvr price"></span>&nbsp;ukre:<span class="ukre price"></span><br/> -->
-			&nbsp;WS:<span class="ws price"></span>&nbsp;BLACK:<span class="black price"></span>&nbsp;CATX:<span class="catx price"></span>
+			&nbsp;WS:<span class="ws price"></span>&nbsp;BLACK:<span class="black price"></span>&nbsp;CATX:<span class="catx price"></span><br/>
+			EURC: <span class="eurc price"></span>&nbsp;AVAX: <span class="avax price"></span>&nbsp;
 			<!--gamma:<span class="gammaTvl"></span>&nbsp;retro:<span class="retroTvl"></span>&nbsp;total:<span class="userTvl"></span>&nbsp;r:<span class="avgApr"></span>%-->
           </div>
 		  <br/>
@@ -2022,6 +2023,20 @@
 					},
 					error: function (e) {
 					}
+				});
+				
+				$.ajax({
+				type : "GET",
+				url: "https://api.dexscreener.com/latest/dex/pairs/avalanche/0x864d4e5ee7318e97483db7eb0912e09f161516ea",
+				dataType: "json",
+				success : function(data) {
+					$("span.price.avax").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
+					if(data.pair.priceUsd > 26){
+						alertCall('avax');
+					}
+				},
+				error: function (e) {
+				}
 				});
 				
 				/*
