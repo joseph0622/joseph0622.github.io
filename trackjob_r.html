@@ -1950,11 +1950,11 @@
 						$("span.price.ws").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
 						wsPrice = data.pair.priceUsd;
 						if(data.pair.priceChange.h6 < -20 || data.pair.priceChange.h1 < -10){
-							alertCall('ws');
+							//alertCall('ws');
 						}
 						
 						if(data.pair.priceUsd > 0.39 || data.pair.priceUsd < 0.27){
-							alertCall('ws');
+							//alertCall('ws');
 						}
 					},
 					error: function (e) {
@@ -1968,7 +1968,7 @@
 					success : function(data) {
 						ethPrice = data.RAW.ETH.USD.PRICE;
 						if(ethPrice >= 4100){
-							alertCall('eth');
+							//alertCall('eth');
 						}
 					},
 					error: function (e) {
@@ -1982,7 +1982,7 @@
 					success : function(data) {
 						wstEthPrice = data.pair.priceUsd;
 						if(wstEthPrice >= 4300){
-							alertCall('wsteth');
+							//alertCall('wsteth');
 						}
 					},
 					error: function (e) {
@@ -2031,7 +2031,7 @@
 				dataType: "json",
 				success : function(data) {
 					$("span.price.avax").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
-					if(data.pair.priceUsd > 30){
+					if(data.pair.priceUsd > 28){
 						alertCall('avax');
 					}
 				},
