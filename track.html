@@ -63,7 +63,7 @@
 			thena: <span class="thena price"></span>&nbsp;ram: <span class="ram price"></span>&nbsp;aero: <span class="aero price"></span><br/>			
 			<!-- tkn: <span class="tkn price"></span>&nbsp;chi: <span class="chi price"></span>&nbsp;wukre: <span class="wukre price"></span>&nbsp;zen: <span class="zen price"></span><br/> -->
 			<!-- more:<span class="more price"></span>&nbsp;pearl:<span class="pearl price"></span>&nbsp;cvr:<span class="cvr price"></span>&nbsp;ukre:<span class="ukre price"></span><br/> -->
-			&nbsp;WS:<span class="ws price"></span>&nbsp;BLACK:<span class="black price"></span>&nbsp;CATX:<span class="catx price"></span><br/>
+			&nbsp;WS:<span class="ws price"></span>&nbsp;BLACK:<span class="black price"></span>&nbsp;REX:<span class="rex price"></span><br/>&nbsp;CATX:<span class="catx price"></span><br/>
 			EURC: <span class="eurc price"></span>&nbsp;AVAX: <span class="avax price"></span>&nbsp;SUPER: <span class="super price"></span>&nbsp;
 			<!--gamma:<span class="gammaTvl"></span>&nbsp;retro:<span class="retroTvl"></span>&nbsp;total:<span class="userTvl"></span>&nbsp;r:<span class="avgApr"></span>%-->
           </div>
@@ -2006,6 +2006,17 @@
 					dataType: "json",
 					success : function(data) {
 						$("span.price.black").text(data.pair.priceUsd);
+					},
+					error: function (e) {
+					}
+				});
+				
+				$.ajax({
+					type : "GET",
+					url: "https://api.dexscreener.com/latest/dex/pairs/linea/0x5c1bf4b7563c460282617a0304e3cde133200f70",
+					dataType: "json",
+					success : function(data) {
+						$("span.price.rex").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
 					},
 					error: function (e) {
 					}
