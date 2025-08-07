@@ -2005,7 +2005,7 @@
 					url: "https://api.dexscreener.com/latest/dex/pairs/avalanche/0x0d9fd6dd9b1ff55fb0a9bb0e5f1b6a2d65b741a3",
 					dataType: "json",
 					success : function(data) {
-						$("span.price.black").text(data.pair.priceUsd);
+						$("span.price.black").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
 					},
 					error: function (e) {
 					}
