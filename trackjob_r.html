@@ -852,7 +852,7 @@
 				success : function(data) {
 					ethPrice = data.RAW.ETH.USD.PRICE;
 					if(ethPrice >= 4100){
-						alertCall('eth');
+						//alertCall('eth');
 					}
 				},
 				error: function (e) {
@@ -866,7 +866,7 @@
 				success : function(data) {
 					wstEthPrice = data.pair.priceUsd;
 					if(wstEthPrice >= 4300){
-						alertCall('wsteth');
+						//alertCall('wsteth');
 					}
 				},
 				error: function (e) {
@@ -2501,5 +2501,6 @@
     </script>
 
   </body>
+
 
 </html>
