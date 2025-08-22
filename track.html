@@ -851,9 +851,9 @@
 				contentType: 'application/json',
 				success : function(data) {
 					ethPrice = data.RAW.ETH.USD.PRICE;
-					if(ethPrice >= 4100){
-						alertCall('eth');
-					}
+					//if(ethPrice >= 4100){
+					//	alertCall('eth');
+					//}
 				},
 				error: function (e) {
 				}
@@ -1747,9 +1747,9 @@
 					success : function(data) {
 						$("span.price.eth").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
 						ethPrice = data.pair.priceUsd;
-						if(data.pair.priceUsd > 4000){
-							alertCall('eth');
-						}
+						//if(data.pair.priceUsd > 4000){
+						//	alertCall('eth');
+						//}
 					},
 					error: function (e) {
 						$.ajax({
@@ -1960,9 +1960,9 @@
 					contentType: 'application/json',
 					success : function(data) {
 						ethPrice = data.RAW.ETH.USD.PRICE;
-						if(ethPrice >= 4100){
-							//alertCall('eth');
-						}
+						//if(ethPrice >= 4100){
+						//	//alertCall('eth');
+						//}
 					},
 					error: function (e) {
 					}
@@ -2022,7 +2022,7 @@
 					success : function(data) {
 						$("span.price.eurc").text(data.pair.priceUsd);
 						if(data.pair.priceUsd > 1.19){
-							//alertCall('eurc');
+							alertCall('eurc');
 						}
 					},
 					error: function (e) {
