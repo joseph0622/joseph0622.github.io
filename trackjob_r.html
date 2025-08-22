@@ -2388,14 +2388,15 @@
 			}
 			
 			function vfat(){
-				$("table.table tbody tr").remove();
+				$("table.table tbody tr").remove();				
+				var delist = new Map();
 				
 				$.ajax({
 					type : "GET",
 					dataType: 'json',
 					url: "https://api.vfat.io/v3/farm-balances?addresses=0xf712ab8c4505eb4b36a2ff9fa746470be81e6538",
 					success : function(data) {						
-						var delist = new Map();
+						
 						
 						$.each(data, function(v, item){
 								var isVfat = !!item.sickleAddress;
@@ -2404,58 +2405,6 @@
 								var tr = $("table.table tfoot tr.avax").clone();
 								
 								if(bala + balb < 100){
-									return;
-								}
-								
-								if(item.underlying[0].balance = 0 || item.underlying[1].balance = 0){
-									if(!isVfat){
-										alertCall('' + item.underlying[0].symbol + '-' + item.underlying[1].symbol);
-									}
-									$(tr).find(".inrange").text('N');
-									$(tr).find(".inrange").css('color','red');
-								}else{
-									$(tr).find(".inrange").text('Y');
-								}								
-								
-								$(tr).find(".t0").text(item.underlying[0].symbol);
-								$(tr).find(".t1").text(item.underlying[1].symbol);
-								$(tr).find(".bal0").text(parseFloat(item.underlying[0].balance).toFixed(3) + '(' + parseFloat(bala).toFixed(3) + ')');
-								$(tr).find(".bal1").text(parseFloat(item.underlying[1].balance).toFixed(3) + '(' + parseFloat(balb).toFixed(3) + ')');
-								$(tr).find(".total").text(parseFloat(bala + balb).toFixed(3));
-								if(item.pendingRewards != null && item.pendingRewards.length > 0 && item.pendingRewards[0].amount > 0){
-									var rewardAmount = parseFloat(item.pendingRewards[0].amount / Math.pow(10, item.pendingRewards[0].token.decimals)).toFixed(0);
-									
-									$(tr).find(".reward").text(parseFloat(rewardAmount * item.pendingRewards[0].token.price).toFixed(2));
-								}
-								
-								
-								delist.set(''+(bala+balb), tr);
-						});
-						const sorted = new Map([...delist.entries()].sort(([a], [b]) => b - a));
-						
-						sorted.forEach(function(tr){
-							
-							$(tr).appendTo($("table.table tbody"));
-						});
-					},
-					error: function (e) {
-					}
-				});				
-				
-				$.ajax({
-					type : "GET",
-					dataType: 'json',
-					url: "https://api.vfat.io/v3/farm-balances?addresses=0x66e14CB99D1E0B474325655DEcA699b9e4b15CA2",
-					success : function(data) {						
-						var delist = new Map();
-						
-						$.each(data, function(v, item){
-								var isVfat = !!item.sickleAddress;
-								var bala = (item.underlying[0].price * item.underlying[0].balance) || 10;
-								var balb = (item.underlying[1].price * item.underlying[1].balance) || 10;
-								var tr = $("table.table tfoot tr.avax").clone();
-								
-								if(bala + balb < 10){
 									return;
 								}
 								
@@ -2483,12 +2432,62 @@
 								
 								delist.set(''+(bala+balb), tr);
 						});
-						const sorted = new Map([...delist.entries()].sort(([a], [b]) => b - a));
 						
-						sorted.forEach(function(tr){
-							
-							$(tr).appendTo($("table.table tbody"));
+						$.ajax({
+							type : "GET",
+							dataType: 'json',
+							url: "https://api.vfat.io/v3/farm-balances?addresses=0x66e14CB99D1E0B474325655DEcA699b9e4b15CA2",
+							success : function(data) {
+								$.each(data, function(v, item){
+										var isVfat = !!item.sickleAddress;
+										var bala = (item.underlying[0].price * item.underlying[0].balance) || 10;
+										var balb = (item.underlying[1].price * item.underlying[1].balance) || 10;
+										var tr = $("table.table tfoot tr.avax").clone();
+										
+										if(bala + balb < 10){
+											return;
+										}
+										
+										if(item.underlying[0].balance == 0 || item.underlying[1].balance == 0){
+											if(!isVfat){
+												alertCall('' + item.underlying[0].symbol + '-' + item.underlying[1].symbol);
+											}
+											$(tr).find(".inrange").text('N');
+											$(tr).find(".inrange").css('color','red');
+										}else{
+											$(tr).find(".inrange").text('Y');
+										}								
+										
+										$(tr).find(".t0").text(item.underlying[0].symbol);
+										$(tr).find(".t1").text(item.underlying[1].symbol);
+										$(tr).find(".bal0").text(parseFloat(item.underlying[0].balance).toFixed(3) + '(' + parseFloat(bala).toFixed(3) + ')');
+										$(tr).find(".bal1").text(parseFloat(item.underlying[1].balance).toFixed(3) + '(' + parseFloat(balb).toFixed(3) + ')');
+										$(tr).find(".total").text(parseFloat(bala + balb).toFixed(3));
+										if(item.pendingRewards != null && item.pendingRewards.length > 0 && item.pendingRewards[0].amount > 0){
+											var rewardAmount = parseFloat(item.pendingRewards[0].amount / Math.pow(10, item.pendingRewards[0].token.decimals)).toFixed(0);
+											
+											$(tr).find(".reward").text(parseFloat(rewardAmount * item.pendingRewards[0].token.price).toFixed(2));
+										}
+										
+										
+										delist.set(''+(bala+balb), tr);
+								});
+								const sorted = new Map([...delist.entries()].sort(([a], [b]) => b - a));
+								
+								sorted.forEach(function(tr){
+									
+									$(tr).appendTo($("table.table tbody"));
+								});
+							},
+							error: function (e) {
+							}
 						});
+						//const sorted = new Map([...delist.entries()].sort(([a], [b]) => b - a));
+						
+						//sorted.forEach(function(tr){
+							
+						//	$(tr).appendTo($("table.table tbody"));
+						//});
 					},
 					error: function (e) {
 					}
