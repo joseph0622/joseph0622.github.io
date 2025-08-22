@@ -2394,9 +2394,7 @@
 					type : "GET",
 					dataType: 'json',
 					url: "https://api.vfat.io/v3/farm-balances?addresses=0xf712ab8c4505eb4b36a2ff9fa746470be81e6538",
-					success : function(data) {						
-						$("table.table tbody tr").remove();
-						
+					success : function(data) {
 						$.each(data, function(v, item){
 								var isVfat = !!item.sickleAddress;
 								var bala = (item.underlying[0].price * item.underlying[0].balance) || 10;
@@ -2472,9 +2470,8 @@
 										delist.set(''+(bala+balb), tr);
 								});
 								const sorted = new Map([...delist.entries()].sort(([a], [b]) => b - a));
-								
-								sorted.forEach(function(tr){
-									
+								$("table.table tbody tr").remove();
+								sorted.forEach(function(tr){									
 									$(tr).appendTo($("table.table tbody"));
 								});
 							},
