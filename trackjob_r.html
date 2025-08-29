@@ -2024,6 +2024,8 @@
 						if(data.pair.priceUsd > 1.19){
 							alertCall('eurc');
 						}
+						
+						//getEurc();
 					},
 					error: function (e) {
 					}
@@ -2390,6 +2392,23 @@
 					}
 				});
 			}
+			
+			function getEurc(){				
+				$.ajax({
+					type : "GET",
+					dataType: 'json',
+					//url: "http://api.arcadia.finance/v1/api/accounts/overview?chain_id=8453&account=0x97aee25121Eb472D8ADf9cc578dbd0c396B953f1",
+					url: "https://app.euler.finance/api/v1/vault?chainId=43114&vaults=0xa4284e26Ae6469aeE8eC38Aa9Db96fc62d6315A1&type=classic",
+					success : function(data) {
+						var price = $("span.eurc.price").text();
+						price = price.substring(0, price.lastIndexOf("("));
+						var rate = data[Object.keys(data)[0]].irmInfo.interestRateInfo[0].borrowAPY;
+						$("span.eurc.price").text(price + "(" + (Math.round(rate.replace(/_.*_/, '')/100000000000000000000000) / 100) + ")");
+					},
+					error: function (e) {
+					}
+				});
+			}			
 			
 			function vfat(){				
 				var delist = new Map();
