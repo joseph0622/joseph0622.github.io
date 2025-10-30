@@ -2368,6 +2368,72 @@
 				}
 			}
 			
+			function getHydrex(){
+				$("table.table tbody tr.eth").remove();
+				
+				$.ajax({
+					type : "POST",
+					url: baseRpc,
+					contentType: 'application/json',
+					data: '{"jsonrpc":"2.0","id":1868742230576330,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0x70a0823100000000000000000000000066e14cb99d1e0b474325655deca699b9e4b15ca2","to":"0x11f926a240503a8b50f2d1d49a3bdefaa661b161"},"latest"]}',
+					success : function(data) {
+						var info = web3.eth.abi.decodeParameters(['int256'], data.result);
+						
+						var tr = $("table.table tfoot tr.eth").clone();
+								
+						$(tr).find(".t0").text("USDC");
+						$(tr).find(".t1").text("DAI");
+						$(tr).find(".total").text((String(info[0].toString()).slice(0, -6) / 1000));
+						
+						$(tr).appendTo($("table.table tbody"));
+					},
+					error: function (e) {
+					}
+				});
+				
+				$.ajax({
+					type : "POST",
+					url: baseRpc,
+					contentType: 'application/json',
+					data: '{"jsonrpc":"2.0","id":6833084012238088,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0x70a0823100000000000000000000000066e14cb99d1e0b474325655deca699b9e4b15ca2","to":"0x25c10987091f98bff0f48a5bd24d7b3bf3419c52"},"latest"]}',
+					success : function(data) {
+						var info = web3.eth.abi.decodeParameters(['int256'], data.result);
+						
+						var tr = $("table.table tfoot tr.eth").clone();
+								
+						$(tr).find(".t0").text("STEAKHOUSE");
+						$(tr).find(".t1").text("USDC");
+						$(tr).find(".total").text((String(info[0].toString()).slice(0, -3) / 1000));
+						
+						$(tr).appendTo($("table.table tbody"));
+					},
+					error: function (e) {
+					}
+				});
+				
+				$.ajax({
+					type : "POST",
+					url: baseRpc,
+					contentType: 'application/json',
+					data: '{"jsonrpc":"2.0","id":1868742230576330,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0x70a08231000000000000000000000000f712ab8c4505eb4b36a2ff9fa746470be81e6538","to":"0x11f926a240503a8b50f2d1d49a3bdefaa661b161"},"latest"]}',
+					success : function(data) {
+						var info = web3.eth.abi.decodeParameters(['int256'], data.result);
+						
+						var tr = $("table.table tfoot tr.eth").clone();
+								
+						$(tr).find(".t0").text("USDC");
+						$(tr).find(".t1").text("DAI");
+						$(tr).find(".total").text((String(info[0].toString()).slice(0, -6) / 1000));
+						
+						$(tr).appendTo($("table.table tbody"));
+					},
+					error: function (e) {
+					}
+				});
+				
+				
+			}
+			
 			function getArc(){				
 				$.ajax({
 					type : "GET",
@@ -2493,7 +2559,7 @@
 										delist.set(''+(bala+balb), tr);
 								});
 								const sorted = new Map([...delist.entries()].sort(([a], [b]) => b - a));
-								$("table.table tbody tr").remove();
+								$("table.table tbody tr.avax").remove();
 								sorted.forEach(function(tr){									
 									$(tr).appendTo($("table.table tbody"));
 								});
@@ -2524,6 +2590,7 @@
 			//getPhar();
 			//getArc();
 			vfat();
+			getHydrex();
 						
 			setInterval(function () {
 				//fecthRamNft();
@@ -2538,6 +2605,7 @@
 				getSilo();
 				getAave();
 				vfat();
+				getHydrex();
 			}, 30000);
 			
 			setInterval(function () {
