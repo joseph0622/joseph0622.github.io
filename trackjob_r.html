@@ -63,8 +63,8 @@
 			thena: <span class="thena price"></span>&nbsp;ram: <span class="ram price"></span>&nbsp;aero: <span class="aero price"></span><br/>			
 			<!-- tkn: <span class="tkn price"></span>&nbsp;chi: <span class="chi price"></span>&nbsp;wukre: <span class="wukre price"></span>&nbsp;zen: <span class="zen price"></span><br/> -->
 			<!-- more:<span class="more price"></span>&nbsp;pearl:<span class="pearl price"></span>&nbsp;cvr:<span class="cvr price"></span>&nbsp;ukre:<span class="ukre price"></span><br/> -->
-			&nbsp;WS:<span class="ws price"></span>&nbsp;BLACK:<span class="black price"></span>&nbsp;REX:<span class="rex price"></span><br/>
-			EURC: <span class="eurc price"></span>&nbsp;AVAX: <span class="avax price"></span>&nbsp;SUPER: <span class="super price"></span>&nbsp;
+			&nbsp;WS:<span class="ws price"></span>&nbsp;BLACK:<span class="black price"></span>&nbsp;REX:<span class="rex price"></span>&nbsp;HYDX:<span class="hydx price"></span><br/>
+			DAI: <span class="dai price"></span>&nbsp;EURC: <span class="eurc price"></span>&nbsp;AVAX: <span class="avax price"></span>&nbsp;
 			<!--gamma:<span class="gammaTvl"></span>&nbsp;retro:<span class="retroTvl"></span>&nbsp;total:<span class="userTvl"></span>&nbsp;r:<span class="avgApr"></span>%-->
           </div>
 		  <br/>
@@ -2047,10 +2047,21 @@
 				
 				$.ajax({
 				type : "GET",
-				url: "https://api.dexscreener.com/latest/dex/pairs/avalanche/0x9d848cf080c46b92b797218835ae7e89e04c1515",
+				url: "https://api.dexscreener.com/latest/dex/pairs/base/0x605abd1873737ca9a9ec1cfa52cdfc8ef62c2e1d",
 				dataType: "json",
 				success : function(data) {
-					$("span.price.super").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
+					$("span.price.hydx").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
+				},
+				error: function (e) {
+				}
+				});
+				
+				$.ajax({
+				type : "GET",
+				url: "https://api.dexscreener.com/latest/dex/pairs/base/0xa441378a1cb4df371535296e539a1e0def6924e4",
+				dataType: "json",
+				success : function(data) {
+					$("span.price.dai").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
 				},
 				error: function (e) {
 				}
