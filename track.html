@@ -2061,7 +2061,7 @@
 				url: "https://api.dexscreener.com/latest/dex/pairs/base/0xa441378a1cb4df371535296e539a1e0def6924e4",
 				dataType: "json",
 				success : function(data) {
-					$("span.price.dai").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
+					$("span.price.dai").text(data.pair.priceUsd);
 				},
 				error: function (e) {
 				}
