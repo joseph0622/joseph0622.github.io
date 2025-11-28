@@ -64,7 +64,7 @@
 			<!-- tkn: <span class="tkn price"></span>&nbsp;chi: <span class="chi price"></span>&nbsp;wukre: <span class="wukre price"></span>&nbsp;zen: <span class="zen price"></span><br/> -->
 			<!-- more:<span class="more price"></span>&nbsp;pearl:<span class="pearl price"></span>&nbsp;cvr:<span class="cvr price"></span>&nbsp;ukre:<span class="ukre price"></span><br/> -->
 			&nbsp;WS:<span class="ws price"></span>&nbsp;BLACK:<span class="black price"></span>&nbsp;REX:<span class="rex price"></span>&nbsp;HYDX:<span class="hydx price"></span><br/>
-			DAI: <span class="dai price"></span>&nbsp;EURC: <span class="eurc price"></span>&nbsp;AVAX: <span class="avax price"></span>&nbsp;
+			USDH: <span class="usdh price"></span>&nbsp;EURC: <span class="eurc price"></span>&nbsp;AVAX: <span class="avax price"></span>&nbsp;
 			<!--gamma:<span class="gammaTvl"></span>&nbsp;retro:<span class="retroTvl"></span>&nbsp;total:<span class="userTvl"></span>&nbsp;r:<span class="avgApr"></span>%-->
           </div>
 		  <br/>
@@ -208,14 +208,15 @@
 					<td class="inrange"></td>
 					<td colspan="2" class="reward"></td>
 				</tr>
-				<tr class="gamma">
+				<tr class="hyper">
 					<td class="t0"></td>
 					<td class="t1"></td>
 					<td class="bal0"></td>
 					<td class="bal1"></td>
 					<td class="total"></td>
 					<td class="inrange"></td>
-					<td colspan="2" class="reward"></td>
+					<td class="apr"></td>
+					<td class="reward"></td>
 				</tr>
 				<tr class="avax">
 					<td class="t0"></td>
@@ -2056,16 +2057,21 @@
 				}
 				});
 				
+				
 				$.ajax({
 				type : "GET",
-				url: "https://api.dexscreener.com/latest/dex/pairs/base/0xa441378a1cb4df371535296e539a1e0def6924e4",
+				url: "https://api.dexscreener.com/latest/dex/pairs/hyperliquid/0x9e749f281cd2bb836d8196f48caaffb9",
 				dataType: "json",
 				success : function(data) {
-					$("span.price.dai").text(data.pair.priceUsd);
+					$("span.price.usdh").text(data.pair.priceUsd);
+					if(data.pair.priceUsd < 0.9){
+						alertCall('usdh');
+					}
 				},
 				error: function (e) {
 				}
 				});
+				
 				
 				$.ajax({
 				type : "GET",
@@ -2445,6 +2451,74 @@
 				
 			}
 			
+			function translateToken(addr){
+				if(addr == '0x111111a1a0667d36bd57c0a9f569b98057111111'){
+					return 'USDH';
+				}
+				
+				if(addr == '0xb8ce59fc3717ada4c02eadf9682a9e934f625ebb'){
+					return 'USDT0';
+				}
+				
+				if(addr == '0xb88339cb7199b77e23db6e890353e22632ba630f'){
+					return 'USDC';
+				}				
+				
+			}
+			
+			function getNest(){
+				$("table.table tbody tr.hyper").remove();
+				
+				$.ajax({
+					type : "GET",
+					url: "https://app.usenest.xyz/api/liveprograms/graph/user-v3-positions?owner=0xF712aB8c4505eB4B36a2Ff9Fa746470be81E6538",
+					dataType: "json",
+					success : function(data) {
+						if(data.data.positions){
+							var pos = data.data.positions;
+							
+							$.each(pos, function(idx, obj){								
+								var tr = $("table.table tfoot tr.hyper").clone();
+										
+								$(tr).prop("id", obj.id);
+								$(tr).find(".t0").text(translateToken(obj.token0.id));
+								$(tr).find(".t1").text(translateToken(obj.token1.id));
+								$(tr).find(".bal0").text(obj.depositedToken0);
+								$(tr).find(".bal1").text(obj.depositedToken1);
+								$(tr).find(".total").text(parseInt(obj.depositedToken0) + parseInt(obj.depositedToken1));
+								
+								if(obj.depositedToken0 < 1 || obj.depositedToken1 < 1){
+									alertCall('nest');
+								}
+								
+								$(tr).appendTo($("table.table tbody"));
+							});
+						}
+					},
+					complete: function (e) {
+						$.ajax({
+							type : "GET",
+							url: "https://app.usenest.xyz/api/blaze/liquidity/positions/0xF712aB8c4505eB4B36a2Ff9Fa746470be81E6538",
+							dataType: "json",
+							success : function(data) {
+								if(data){
+									$.each(data, function(idx, obj){
+										if(obj.associatedId){
+											var tr = $("#" + obj.associatedId.toString())[0];
+											$(tr).find(".apr").text(obj.apr.toString().slice(0, 4) * 100);
+										}
+									});
+								}
+							},
+							error: function (e) {
+							}
+						});
+					}
+				});
+				
+				
+			}
+			
 			function getArc(){				
 				$.ajax({
 					type : "GET",
@@ -2602,6 +2676,7 @@
 			//getArc();
 			vfat();
 			getHydrex();
+			getNest();
 						
 			setInterval(function () {
 				//fecthRamNft();
@@ -2617,6 +2692,7 @@
 				getAave();
 				vfat();
 				getHydrex();
+				getNest();
 			}, 30000);
 			
 			setInterval(function () {
