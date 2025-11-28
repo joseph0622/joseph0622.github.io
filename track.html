@@ -2399,6 +2399,7 @@
 			function getHydrex(){
 				$("table.table tbody tr.eth").remove();
 				
+				/*
 				$.ajax({
 					type : "POST",
 					url: baseRpc,
@@ -2418,6 +2419,8 @@
 					error: function (e) {
 					}
 				});
+				*/
+				
 				
 				$.ajax({
 					type : "POST",
@@ -2433,12 +2436,77 @@
 						$(tr).find(".t1").text("USDC");
 						$(tr).find(".total").text((String(info[0].toString()).slice(0, -3) / 1000));
 						
+						if(info[0] > 0)
 						$(tr).appendTo($("table.table tbody"));
 					},
 					error: function (e) {
 					}
 				});
 				
+				$.ajax({
+					type : "POST",
+					url: baseRpc,
+					contentType: 'application/json',
+					data: '{"jsonrpc":"2.0","id":6833084012238088,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0x70a0823100000000000000000000000066e14cb99d1e0b474325655deca699b9e4b15ca2","to":"0x4D076e56DeDF20D975cAb4445E40156F6660dEb1"},"latest"]}',
+					success : function(data) {
+						var info = web3.eth.abi.decodeParameters(['int256'], data.result);
+						
+						var tr = $("table.table tfoot tr.eth").clone();
+								
+						$(tr).find(".t0").text("STEAKHOUSE");
+						$(tr).find(".t1").text("EURC");
+						$(tr).find(".total").text((String(info[0].toString()).slice(0, -3) / 1000));
+						
+						if(info[0] > 0)
+						$(tr).appendTo($("table.table tbody"));
+					},
+					error: function (e) {
+					}
+				});
+				
+				$.ajax({
+					type : "POST",
+					url: baseRpc,
+					contentType: 'application/json',
+					data: '{"jsonrpc":"2.0","id":6833084012238088,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0x70a08231000000000000000000000000F712aB8c4505eB4B36a2Ff9Fa746470be81E6538","to":"0x25c10987091f98bff0f48a5bd24d7b3bf3419c52"},"latest"]}',
+					success : function(data) {
+						var info = web3.eth.abi.decodeParameters(['int256'], data.result);
+						
+						var tr = $("table.table tfoot tr.eth").clone();
+						
+						$(tr).find(".t0").text("STEAKHOUSE");
+						$(tr).find(".t1").text("USDC");
+						$(tr).find(".total").text((String(info[0].toString()).slice(0, -3) / 1000));
+						
+						if(info[0] > 0)
+						$(tr).appendTo($("table.table tbody"));
+					},
+					error: function (e) {
+					}
+				});
+				
+				$.ajax({
+					type : "POST",
+					url: baseRpc,
+					contentType: 'application/json',
+					data: '{"jsonrpc":"2.0","id":6833084012238088,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0x70a08231000000000000000000000000F712aB8c4505eB4B36a2Ff9Fa746470be81E6538","to":"0x4D076e56DeDF20D975cAb4445E40156F6660dEb1"},"latest"]}',
+					success : function(data) {
+						var info = web3.eth.abi.decodeParameters(['int256'], data.result);
+						
+						var tr = $("table.table tfoot tr.eth").clone();
+								
+						$(tr).find(".t0").text("STEAKHOUSE");
+						$(tr).find(".t1").text("EURC");
+						$(tr).find(".total").text((String(info[0].toString()).slice(0, -3) / 1000));
+						
+						if(info[0] > 0)
+						$(tr).appendTo($("table.table tbody"));
+					},
+					error: function (e) {
+					}
+				});
+				
+				/*
 				$.ajax({
 					type : "POST",
 					url: baseRpc,
@@ -2458,6 +2526,7 @@
 					error: function (e) {
 					}
 				});
+				*/
 				
 				
 			}
