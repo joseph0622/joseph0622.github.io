@@ -64,7 +64,7 @@
 			<!-- tkn: <span class="tkn price"></span>&nbsp;chi: <span class="chi price"></span>&nbsp;wukre: <span class="wukre price"></span>&nbsp;zen: <span class="zen price"></span><br/> -->
 			<!-- more:<span class="more price"></span>&nbsp;pearl:<span class="pearl price"></span>&nbsp;cvr:<span class="cvr price"></span>&nbsp;ukre:<span class="ukre price"></span><br/> -->
 			&nbsp;WS:<span class="ws price"></span>&nbsp;BLACK:<span class="black price"></span>&nbsp;REX:<span class="rex price"></span>&nbsp;HYDX:<span class="hydx price"></span><br/>
-			USDH: <span class="usdh price"></span>&nbsp;EURC: <span class="eurc price"></span>&nbsp;AVAX: <span class="avax price"></span>&nbsp;
+			USDH: <span class="usdh price"></span>&nbsp;EURC: <span class="eurc price"></span>&nbsp;HYPE: <span class="hype price"></span>&nbsp;
 			<!--gamma:<span class="gammaTvl"></span>&nbsp;retro:<span class="retroTvl"></span>&nbsp;total:<span class="userTvl"></span>&nbsp;r:<span class="avgApr"></span>%-->
           </div>
 		  <br/>
@@ -2034,13 +2034,10 @@
 				
 				$.ajax({
 				type : "GET",
-				url: "https://api.dexscreener.com/latest/dex/pairs/avalanche/0x864d4e5ee7318e97483db7eb0912e09f161516ea",
+				url: "https://api.dexscreener.com/latest/dex/pairs/hyperliquid/0x13ba5fea7078ab3798fbce53b4d0721c",
 				dataType: "json",
 				success : function(data) {
-					$("span.price.avax").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
-					if(data.pair.priceUsd > 29){
-						//alertCall('avax');
-					}
+					$("span.price.hype").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
 				},
 				error: function (e) {
 				}
