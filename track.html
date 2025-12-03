@@ -2554,7 +2554,11 @@
 						if(data.data.positions){
 							var pos = data.data.positions;
 							
-							$.each(pos, function(idx, obj){								
+							$.each(pos, function(idx, obj){
+								if(obj.liquidity == 0){
+									return;
+								}
+							
 								var tr = $("table.table tfoot tr.hyper").clone();
 										
 								$(tr).prop("id", obj.id);
