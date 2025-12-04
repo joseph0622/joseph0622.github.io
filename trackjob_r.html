@@ -2038,6 +2038,10 @@
 				dataType: "json",
 				success : function(data) {
 					$("span.price.hype").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
+					
+					if(data.pair.priceUsd > 41 || data.pair.priceUsd > 22){
+							alertCall('hype');
+						}
 				},
 				error: function (e) {
 				}
