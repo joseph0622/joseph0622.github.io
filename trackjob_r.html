@@ -2039,7 +2039,7 @@
 				success : function(data) {
 					$("span.price.hype").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
 					
-					if(data.pair.priceUsd > 41 || data.pair.priceUsd > 22){
+					if(data.pair.priceUsd > 41 || data.pair.priceUsd < 22){
 							alertCall('hype');
 						}
 				},
@@ -2761,7 +2761,7 @@
 			//getArc();
 			vfat();
 			getHydrex();
-			//getNest();
+			getNest();
 						
 			setInterval(function () {
 				//fecthRamNft();
@@ -2777,7 +2777,8 @@
 				getAave();
 				vfat();
 				getHydrex();
-				//getNest();
+				if(!trackjob)
+				getNest();
 			}, 30000);
 			
 			setInterval(function () {
@@ -2794,6 +2795,5 @@
     </script>
 
   </body>
-
 
 </html>
