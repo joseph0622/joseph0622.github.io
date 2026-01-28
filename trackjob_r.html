@@ -2023,7 +2023,7 @@
 					success : function(data) {
 						$("span.price.eurc").text(data.pair.priceUsd);
 						if(data.pair.priceUsd > 1.19){
-							alertCall('eurc');
+							//alertCall('eurc');
 						}
 						
 						//getEurc();
@@ -2039,7 +2039,7 @@
 				success : function(data) {
 					$("span.price.hype").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
 					
-					if(data.pair.priceUsd > 41 || data.pair.priceUsd < 22){
+					if(data.pair.priceUsd > 38 || data.pair.priceUsd < 22){
 							alertCall('hype');
 						}
 				},
@@ -2795,5 +2795,6 @@
     </script>
 
   </body>
+
 
 </html>
