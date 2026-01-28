@@ -2589,8 +2589,8 @@
 								$(tr).prop("id", obj.id);
 								$(tr).find(".t0").text(obj.id + ' ' + translateToken(obj.token0.id));
 								$(tr).find(".t1").text(translateToken(obj.token1.id));
-								$(tr).find(".bal0").text(obj.depositedToken0);
-								$(tr).find(".bal1").text(obj.depositedToken1);
+								$(tr).find(".bal0").text(obj.depositedToken0 - obj.withdrawnToken0);
+								$(tr).find(".bal1").text(obj.depositedToken1 - obj.withdrawnToken1);
 								$(tr).find(".total").text(parseInt(obj.depositedToken0) + parseInt(obj.depositedToken1));
 								
 								if(obj.depositedToken0 < 1 || obj.depositedToken1 < 1){
