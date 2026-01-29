@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+  <head>
+
+    <meta charset="utf-8">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>RetroTrackor</title>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+	<!--<script src="https://smtpjs.com/v3/smtp.js"></script>-->
+	 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <!-- Styles -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/web3/4.2.0/web3.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/web3/4.2.0/web3.min.js.map"></script>
+  </head>
+
+  <body>
+
+    <!-- Web3 -->
+
+    <script>
+		$(function(){
+			function ceilToDecimalPlaces(value, decimals) {
+				// Calculate the multiplier (e.g., 10^5 for 5 decimal places)
+				const multiplier = Math.pow(10, decimals);
+
+				// Multiply the value, round up using Math.ceil, then divide back
+				return Math.ceil(value * multiplier) / multiplier;
+			}
+			
+			function getNest(){
+				var resultList = [];
+
+				$.ajax({
+					type : "GET",
+					url: "https://app.usenest.xyz/api/blaze/liquidity/positions/0xF712aB8c4505eB4B36a2Ff9Fa746470be81E6538",
+					dataType: "json",
+					success : function(data) {
+						if(data){
+							$.each(data, function(idx, obj){
+								if(obj.associatedId){
+									localStorage.setItem(obj.associatedId, obj.apr.toString().slice(0, 4) * 100);
+								}
+							});
+						}
+					},
+					error: function (e) {						
+					},complete: function (e) {
+						$.ajax({
+							type : "GET",
+							url: "https://app.usenest.xyz/api/tokens",
+							dataType: "json",
+							success : function(data) {
+								if(data){
+									$.each(data, function(idx, obj){
+										localStorage.setItem(obj.tokenAddress.toUpperCase(), obj.priceUSD);
+									});
+								}
+							},
+							error: function (e) {						
+							},complete: function (e) {
+								$.ajax({
+									type : "GET",
+									url: "https://app.usenest.xyz/api/liveprograms/graph/user-v3-positions?owner=0xF712aB8c4505eB4B36a2Ff9Fa746470be81E6538",
+									dataType: "json",
+									success : function(data) {
+										if(data.data.positions){
+											var pos = data.data.positions;
+											
+											$.each(pos, function(idx, obj){
+												if(obj.liquidity == 0){
+													return;
+												}
+											
+												var result = {};
+												result.id = obj.id;
+												result.type = 'manual';
+												result.vault = null;
+												result.liquidity = obj.liquidity;
+												result.share = 0;
+												result.depositedToken0 = '0';
+												result.depositedToken1 = '0';
+												result.token0Tvl = 0;
+												result.token1Tvl = 0;												
+												var t1 = ceilToDecimalPlaces((obj.depositedToken0 - obj.withdrawnToken0)*localStorage.getItem(obj.token0.id.toUpperCase() ), 5);
+												var t2  = ceilToDecimalPlaces((obj.depositedToken1 - obj.withdrawnToken1)*localStorage.getItem(obj.token1.id.toUpperCase() ), 5);
+												result.tvl = t1 + t2;
+												result.token0 = {};
+												result.token0.address = obj.token0.id;
+												result.token1 = {};
+												result.token1.address = obj.token1.id;
+												result.pool = {};
+												result.pool.address = obj.pool.id;
+												result.pool.tick = obj.pool.tick;
+												if(localStorage.getItem(obj.id)){
+													result.apr = parseInt(localStorage.getItem(obj.id));
+												}else{
+													result.apr = 0;
+												}
+												
+												result.tickLower = {};
+												result.tickLower.tick = obj.tickLower.tickIdx;
+												result.tickUpper = {};
+												result.tickUpper.tick = obj.tickUpper.tickIdx;
+												
+												resultList.push(result);
+											});
+										}
+									},
+									complete: function (e) {
+										$("body").html(JSON.stringify(resultList));
+									}
+								});
+							}
+						});
+					}
+				});
+			}
+
+			getNest();
+		});
+    </script>
+
+  </body>
+
+</html>
