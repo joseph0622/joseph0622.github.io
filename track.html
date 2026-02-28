@@ -2604,14 +2604,14 @@
 					complete: function (e) {
 						$.ajax({
 							type : "GET",
-							url: "https://app.usenest.xyz/api/blaze/liquidity/positions/0xF712aB8c4505eB4B36a2Ff9Fa746470be81E6538",
+							url: "https://app.usenest.xyz/api/blaze/user-positions/v3-positions/0xF712aB8c4505eB4B36a2Ff9Fa746470be81E6538",
 							dataType: "json",
 							success : function(data) {
 								if(data){
 									$.each(data, function(idx, obj){
-										if(obj.associatedId){
-											var tr = $("#" + obj.associatedId.toString())[0];
-											$(tr).find(".apr").text(obj.apr.toString().slice(0, 4) * 100);
+										if(obj.id && obj.apr){
+											var tr = $("#" + obj.id.toString())[0];
+											$(tr).find(".apr").text(obj.apr.toString().slice(0, 4));
 										}
 									});
 								}
