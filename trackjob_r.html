@@ -2594,7 +2594,7 @@
 								$(tr).find(".total").text(parseInt(obj.depositedToken0) + parseInt(obj.depositedToken1));
 								
 								if(obj.depositedToken0 < 1 || obj.depositedToken1 < 1){
-									alertCall('nest');
+									//alertCall('nest');
 								}
 								
 								$(tr).appendTo($("table.table tbody"));
@@ -2611,7 +2611,13 @@
 									$.each(data, function(idx, obj){
 										if(obj.id && obj.apr){
 											var tr = $("#" + obj.id.toString())[0];
-											$(tr).find(".apr").text(obj.apr.toString().slice(0, 4));
+											var r = obj.apr.toString().slice(0, 4);
+											$(tr).find(".apr").text(r);
+
+											if(r && r< 1){
+												alertCall('nest');
+
+											}
 										}
 									});
 								}
