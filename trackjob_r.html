@@ -2039,7 +2039,7 @@
 				success : function(data) {
 					$("span.price.hype").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
 					
-					if(data.pair.priceUsd > 66 || data.pair.priceUsd < 22){
+					if(data.pair.priceUsd > 68 || data.pair.priceUsd < 40){
 							alertCall('hype');
 						}
 				},
