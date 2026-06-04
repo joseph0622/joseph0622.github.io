@@ -474,7 +474,7 @@
 				
 				$.ajax({
 					type : "GET",
-					url: "https://api.dexscreener.com/latest/dex/pairs/arbitrum/0x688547381eec7c1d3d9eba778fe275d1d7e03946",
+					url: "https://api.dexscreener.com/latest/dex/pairs/hyperevm/0xbe052ed684849311604d7a4bc45ef291526e34a2",
 					dataType: "json",
 					success : function(data) {
 						$("span.price.ram").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
