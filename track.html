@@ -68,13 +68,18 @@
 			<!--gamma:<span class="gammaTvl"></span>&nbsp;retro:<span class="retroTvl"></span>&nbsp;total:<span class="userTvl"></span>&nbsp;r:<span class="avgApr"></span>%-->
           </div>
 		  <br/>
+		  <h6>Hyperlend</h6>
+		  <div class="container">
+			<span class="hyper rate"></span>&nbsp;
+			supply: <span class="hyper supply"></span>&nbsp;borrow: <span class="hyper borrow"></span>&nbsp;<br/>
+          </div>
 		  <!--
 		  <h6>Aero</h6>
 		  <div class="container">
 			aero: <span class="uaero usage"></span> / <span class="uaero supply"></span><br/>
 			usdc: <span class="uusdc usage"></span> / <span class="uusdc supply"></span><br/>
           </div>
-		  -->	 
+		   
 		  <h6>Silo</h6>
 		  <div class="container">
 			<span class="siloHealthRatio"></span>&nbsp;
@@ -85,6 +90,7 @@
 			<span class="aaveHealthRatio"></span>&nbsp;
 			ws supply: <span class="aws supply"></span>&nbsp;usdc borrow: <span class="ausdc borrow"></span>&nbsp;<br/>
           </div>
+		  -->	
 		  <!--
 		  <h6>Radi</h6>
 		  <div class="container">
@@ -831,184 +837,6 @@
 				error: function (e) {
 				}
 			});
-		}
-		
-		function getRadi(){						
-			$.ajax({
-				type : "GET",
-				url: "https://api.dexscreener.com/latest/dex/pairs/base/0x70acdf2ad0bf2402c957154f944c19ef4e1cbae1",
-				dataType: "json",
-				success : function(data) {
-					$("span.price.cBtc").text(data.pair.priceUsd);
-					cBtcPrice = data.pair.priceUsd;
-				},
-				error: function (e) {
-				}
-			});
-		
-			$.ajax({
-				type : "GET",
-				url: 'https://min-api.cryptocompare.com/data/pricemultifull?fsyms=ETH&tsyms=USD',
-				contentType: 'application/json',
-				success : function(data) {
-					ethPrice = data.RAW.ETH.USD.PRICE;
-					//if(ethPrice >= 4100){
-					//	alertCall('eth');
-					//}
-				},
-				error: function (e) {
-				}
-			});
-			
-			$.ajax({
-				type : "GET",
-				url: "https://api.dexscreener.com/latest/dex/pairs/base/0xa6385c73961dd9c58db2ef0c4eb98ce4b60651e8",
-				dataType: "json",
-				success : function(data) {
-					wstEthPrice = data.pair.priceUsd;
-					if(wstEthPrice >= 4300){
-						alertCall('wsteth');
-					}
-				},
-				error: function (e) {
-				}
-			});
-			
-			$.ajax({
-				type : "GET",
-				url: "https://api.dexscreener.com/latest/dex/pairs/base/0x91f0f34916ca4e2cce120116774b0e4fa0cdcaa8",
-				dataType: "json",
-				success : function(data) {
-					cbEthPrice = data.pair.priceUsd;
-				},
-				error: function (e) {
-				}
-			});
-			
-			$.ajax({
-				type : "GET",
-				url: "https://api.dexscreener.com/latest/dex/pairs/avalanche/0x0d9fd6dd9b1ff55fb0a9bb0e5f1b6a2d65b741a3",
-				dataType: "json",
-				success : function(data) {
-					$("span.price.black").text(data.pair.priceUsd);
-				},
-				error: function (e) {
-				}
-			});
-			
-			
-		
-			$.ajax({
-				type : "POST",
-				url: baseRpc,
-				contentType: 'application/json',
-				data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0x70a08231000000000000000000000000f712ab8c4505eb4b36a2ff9fa746470be81e6538","to":"0x392376c337413ce2e9ad7dd5f3468ae58f323b00"},"latest"]}',
-				success : function(data) {
-					var borrowUsdc = web3.eth.abi.decodeParameter('uint256', data.result);					
-					rdUsdc = String(borrowUsdc.toString()).slice(0, -3) / 1000;
-					$(".rusdc.borrow").text(rdUsdc);
-					
-					if(cBtcPrice > 0 && ethPrice >0 && cbEthPrice > 0 && rdUsdc > 0){
-						$(".reth.supply").text((rEth + rCbEth) + " (" + (Math.floor(((rEth * ethPrice) + (rCbEth * cbEthPrice) + (rCbBtc * cBtcPrice)) * 100) / 100) + ")");
-						
-						if(rEth > 0 && rCbEth > 0 && rdUsdc > 0){
-							healthRatio = Math.floor((1 - ((Math.floor(rdUsdc * 100) / 100) / (Math.floor(((rEth * ethPrice) + (rCbEth * cbEthPrice) + (rCbBtc * cBtcPrice)) * 100) / 100) / 0.75))*100);
-							
-							$(".radiHealthRatio").text(healthRatio + "%");
-							
-							if(healthRatio <= 10){
-								alertCall('radi');
-							}
-						}
-					}
-				},
-				error: function (e) {
-				}
-			});
-			
-			$.ajax({
-				type : "POST",
-				url: baseRpc,
-				contentType: 'application/json',
-				data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0x70a08231000000000000000000000000f712ab8c4505eb4b36a2ff9fa746470be81e6538","to":"0x633ebd78e0ebe2ff2e2e169a4010b9ca4f7bcaa1"},"latest"]}',
-				success : function(data) {
-					var supplyBtc = web3.eth.abi.decodeParameter('uint256', data.result);					
-					rCbBtc = String(supplyBtc.toString()).slice(0, -5) / 1000;
-					
-					if(cBtcPrice > 0 && ethPrice >0 && cbEthPrice > 0 && rdUsdc > 0){
-						$(".reth.supply").text((rEth + rCbEth) + " (" + (Math.floor(((rEth * ethPrice) + (rCbEth * cbEthPrice) + (rCbBtc * cBtcPrice)) * 100) / 100) + ")");
-						
-						if(rEth > 0 && rCbEth > 0 && rdUsdc > 0){
-							healthRatio = Math.floor((1 - ((Math.floor(rdUsdc * 100) / 100) / (Math.floor(((rEth * ethPrice) + (rCbEth * cbEthPrice) + (rCbBtc * cBtcPrice)) * 100) / 100) / 0.75))*100);
-							
-							$(".radiHealthRatio").text(healthRatio + "%");
-							
-							if(healthRatio <= 10){
-								alertCall('radi');
-							}
-						}
-					}
-				},
-				error: function (e) {
-				}
-			});
-			
-			$.ajax({
-				type : "POST",
-				url: baseRpc,
-				contentType: 'application/json',
-				data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0x70a08231000000000000000000000000f712ab8c4505eb4b36a2ff9fa746470be81e6538","to":"0x47cefa4f2170e6cba87452e9053540e05182a556"},"latest"]}',
-				success : function(data) {
-					var supplyEth = web3.eth.abi.decodeParameter('uint256', data.result);					
-					rEth = String(supplyEth.toString()).slice(0, -15) / 1000;
-					
-					if(cBtcPrice > 0 && ethPrice >0 && cbEthPrice > 0 && rdUsdc > 0){
-						$(".reth.supply").text((rEth + rCbEth) + " (" + (Math.floor(((rEth * ethPrice) + (rCbEth * cbEthPrice) + (rCbBtc * cBtcPrice)) * 100) / 100) + ")");
-						
-						if(rEth > 0 && rCbEth > 0 && rdUsdc > 0){
-							healthRatio = Math.floor((1 - ((Math.floor(rdUsdc * 100) / 100) / (Math.floor(((rEth * ethPrice) + (rCbEth * cbEthPrice) + (rCbBtc * cBtcPrice)) * 100) / 100) / 0.75))*100);
-							
-							$(".radiHealthRatio").text(healthRatio + "%");
-							
-							if(healthRatio <= 10){
-								alertCall('radi');
-							}
-						}
-					}
-				},
-				error: function (e) {
-				}
-			});
-			
-			$.ajax({
-				type : "POST",
-				url: baseRpc,
-				contentType: 'application/json',
-				data: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0x70a08231000000000000000000000000f712ab8c4505eb4b36a2ff9fa746470be81e6538","to":"0x223a4066bd6a30477ead12a7af52125390c735da"},"latest"]}',
-				success : function(data) {
-					var supplyEth = web3.eth.abi.decodeParameter('uint256', data.result);					
-					rCbEth = String(supplyEth.toString()).slice(0, -15) / 1000;
-					
-					if(cBtcPrice > 0 && ethPrice >0 && cbEthPrice > 0 && rdUsdc > 0){
-						$(".reth.supply").text((rEth + rCbEth) + " (" + (Math.floor(((rEth * ethPrice) + (rCbEth * cbEthPrice) + (rCbBtc * cBtcPrice)) * 100) / 100) + ")");
-						
-						if(rEth > 0 && rCbEth > 0 && rdUsdc > 0){
-							healthRatio = Math.floor((1 - ((Math.floor(rdUsdc * 100) / 100) / (Math.floor(((rEth * ethPrice) + (rCbEth * cbEthPrice) + (rCbBtc * cBtcPrice)) * 100) / 100) / 0.75))*100);
-							
-							$(".radiHealthRatio").text(healthRatio + "%");
-							
-							if(healthRatio <= 10){
-								alertCall('radi');
-							}
-						}
-					}
-				},
-				error: function (e) {
-				}
-			});
-			
-			
-			
 		}
 		
 		function getDolo(){	
@@ -1954,46 +1782,7 @@
 					error: function (e) {
 					}
 				});
-				
-				$.ajax({
-					type : "GET",
-					url: 'https://min-api.cryptocompare.com/data/pricemultifull?fsyms=ETH&tsyms=USD',
-					contentType: 'application/json',
-					success : function(data) {
-						ethPrice = data.RAW.ETH.USD.PRICE;
-						//if(ethPrice >= 4100){
-						//	//alertCall('eth');
-						//}
-					},
-					error: function (e) {
-					}
-				});
-				
-				$.ajax({
-					type : "GET",
-					url: "https://api.dexscreener.com/latest/dex/pairs/base/0xa6385c73961dd9c58db2ef0c4eb98ce4b60651e8",
-					dataType: "json",
-					success : function(data) {
-						wstEthPrice = data.pair.priceUsd;
-						if(wstEthPrice >= 4300){
-							//alertCall('wsteth');
-						}
-					},
-					error: function (e) {
-					}
-				});
-				
-				$.ajax({
-					type : "GET",
-					url: "https://api.dexscreener.com/latest/dex/pairs/unichain/0x97e4442bca2c069f9060f3b8eef52eb25c98c245",
-					dataType: "json",
-					success : function(data) {
-						$("span.price.catx").text(data.pair.priceUsd);
-					},
-					error: function (e) {
-					}
-				});
-				
+												
 				$.ajax({
 					type : "GET",
 					url: "https://api.dexscreener.com/latest/dex/pairs/avalanche/0x0d9fd6dd9b1ff55fb0a9bb0e5f1b6a2d65b741a3",
@@ -2039,7 +1828,7 @@
 				success : function(data) {
 					$("span.price.hype").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
 					
-					if(data.pair.priceUsd > 46 || data.pair.priceUsd < 22){
+					if(data.pair.priceUsd > 81 || data.pair.priceUsd < 40){
 							alertCall('hype');
 						}
 				},
@@ -2673,6 +2462,26 @@
 				});
 			}			
 			
+			function hyperlend(){
+				$.ajax({
+					type : "GET",
+					dataType: 'json',
+					url: "https://hyperlend-api.blockanalitica.com/wallets/0xF712aB8c4505eB4B36a2Ff9Fa746470be81E6538/?format=json&network=hyper",
+					success : function(data) {
+						var rate = data.health_rate;						
+						$("span.hyper.rate").text(rate);
+						$("span.hyper.supply").text(data.total_supply);
+						$("span.hyper.borrow").text(data.total_borrow);					
+						
+						if(rate < 1.2){
+							alertCall('hyperlend');
+						}
+					},
+					error: function (e) {
+					}
+				});
+			}
+			
 			function vfat(){				
 				var delist = new Map();
 				
@@ -2786,9 +2595,10 @@
 			//checkAero();
 			//getPhar();
 			//getArc();
-			vfat();
+			//vfat();
 			getHydrex();
 			getNest();
+			hyperlend();
 						
 			setInterval(function () {
 				//fecthRamNft();
@@ -2802,8 +2612,9 @@
 				//getPhar();
 				getSilo();
 				getAave();
-				vfat();
+				//vfat();
 				getHydrex();
+				hyperlend();
 				if(!trackjob)
 				getNest();
 			}, 30000);
