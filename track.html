@@ -2463,15 +2463,16 @@
 			}			
 			
 			function hyperlend(){
+				var tracker = 'https://hyperlend-api.blockanalitica.com/wallets/0xF712aB8c4505eB4B36a2Ff9Fa746470be81E6538/?format=json&network=hyper';
 				$.ajax({
 					type : "GET",
 					dataType: 'json',
-					url: "https://corprv.mycorprv.workers.dev/?url=hyperlend-api.blockanalitica.com/wallets/0xF712aB8c4505eB4B36a2Ff9Fa746470be81E6538/?format=json&network=hyper",
+					url: "https://corprv.mycorprv.workers.dev/?url=" + tracker,
 					success : function(data) {
-						var rate = data.health_rate;						
-						$("span.hyper.rate").text(rate);
-						$("span.hyper.supply").text(data.total_supply);
-						$("span.hyper.borrow").text(data.total_borrow);					
+						var rate = (Math.round(data.health_rate * 100) / 100);
+						$("span.hyper.rate").text(Math.round(rate * 100) / 100);
+						$("span.hyper.supply").text(Math.round(data.total_supply * 100) / 100);
+						$("span.hyper.borrow").text(Math.round(data.total_borrow * 100) / 100);					
 						
 						if(rate < 1.2){
 							alertCall('hyperlend');
