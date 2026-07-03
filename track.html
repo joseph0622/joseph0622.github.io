@@ -2466,7 +2466,7 @@
 				$.ajax({
 					type : "GET",
 					dataType: 'json',
-					url: "https://hyperlend-api.blockanalitica.com/wallets/0xF712aB8c4505eB4B36a2Ff9Fa746470be81E6538/?format=json&network=hyper",
+					url: "https://corprv.mycorprv.workers.dev/?url=https://hyperlend-api.blockanalitica.com/wallets/0xF712aB8c4505eB4B36a2Ff9Fa746470be81E6538/?format=json&network=hyper",
 					success : function(data) {
 						var rate = data.health_rate;						
 						$("span.hyper.rate").text(rate);
