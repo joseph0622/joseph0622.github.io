@@ -73,6 +73,10 @@
 			<span class="hyper rate"></span>&nbsp;
 			supply: <span class="hyper supply"></span>&nbsp;borrow: <span class="hyper borrow"></span>&nbsp;<br/>
           </div>
+		  <br/>
+		  <div class="container">
+			Zerion <span class="balance"></span>
+		  </div>
 		  <!--
 		  <h6>Aero</h6>
 		  <div class="container">
@@ -1685,7 +1689,7 @@
 				
 				$.ajax({
 					type : "GET",
-					url: "https://api.dexscreener.com/latest/dex/pairs/arbitrum/0x688547381eec7c1d3d9eba778fe275d1d7e03946",
+					url: "https://api.dexscreener.com/latest/dex/pairs/hyperevm/0xbe052ed684849311604d7a4bc45ef291526e34a2",
 					dataType: "json",
 					success : function(data) {
 						$("span.price.ram").text(data.pair.priceUsd + ' (' + data.pair.priceChange.h1 +'|' + data.pair.priceChange.h6 + '|' + data.pair.priceChange.h24+')');
@@ -1884,6 +1888,7 @@
 				error: function (e) {
 				}
 				});
+				
 				
 				/*
 				$.ajax({
@@ -2483,6 +2488,22 @@
 				});
 			}
 			
+			function zerion(){
+				var zerion = "https://api.zerion.io/v1/wallets/0xf712ab8c4505eb4b36a2ff9fa746470be81e6538/portfolio?filter%5Bpositions%5D=no_filter&currency=usd&auth=Basic%20emtfZWNmYWY2ZmVmNWQ0NDg2N2JiMTRhYmZkMTEzOTcyZjU6";
+				$.ajax({
+					type : "GET",
+					url: "https://corprv.mycorprv.workers.dev/?url=" + zerion,
+					dataType: "json",
+					success : function(data) {
+						const bal = Math.round(data.data.attributes.total.positions *100)/100;
+						$("span.balance").text(bal.toLocaleString());
+					},
+					error: function (e) {
+					}
+				});
+				
+			}
+			
 			function vfat(){				
 				var delist = new Map();
 				
@@ -2600,6 +2621,7 @@
 			getHydrex();
 			getNest();
 			hyperlend();
+			zerion();
 						
 			setInterval(function () {
 				//fecthRamNft();
