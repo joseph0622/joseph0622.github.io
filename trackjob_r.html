@@ -2469,10 +2469,10 @@
 					dataType: 'json',
 					url: "https://corprv.mycorprv.workers.dev/?url=" + tracker,
 					success : function(data) {
-						var rate = (Math.round(data.health_rate * 100) / 100);
+						var rate = (Math.round(data.data.health_rate * 100) / 100);
 						$("span.hyper.rate").text(Math.round(rate * 100) / 100);
-						$("span.hyper.supply").text(Math.round(data.total_supply * 100) / 100);
-						$("span.hyper.borrow").text(Math.round(data.total_borrow * 100) / 100);					
+						$("span.hyper.supply").text(Math.round(data.data.total_supply * 100) / 100);
+						$("span.hyper.borrow").text(Math.round(data.data.total_borrow * 100) / 100);					
 						
 						if(rate < 1.2){
 							alertCall('hyperlend');
