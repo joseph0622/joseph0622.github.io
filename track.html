@@ -2371,20 +2371,20 @@
 					dataType: "json",
 					success : function(data) {
 						$.each(data, function(idx, obj){
-							if(obj.tvl){
+							if(obj.tvl > 1){
 								var tr = $("table.table tfoot tr.hyper").clone();
 								
 								$(tr).prop("id", obj.v3.tokenId);
 								$(tr).find(".t0").text(obj.v3.tokenId + ' ' + translateToken(obj.token0.tokenAddress));
 								$(tr).find(".t1").text(translateToken(obj.token1.tokenAddress));
-								$(tr).find(".bal0").text(obj.token0Balance.amountUsd);
-								$(tr).find(".bal1").text(obj.token1Balance.amountUsd);
+								$(tr).find(".bal0").text(parseInt(obj.token0Balance.amountUsd));
+								$(tr).find(".bal1").text(parseInt(obj.token1Balance.amountUsd));
 								$(tr).find(".total").text(parseInt(obj.tvl));
 								$(tr).find(".apr").text(parseInt(obj.apr));
 								$(tr).find(".reward").text(parseInt(obj.earnedEmissionUsd));
 								$(tr).appendTo($("table.table tbody"));
 								
-								if(obj.apr< 1){
+								if(obj.apr && obj.apr< 1){
 									alertCall('nest');
 								}
 							}
