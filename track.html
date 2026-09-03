@@ -2401,20 +2401,18 @@
 							url: "https://app.usenest.xyz/api/blaze/user-positions/0xF712aB8c4505eB4B36a2Ff9Fa746470be81E6538",
 							dataType: "json",
 							success : function(data) {
-								if(data){
-									$.each(data, function(idx, obj){
-										if(obj.id && obj.apr){
-											var tr = $("#" + obj.id.toString())[0];
-											var r = obj.apr.toString().slice(0, 4);
-											$(tr).find(".apr").text(r);
+								$.each(data, function(idx, obj){
+									if(obj.id && obj.apr){
+										var tr = $("#" + obj.id.toString())[0];
+										var r = obj.apr.toString().slice(0, 4);
+										$(tr).find(".apr").text(r);
 
-											if(r && r< 1){
-												alertCall('nest');
+										if(r && r< 1){
+											alertCall('nest');
 
-											}
 										}
-									});
-								}
+									}
+								});								
 							},
 							error: function (e) {
 							}
