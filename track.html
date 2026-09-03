@@ -2367,59 +2367,32 @@
 				
 				$.ajax({
 					type : "GET",
-					url: "https://app.usenest.xyz/api/liveprograms/graph/user-v3-positions?owner=0xF712aB8c4505eB4B36a2Ff9Fa746470be81E6538",
+					url: "https://app.usenest.xyz/api/blaze/user-positions/0xF712aB8c4505eB4B36a2Ff9Fa746470be81E6538",
 					dataType: "json",
 					success : function(data) {
-						if(data.data.positions){
-							var pos = data.data.positions;
-							
-							$.each(pos, function(idx, obj){
-								if(obj.liquidity == 0){
-									return;
-								}
-							
+						$.each(data, function(idx, obj){
+							if(obj.tvl){
 								var tr = $("table.table tfoot tr.hyper").clone();
-										
-								$(tr).prop("id", obj.id);
-								$(tr).find(".t0").text(obj.id + ' ' + translateToken(obj.token0.id));
-								$(tr).find(".t1").text(translateToken(obj.token1.id));
-								$(tr).find(".bal0").text(obj.depositedToken0 - obj.withdrawnToken0);
-								$(tr).find(".bal1").text(obj.depositedToken1 - obj.withdrawnToken1);
-								$(tr).find(".total").text(parseInt(obj.depositedToken0) + parseInt(obj.depositedToken1));
 								
-								if(obj.depositedToken0 < 1 || obj.depositedToken1 < 1){
-									//alertCall('nest');
-								}
-								
+								$(tr).prop("id", obj.v3.tokenId);
+								$(tr).find(".t0").text(obj.v3.tokenId + ' ' + translateToken(obj.token0.tokenAddress));
+								$(tr).find(".t1").text(translateToken(obj.token1.tokenAddress));
+								$(tr).find(".bal0").text(obj.token0Balance.amountUsd);
+								$(tr).find(".bal1").text(obj.token1Balance.amountUsd);
+								$(tr).find(".total").text(parseInt(obj.tvl));
+								$(tr).find(".apr").text(parseInt(obj.apr));
+								$(tr).find(".reward").text(parseInt(obj.earnedEmissionUsd));
 								$(tr).appendTo($("table.table tbody"));
-							});
-						}
-					},
-					complete: function (e) {
-						$.ajax({
-							type : "GET",
-							url: "https://app.usenest.xyz/api/blaze/user-positions/0xF712aB8c4505eB4B36a2Ff9Fa746470be81E6538",
-							dataType: "json",
-							success : function(data) {
-								$.each(data, function(idx, obj){
-									if(obj.id && obj.apr){
-										var tr = $("#" + obj.id.toString())[0];
-										var r = obj.apr.toString().slice(0, 4);
-										$(tr).find(".apr").text(r);
-
-										if(r && r< 1){
-											alertCall('nest');
-
-										}
-									}
-								});								
-							},
-							error: function (e) {
+								
+								if(obj.apr< 1){
+									alertCall('nest');
+								}
 							}
-						});
+						});								
+					},
+					error: function (e) {
 					}
 				});
-				
 				
 			}
 			
